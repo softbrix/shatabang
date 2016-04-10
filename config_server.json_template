@@ -1,0 +1,4 @@
+{
+  storageDir : "dir to source files",
+  cacheDir : "dir to cached files"
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<!--
+	Multiverse by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Shatabang!</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/thirdParty.css" />
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+
+
+	</head>
+	<body>
+
+		<div id="header" style="display: none">
+			<a onclick="zoomIn(); return false;" class="zoomBtn btn btn-primary btn-sm "> + </a>
+			<a onclick="zoomOut(); return false;" class="zoomBtn btn btn-primary btn-sm"> - </a>
+			<a href="/logout" id="logoutBtn"  class="btn btn-default btn-sm" style="float:right;">Logout</a>
+			<span id="username" style="float:right"></span>
+			<a class="fancyboxLink btn btn-primary btn-sm" data-fancybox-type="iframe" href="upload.html" style="float: right"> Upload </a>
+		</div>
+
+		<a href="/auth/google" id="loginBtn" style="display: none" class="loginBtn btn btn-social btn-google btn-lg">
+			<i class="fa fa-google"></i>
+			Sign In with Google</a>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+
+				<!-- Main -->
+					<div id="gallery" />
+
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.poptrox.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/thirdParty.js"></script>
+			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+			<!--script src="assets/js/main.js"></script-->
+
+
+			<!-- Add mousewheel plugin (this is optional) -->
+			<script type="text/javascript" src="assets/js/jquery.mousewheel-3.0.6.pack.js"></script>
+
+			<!-- Add fancyBox -->
+			<link rel="stylesheet" href="assets/fancybox/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
+			<script type="text/javascript" src="assets/fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+			<script type="text/javascript">
+			var imageWidth = 300;
+			var imagesPWidth = Math.ceil($('body').width() / imageWidth);
+			imagesPWidth = Math.max(4, imagesPWidth); // At least 6 images in with
+			var zoomMultiplicator = 2;
+
+			var setImgWidth = function() {
+				var elem = findElementAtScrollTop($('#gallery'));
+
+				imagesPWidth = Math.ceil(imagesPWidth);
+				var ratio = 100/imagesPWidth;
+				var el = $('.fancybox');
+				el.css('width',  ratio + '%');
+				var width = el.width();
+				$('.fancybox').css('height', (200 * (width/300)) + 'px');
+
+				scrollToElement(elem);
+			};
+
+			function zoomIn() {
+				if(imagesPWidth > 0) {
+					imagesPWidth /= zoomMultiplicator;
+					setImgWidth();
+
+				}
+			}
+
+			function zoomOut() {
+				if(imagesPWidth < 1000) {
+					imagesPWidth *= zoomMultiplicator;
+					setImgWidth();
+					// TODO: Move this into its own object
+					window.scrollCheck();
+				}
+			}
+
+			function findElementAtScrollTop(parentElemet) {
+				var elem, minDistance = Number.MAX_VALUE;
+				 $.each(parentElemet.children(), function(idx, child) {
+					 var pos = $(child).position().top;
+					 var distance = Math.abs(pos - window.scrollY);
+					 if(distance < minDistance) {
+						 elem = child;
+						 minDistance = distance;
+					 }
+				 });
+				 return elem;
+			}
+
+			function scrollToElement(elem) {
+				var newTop = $(elem).position().top;
+				window.scrollTo(0, newTop);
+			}
+
+			function loaded() {
+				setImgWidth();
+				$(".fancyboxLink").fancybox();
+				$(".fancybox").fancybox({
+		        padding : 0,
+						openEffect	: 'elastic',
+    				closeEffect	: 'elastic',
+		    });
+				window.onresize = setImgWidth;
+			}
+
+				function appendStr(imgThumb, imgBig) {
+					return '<a href="'+imgBig+'" target="_blank" class="fancybox" rel="gallery1"><img src="'+imgThumb+'" alt="'+imgThumb+'" /></a>';
+				}
+			</script>
+
+			<script src="assets/js/shatabang.js"></script>
+	</body>
+</html>

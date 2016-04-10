@@ -1,0 +1,21 @@
+<script src="assets/dropzone/dropzone.min.js"></script>
+<link rel="stylesheet" href="assets/dropzone/basic.min.css">
+<link rel="stylesheet" href="assets/dropzone/dropzone.min.css">
+
+<form id        =  "uploadForm"
+      action    =  "./api/upload/single"
+      class     = "dropzone">
+<!--input type="file" name="uploaded" multiple="multiple" accept="image/*,video/*"/ -->
+<div class="fallback">
+    <input name="file" type="file" multiple />
+</div>
+</form>
+
+
+<script type="text/javascript">
+  Dropzone.options.uploadForm = {
+    //paramName: "file", // The name that will be used to transfer the file
+    maxFilesize: 2000, // MB
+    maxFiles : 999
+  };
+</script>

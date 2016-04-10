@@ -1,0 +1,87 @@
+{
+  "name": "shatabang",
+  "version": "0.0.1",
+  "description": "Picture library managing tools",
+  "author": "Andreas Sehr <andreas@sehr.se>",
+  "contributors": [
+    {
+      "name": "Foo Bar",
+      "email": "foo.bar@example.com"
+    }
+  ],
+  "bin": {
+    "module-name": ""
+  },
+  "scripts": {
+    "test": "vows --spec --isolate",
+    "start": "node read_files.js",
+    "predeploy": "echo im about to deploy",
+    "postdeploy": "echo ive deployed",
+    "prepublish": "echo soon to be published"
+  },
+  "main": "lib/foo.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nodejitsu/browsenpm.org"
+  },
+  "bugs": {
+    "url": "https://github.com/nodejitsu/browsenpm.org/issues"
+  },
+  "keywords": [
+    "nodejitsu",
+    "example",
+    "browsenpm"
+  ],
+  "dependencies": {
+    "async": "^1.5.2",
+    "axios": "0.9.1",
+    "babel-preset-react": "^6.5.0",
+    "babelify": "^7.2.0",
+    "body-parser": "^1.15.0",
+    "compression": "^1.6.1",
+    "connect-redis": "^3.0.2",
+    "exif": "*",
+    "exiftool": "0.0.3",
+    "express": "4.13.3",
+    "express-session": "^1.13.0",
+    "ffprobe": "^1.1.0",
+    "fluent-ffmpeg": "git+https://github.com/mansehr/node-fluent-ffmpeg.git",
+    "fs-extra": "*",
+    "jsonfile": "^2.2.3",
+    "minimist": "^1.2.0",
+    "mp4js": "0.0.2",
+    "multer": "1.1.0",
+    "node-dir": "*",
+    "node-iptc": "git+https://github.com/mansehr/node-iptc.git",
+    "passport": "^0.3.2",
+    "passport-google": "^0.3.0",
+    "passport-google-oauth": "^1.0.0",
+    "path": "*",
+    "piexifjs": "^1.0.0",
+    "progress": "1.1.8",
+    "q": "^1.4.1",
+    "react": "^0.14.7",
+    "react-dom": "^0.14.7",
+    "sharp": "0.13.0",
+    "touch": "^1.0.0",
+    "underscore": "*"
+  },
+  "devDependencies": {
+    "bootstrap": "^3.3.6",
+    "bootstrap-social": "^4.11.0",
+    "font-awesome": "^4.5.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "mocha": "~2.3.3",
+    "should": "~7.1.0",
+    "supertest": "~1.1.0"
+  },
+  "preferGlobal": true,
+  "private": true,
+  "publishConfig": {
+    "registry": "https://your-private-hosted-npm.registry.nodejitsu.com"
+  },
+  "subdomain": "foobar",
+  "analyze": true,
+  "license": "TBD"
+}
