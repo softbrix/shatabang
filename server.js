@@ -21,7 +21,7 @@ var GOOGLE_CLIENT_ID      = config.google_client_id,
     GOOGLE_CLIENT_SECRET  = config.google_client_secret,
     GOOGLE_CALLBACK_URL = config.google_auth_callback_url,
     GOOGLE_ALLOWED_IDS = config.google_auth_allowed_ids;
- 
+
 var storageDir = config.storageDir; //'/Volumes/Mini\ Stick/sorted/';
 var cacheDir = config.cacheDir; // '/Volumes/Mini\ Stick/cache/';
 var uploadDir = path.join(storageDir, 'upload');
@@ -32,7 +32,7 @@ if(!shFiles.exists(uploadDir)) {
   shFiles.mkdirsSync(uploadDir);
 }
 upload_route.initialize(uploadDir);
-images_route.initialize(storageDir);
+images_route.initialize(config);
 
 passport.serializeUser(function(user, done) {
   console.log('serializeUser', user.displayName);

@@ -2,10 +2,7 @@
 
 //var _ = require('underscore');
 var async = require('async');
-var Q = require('q');
-var fs = require('fs-extra');
 var path = require('path');
-var exec = require('child_process').exec;
 var ProgressBar = require('progress');
 var mediaInfo = require('./modules/media_info');
 var shFiles = require('./modules/shatabang_files');
@@ -59,7 +56,7 @@ var main = function() {
     try {
       // Start the workers
       processNext();
-      // Callback code can't handle multiple instances 
+      // Callback code can't handle multiple instances
       // processNext();
     } catch (err) {
       console.log('Error: ' + err.message);
@@ -152,71 +149,12 @@ var processFile = function(sourceFile, destinationDir, fileName) {
     processNext();
   };
 
-  moveFile(sourceFile, destination)
+  shFiles.moveFile(sourceFile, destination)
   .then(doNext, function(error) {
     console.log(error);
     doNext(sourceFile);
   });
 
-};
-
-
-var moveFile = function(source, destination, retryCnt) {
-  if (typeof fileHandlingMethod === 'undefined') {
-    return Q.resolve(source);
-  }
-  var deffered = Q.defer();
-  var newDestination = destination;
-  if (retryCnt > 0) {
-    var fileInfo = path.parse(destination);
-    fileInfo.name = fileInfo.name + '_' + retryCnt;
-    fileInfo.base = fileInfo.name + fileInfo.ext;
-    newDestination = path.format(fileInfo);
-  }
-  //console.log('moveFile1', newDestination);
-  fs.access(newDestination, fs.F_OK, function(err) {
-  if (!err) {
-    // TODO: This probably doesn't work
-    moveFile(source, destination, (retryCnt || 0) + 1).then(function(name) {
-      deffered.resolve(name);
-    }, function(error) { deffered.reject(error); });
-  } else {
-    //console.log('newDest', newDestination, path.dirname(newDestination));
-    var error = fs.mkdirsSync(path.dirname(newDestination));
-    if (error) {
-      console.log(newDestination, 'Error with new destination: ', error.message || error);
-    }
-
-    var command = fileHandlingMethod + '"' + source + '"' + ' "' + newDestination + '"';
-    //console.log(command);
-    var fileOpCallback = function(error) {
-      if (error) {
-        if (error.code === 'EXDEV') {
-          exec(command, function(error/*, stdout, stderr*/) {
-            if (error) {
-              console.log(command, error);
-              deffered.reject(error);
-            } else {
-              deffered.resolve(newDestination);
-            }
-          });
-        } else {
-          console.error('Move error', error);
-          deffered.reject(error);
-        }
-      } else {
-        deffered.resolve(newDestination);
-      }
-    };
-
-    if (fileHandlingMethod === " mv ") {
-      fs.rename(source, newDestination, fileOpCallback);
-    } else {
-      fs.copy(source, newDestination, fileOpCallback);
-    }
-  }
-  });
-  return deffered.promise;
 };
 
 

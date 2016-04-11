@@ -1,6 +1,18 @@
 
 /** This is the shatabang code */
 
+
+function deleteImages(imageList) {
+  axios.post('/api/images/delete', imageList).then(function(response) {
+    if(response.status === 200) {
+      console.log(response.data);
+    } else {
+      console.log('Error while delete request', response.status);
+      // TODO: report error
+    }
+  });
+}
+
 (function($) {
   axios.get('/api/account').then(function(response) {
     if(response.status === 200 && response.data.user) {
@@ -63,7 +75,7 @@
         }
         var imgSrc = baseUrl + imageWidth + '/' +image;
         var lnkHref = baseUrl + '1920/' + image;
-        elem.append(appendStr(imgSrc,lnkHref));
+        elem.append(appendStr(imgSrc,lnkHref, images[i]));
       }
     }
     folderInfo.ptr = i;

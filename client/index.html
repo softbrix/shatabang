@@ -19,13 +19,26 @@
 	</head>
 	<body>
 
-		<div id="header" style="display: none">
+		<div id="header" class="header" style="display: none">
 			<a onclick="zoomIn(); return false;" class="zoomBtn btn btn-primary btn-sm "> + </a>
 			<a onclick="zoomOut(); return false;" class="zoomBtn btn btn-primary btn-sm"> - </a>
+			Mode: <input type="checkbox" name="viewMode" data-on-text="View" data-off-text="Edit" data-size="small" checked>
 			<a href="/logout" id="logoutBtn"  class="btn btn-default btn-sm" style="float:right;">Logout</a>
 			<span id="username" style="float:right"></span>
 			<a class="fancyboxLink btn btn-primary btn-sm" data-fancybox-type="iframe" href="upload.html" style="float: right"> Upload </a>
 		</div>
+		<div id="selectedHeader" class="header subHeader" style="display: none">
+			Selection: <span id="selectCnt">0</span>
+			<a id="clrSlct" class="btn btn-xs btn-default">Clear</a>
+			<a id="allSlct" class="btn btn-xs btn-default">Select all</a>
+			<a id="invSlct" class="btn btn-xs btn-default">Invert</a>
+			| Tags:
+			<a id="addTag" class="btn btn-xs btn-default">Add</a>
+			<a id="delTag" class="btn btn-xs btn-default">Delete</a>
+			<a id="edtTag" class="btn btn-xs btn-default">Edit</a>
+			| Image:
+			<a id="delImg" class="btn btn-xs btn-default">Delete</a>
+    </div>
 
 		<a href="/auth/google" id="loginBtn" style="display: none" class="loginBtn btn btn-social btn-google btn-lg">
 			<i class="fa fa-google"></i>
@@ -112,19 +125,85 @@
 				window.scrollTo(0, newTop);
 			}
 
-			function loaded() {
-				setImgWidth();
-				$(".fancyboxLink").fancybox();
+			function enableFancyboxOnImages() {
 				$(".fancybox").fancybox({
 		        padding : 0,
 						openEffect	: 'elastic',
     				closeEffect	: 'elastic',
 		    });
+			}
+
+			function updateSlctCnt() {
+				// Update select count
+				$('#selectCnt').text($("#gallery .selected").length);
+			}
+
+			function getSelectedImages() {
+				var a = [];
+				$("#gallery .selected").each(function(index, element) {
+				    a.push(element);
+				});
+				return a;
+			}
+
+			function loaded() {
+				setImgWidth();
+				$(".fancyboxLink").fancybox();
+				enableFancyboxOnImages();
+
+				var viewMode = true;
+
+				var clickHandler = function(event) {
+					event.stopPropagation();
+					event.preventDefault();
+					console.log(event);
+					$( this ).toggleClass('selected');
+
+					updateSlctCnt();
+				};
+
+				$("[name='viewMode']").bootstrapSwitch({
+					onSwitchChange : function(event, newViewMode) {
+						viewMode = newViewMode;
+						if (newViewMode) {
+							$("body").removeClass('editMode');
+							$(".shImage").addClass('fancybox');
+							$("#gallery").off("click", ".shImage", clickHandler);
+							$("#selectedHeader").hide();
+						} else {
+							$("body").addClass('editMode');
+							$(".shImage").removeClass('fancybox');
+							$("#gallery").on("click", ".shImage", clickHandler);
+							$("#selectedHeader").show();
+						}
+					}
+				});
+				$('#clrSlct').click(function(){ $(".shImage").removeClass('selected'); updateSlctCnt(); });
+				$('#allSlct').click(function(){ $(".shImage").addClass('selected'); updateSlctCnt(); });
+				$('#invSlct').click(function(){
+					$(".shImage.selected").addClass('oldSelected').removeClass('selected');
+					$(".shImage:not(.oldSelected)").addClass('selected');
+					$(".shImage.oldSelected").removeClass('oldSelected');
+					updateSlctCnt();
+				});
+
+				$('#delImg').click(function() {
+					var ids = [];
+					$.each(getSelectedImages(), function(id, el) {
+						ids.push($(el).data('ref'));
+						$(el).remove();
+					});
+					console.log(ids);
+					deleteImages(ids);
+				});
+
 				window.onresize = setImgWidth;
 			}
 
-				function appendStr(imgThumb, imgBig) {
-					return '<a href="'+imgBig+'" target="_blank" class="fancybox" rel="gallery1"><img src="'+imgThumb+'" alt="'+imgThumb+'" /></a>';
+				function appendStr(imgThumb, imgBig, reference) {
+					return '<a href="'+imgBig+'" data-ref="'+reference+'" target="_blank" '+
+								 'class="shImage fancybox" rel="gallery1">'+
+								 '<img src="'+imgThumb+'" alt="'+imgThumb+'" /></a>';
 				}
 			</script>
 

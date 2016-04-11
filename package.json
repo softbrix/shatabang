@@ -69,6 +69,7 @@
   "devDependencies": {
     "bootstrap": "^3.3.6",
     "bootstrap-social": "^4.11.0",
+    "bootstrap-switch": "^3.3.2",
     "font-awesome": "^4.5.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
