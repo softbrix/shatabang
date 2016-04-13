@@ -126,8 +126,10 @@ app.get('/logout', function(req, res) {
 // Secure the api and images path
 app.all('/api/*', requireAuthentication);
 app.all('/images/*', requireAuthentication);
+app.all('/media/*', requireAuthentication);
 
 app.use('/images', express.static(cacheDir));
+app.use('/media', express.static(storageDir));
 app.use('/api/upload', upload_route);
 app.use('/api/images', images_route);
 app.use('/', express.static(__dirname + "/client/"));

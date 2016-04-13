@@ -82,10 +82,10 @@
 
 				imagesPWidth = Math.ceil(imagesPWidth);
 				var ratio = 100/imagesPWidth;
-				var el = $('.fancybox');
+				var el = $('.shImage');
 				el.css('width',  ratio + '%');
 				var width = el.width();
-				$('.fancybox').css('height', (200 * (width/300)) + 'px');
+				$('.shImage').css('height', (200 * (width/300)) + 'px');
 
 				scrollToElement(elem);
 			};
@@ -126,10 +126,20 @@
 			}
 
 			function enableFancyboxOnImages() {
-				$(".fancybox").fancybox({
-		        padding : 0,
+				$(".fancybox:not(.isVideo)").fancybox({
+		        padding : 0
+						/*,
 						openEffect	: 'elastic',
-    				closeEffect	: 'elastic',
+    				closeEffect	: 'elastic',*/
+		    });
+
+				$(".fancybox.isVideo").fancybox({
+		        padding : 0,
+						arrows : false,
+						iframe: {
+							scrolling : 'none',
+							preload   : false
+						}
 		    });
 			}
 
@@ -178,7 +188,10 @@
 						}
 					}
 				});
-				$('#clrSlct').click(function(){ $(".shImage").removeClass('selected'); updateSlctCnt(); });
+				var clearSelect = function() {
+					$(".shImage").removeClass('selected'); updateSlctCnt();
+				}
+				$('#clrSlct').click(function(){ clearSelect(); });
 				$('#allSlct').click(function(){ $(".shImage").addClass('selected'); updateSlctCnt(); });
 				$('#invSlct').click(function(){
 					$(".shImage.selected").addClass('oldSelected').removeClass('selected');
@@ -195,14 +208,22 @@
 					});
 					console.log(ids);
 					deleteImages(ids);
+					clearSelect();
 				});
 
 				window.onresize = setImgWidth;
 			}
 
-				function appendStr(imgThumb, imgBig, reference) {
-					return '<a href="'+imgBig+'" data-ref="'+reference+'" target="_blank" '+
-								 'class="shImage fancybox" rel="gallery1">'+
+				function appendStr(imgThumb, imgBig, reference, isVideo) {
+					var openIframe = "", classes = "", icon = "";
+					if(isVideo) {
+						openIframe = 'data-fancybox-type="iframe"';
+						classes = ' isVideo';
+						icon = '<i class="fa fa-youtube-play" style="position: absolute; z-index: 5; margin: 0 3px"></i>'
+					}
+					return '<a href="'+imgBig+'" data-ref="'+reference+'" '+openIframe +' target="_blank" '+
+								 'class="shImage fancybox'+classes+'" rel="gallery1">'+
+								 icon +
 								 '<img src="'+imgThumb+'" alt="'+imgThumb+'" /></a>';
 				}
 			</script>

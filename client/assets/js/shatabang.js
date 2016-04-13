@@ -68,14 +68,18 @@ function deleteImages(imageList) {
     var images = folderInfo.images;
     for(var i = folderInfo.ptr, j = 0; i < folderInfo.size && j < limit; ++i, ++j) {
       if (images.hasOwnProperty(i)) {
-        var image = images[i];
-        console.log(image);
-        if(moveFileRegexp.test(image)) {
-          image = image.replace(moveFileRegexp, '$1jpg');
+        var media = images[i];
+        var thumb = media, bigMedia, isVideo;
+        if(moveFileRegexp.test(media)) {
+          thumb = media.replace(moveFileRegexp, '$1jpg');
+          bigMedia = "./media/" + media;
+          isVideo = true;
+        } else {
+          bigMedia = baseUrl + '1920/' + media;
+          isVideo = false;
         }
-        var imgSrc = baseUrl + imageWidth + '/' +image;
-        var lnkHref = baseUrl + '1920/' + image;
-        elem.append(appendStr(imgSrc,lnkHref, images[i]));
+        var imgSrc = baseUrl + imageWidth + '/' +thumb;
+        elem.append(appendStr(imgSrc, bigMedia, images[i], isVideo));
       }
     }
     folderInfo.ptr = i;
