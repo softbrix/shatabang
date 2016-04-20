@@ -1,5 +1,6 @@
 "use strict"
 
+var directory_list = require('./modules/directory_list');
 var shFiles = require('./modules/shatabang_files');
 var mediaInfo = require('./modules/media_info');
 var idx = require('./modules/shatabang_index');
@@ -44,31 +45,11 @@ var main = function() {
 
     _.each(directories, processDirectory);
 
-	// Catches exception in the process and keeps the processing of the files running
-	process.on('uncaughtException', function (err) {
-		console.log('Caught exception: ' + err);
-		processNext();
-	});
-  });
-};
-
-
-// file list is a lot of entries like '/year/month/day/time.xyz'
-var fileDateRegexp = /^([\d]{2,4}).?(\d{1,2}).?(\d{1,2}).?(\d{1,6})/;
-var sortFileListByDate = function(fileList) {
-  return fileList.sort(function(b, a) {
-    var regExpA = fileDateRegexp.exec(a) || {length: 0};
-    var regExpB = fileDateRegexp.exec(b) || {length: 0};
-    if(regExpA.length < 5 || regExpA.length !== regExpB.length) {
-      return regExpA.length - regExpB.length;
-    }
-    if(regExpA[1] === regExpB[1]) {
-      if(regExpA[2] === regExpB[2]) {
-        return regExpA[3] - regExpB[3];
-      }
-      return regExpA[2] - regExpB[2];
-    }
-    return regExpA[1] - regExpB[1];
+  	// Catches exception in the process and keeps the processing of the files running
+  	process.on('uncaughtException', function (err) {
+  		console.log('Caught exception: ' + err);
+  		processNext();
+  	});
   });
 };
 
@@ -77,47 +58,26 @@ var sortFileListByDate = function(fileList) {
  thumbnails for all items.
  */
 var processDirectory = function(directory) {
-  shFiles.listMediaFiles(path.join(sourceDir, directory), function(error, filesList) {
-    if (error) {
-      throw error;
-    }
+  directory_list(directory, sourceDir, cachedDir).then(function(relativeFilesList) {
+  	var startProcessor = filesToProcess.length === 0;
+  	filesToProcess = filesToProcess.concat(relativeFilesList);
 
-    //console.log(directory, filesList.length);
+  	bar = new ProgressBar('[:bar] :percent (:current/:total) :etas', { total: filesToProcess.length });
 
-    var relativeFilesList = _.map(filesList, function(item) {
-      return path.relative(sourceDir, item);
-    });
+    console.log('Added [', directory, ']', relativeFilesList.length);
 
-    relativeFilesList = sortFileListByDate(relativeFilesList);
-
-    //console.log(relativeFilesList);
-
-    var mediaListFile = path.join(cachedDir, directory, 'media.lst');
-    //console.log(mediaListFile);
-
-    shFiles.writeFile(mediaListFile, relativeFilesList, function(err) {
-      if(err) {
-        return console.log(err);
-      }
-      console.log("The file was saved: ", directory);
-    });
-
-	var startProcessor = filesToProcess.length === 0;
-	filesToProcess = filesToProcess.concat(relativeFilesList);
-
-	bar = new ProgressBar('[:bar] :percent (:current/:total) :etas', { total: filesToProcess.length });
-
-  console.log('Added [', directory, ']', filesList.length);
-
-	if(startProcessor) {
-		console.log('Processor started');
-		processNext();
-	}
+  	if(startProcessor) {
+  		console.log('Processor started');
+  		processNext();
+  	}
+  }, function(error) {
+    console.log('Error while processing directory', error);
   });
 };
 
 var processNext = function() {
   if(filesToProcess.length === 0) {
+    console.log('Exit Process next');
     return;
   }
   var fileName = filesToProcess.pop();
