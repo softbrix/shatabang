@@ -16,7 +16,7 @@ var createFileEditFallback = function(fileHandlingMethod, source, newDestination
             console.log(command, error);
             deffered.reject(error);
           } else {
-            deffered.resolve(newDestination);
+            deffered.resolve(newDestination, source);
           }
         });
       } else {
@@ -24,7 +24,7 @@ var createFileEditFallback = function(fileHandlingMethod, source, newDestination
         deffered.reject(error);
       }
     } else {
-      deffered.resolve(newDestination);
+      deffered.resolve(newDestination, source);
     }
   };
 };

@@ -5,7 +5,8 @@ var async = require('async');
 var path = require('path');
 var ProgressBar = require('progress');
 var mediaInfo = require('./modules/media_info');
-var shFiles = require('./modules/shatabang_files');
+var sort_file = require('./modules/sort_file');
+var shFiles =   require('./modules/shatabang_files');
 
 var argv = require('minimist')(process.argv.slice(2));
 
@@ -73,7 +74,11 @@ var filesToProcess = [];
 var processNext = function() {
   setTimeout(function() {
     if (filesToProcess.length > 0) {
-      parseFile(filesToProcess.pop());
+      sort_file(filesToProcess.pop(), destDir)
+      .then(doNext, function(error) {
+        console.log(error);
+        processNext();
+      });
       bar.tick();
     } else {
       console.log('Finished moving files. ');
@@ -85,76 +90,24 @@ var processNext = function() {
   }, 0);
 };
 
-/*var escapePath = function(p) {
-  return p.replace(/( |\(|\)|\&)/g, '\\$1');
-};*/
-
-var parseFile = function(item) {
-  //console.log('parseFile', item);
-
-  var destinationDir = path.join(destDir, 'unknown');
-  mediaInfo.readMediaInfo(item).then(function (exifData) {
-    //console.log('exifData', exifData);
-    var date = exifData.CreateDate || exifData.ModifyDate;
-    // ex: 2015:12:11 12:10:09
-    var dateRegexp = /^([\d]{2,4}).?(\d{1,2}).?(\d{1,2})\s(\d{1,2}).?(\d{1,2}).?(\d{1,2})/;
-    var result = dateRegexp.exec(date);
-    //console.log(item, exifData.Tags); // Do something with your data!
-    var newFileName;
-    if (result && result.length > 3) {
-      var year = result[1], month = result[2], day = result[3];
-      destinationDir = path.join(destDir, year, month, day);
-      if (result.length > 6) {
-        var hh = result[4], mm = result[5], ss = result[6];
-        //console.log(date, hh,mm,ss);
-        newFileName = hh+mm+ss + path.extname(item);
-      }
-    } else {
-      console.log("Failed to parse the date in the exif information", item);
-    }
-    processFile(item, destinationDir, newFileName);
-  }, function(error) {
-    console.log(item, 'Error: ', (error.message || error));
-    processFile(item, destinationDir);
-  });
-};
-
-var processFile = function(sourceFile, destinationDir, fileName) {
+var doNext = function(movedFilePath, sourceFile) {
+  //console.log('do next');
   var parentDir = sourceDir === "/" ? sourceDir : path.join(sourceDir, '..');
   var relativePath = path.relative(parentDir , path.dirname(sourceFile));
-
-  if (typeof fileName === 'undefined') {
-    fileName = path.basename(sourceFile);
-  }
-
-  var destination = path.join(destinationDir, fileName);
-
-  //console.log('process', sourceFile, destination);
-
-  var doNext = function(movedFilePath) {
-    //console.log('do next');
-    if (addTags) {
-      addTagsWorkerQueue.push({
-        'fileName' : movedFilePath,
-        'tags' : [relativePath, fileName]},
-        function (err) {
-          if(err) { console.log(err); }
-          else {
-            if(typeof tagsBar !== 'undefined') {
-              tagsBar.tick();
-            }
+  if (addTags) {
+    addTagsWorkerQueue.push({
+      'fileName' : movedFilePath,
+      'tags' : [relativePath]},
+      function (err) {
+        if(err) { console.log(err); }
+        else {
+          if(typeof tagsBar !== 'undefined') {
+            tagsBar.tick();
           }
-      });
-    }
-    processNext();
-  };
-
-  shFiles.moveFile(sourceFile, destination)
-  .then(doNext, function(error) {
-    console.log(error);
-    doNext(sourceFile);
-  });
-
+        }
+    });
+  }
+  processNext();
 };
 
 
