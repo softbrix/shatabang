@@ -7,7 +7,8 @@ var express        = require("express"),
     upload_route   = require('./routes/uploads'),
     images_route   = require('./routes/images'),
     session        = require('express-session'),
-    RedisStore     = require( 'connect-redis' )( session ),
+    redis          = require("redis"),
+    redisStore     = require( 'connect-redis' )( session ),
     app            = express(),
     path           = require('path'),
     passport       = require('passport'),
@@ -24,14 +25,19 @@ var GOOGLE_CLIENT_ID      = config.google_client_id,
 
 var storageDir = config.storageDir; //'/Volumes/Mini\ Stick/sorted/';
 var cacheDir = config.cacheDir; // '/Volumes/Mini\ Stick/cache/';
-var uploadDir = path.join(storageDir, 'upload');
+var deleteDir = config.deletedDir = path.join(storageDir, 'deleted');
+var uploadDir = config.uploadDir = path.join(storageDir, 'upload');
 
 // Check that upload dir exists
 if(!shFiles.exists(uploadDir)) {
   console.log("Upload dir does not exists. Trying to create it.");
   shFiles.mkdirsSync(uploadDir);
 }
-upload_route.initialize(uploadDir);
+if(!shFiles.exists(deleteDir)) {
+  console.log("Delete dir does not exists. Trying to create it.");
+  shFiles.mkdirsSync(deleteDir);
+}
+upload_route.initialize(config);
 images_route.initialize(config);
 
 passport.serializeUser(function(user, done) {
@@ -72,7 +78,8 @@ app.use( session({
 	secret: 'asdlkasldksdfkasjfl32492234l2k3j4lk2j34l9k2nmsan234',
 	name:   'cookie67',
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: true,
+  store: new redisStore({ host: 'localhost', port: 6379, client: redis.createClient(),ttl :  900})
 }));
 app.use(passport.initialize());
 app.use(passport.session());

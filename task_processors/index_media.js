@@ -1,0 +1,31 @@
+"use strict"
+var task_queue = require('../modules/task_queue');
+var mediaInfo = require('../modules/media_info');
+var idx = require('../modules/shatabang_index');
+var _ = require('underscore');
+var path = require('path');
+
+
+var init = function(config) {
+  idx.usePath(path.join(config.cacheDir, 'idx_tst'));
+  var storageDir = config.storageDir;
+
+  task_queue.registerTaskProcessor('index_media', function(data, job, done) {
+    console.log(storageDir, data.file);
+    var relativeFilePath = path.relative(storageDir, data.file);
+    mediaInfo.getTags(data.file).
+        then(function(tags) {
+          if(tags.length > 0) {
+            _.each(tags, function(tag) {
+              //console.log('put tag', tag);
+              idx.put(tag, relativeFilePath);
+            });
+          }
+          done();
+        }, done);
+  });
+};
+
+module.exports = {
+  init : init
+};

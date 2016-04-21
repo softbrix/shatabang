@@ -48,6 +48,7 @@
     "fluent-ffmpeg": "git+https://github.com/mansehr/node-fluent-ffmpeg.git",
     "fs-extra": "*",
     "jsonfile": "^2.2.3",
+    "kue": "^0.10.5",
     "minimist": "^1.2.0",
     "mp4js": "0.0.2",
     "multer": "1.1.0",
@@ -62,6 +63,7 @@
     "q": "^1.4.1",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
+    "redis": "^2.5.3",
     "sharp": "0.13.0",
     "touch": "^1.0.0",
     "underscore": "*"
