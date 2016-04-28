@@ -1,5 +1,5 @@
 "use strict"
-var shFiles = require('../modules/shatabang_files');
+var shFiles = require('./shatabang_files');
 var path = require('path');
 var Q = require('q');
 
@@ -23,11 +23,7 @@ var sortFileListByDate = function(fileList) {
   });
 };
 
-/**
- Processes the year directory and put file list in cache, then generate
- thumbnails for all items.
- */
-var processDirectory = function(directory, sourceDir, cachedDir) {
+var findMediaFiles = function(directory, sourceDir) {
   var deffered = Q.defer();
   shFiles.listMediaFiles(path.join(sourceDir, directory), function(err, filesList) {
     if (err) {
@@ -35,29 +31,46 @@ var processDirectory = function(directory, sourceDir, cachedDir) {
       return;
     }
 
-    //console.log(directory, filesList.length);
-
     var relativeFilesList = filesList.map(function(item) {
       return path.relative(sourceDir, item);
     });
 
     relativeFilesList = sortFileListByDate(relativeFilesList);
 
-    //console.log(relativeFilesList);
-
-    var mediaListFile = path.join(cachedDir, directory, 'media.lst');
-    //console.log(mediaListFile);
-
-    shFiles.writeFile(mediaListFile, relativeFilesList, function(err) {
-      if(err) {
-        deffered.reject(err);
-        return;
-      }
-      console.log("The file was saved: ", directory);
-      deffered.resolve(relativeFilesList, mediaListFile);
-    });
+    deffered.resolve(relativeFilesList);
   });
   return deffered.promise;
 };
 
-module.exports = processDirectory;
+var writeMediaListFile = function(directory, cachedDir, relativeFilesList) {
+  var deffered = Q.defer();
+  var mediaListFile = path.join(cachedDir, directory, 'media.lst');
+  //console.log(mediaListFile);
+
+  shFiles.writeFile(mediaListFile, relativeFilesList, function(err) {
+    if(err) {
+      deffered.reject(err);
+      return;
+    }
+    console.log("The file was saved: ", directory);
+    deffered.resolve(mediaListFile);
+  });
+  return deffered.promise;
+};
+
+/**
+ Processes the year directory and put file list in cache, then generate
+ thumbnails for all items.
+ */
+var processDirectory = function(directory, sourceDir, cachedDir) {
+  return findMediaFiles(directory, sourceDir).then(function(relativeFilesList) {
+    return writeMediaListFile(directory, cachedDir, relativeFilesList);
+  });
+};
+
+module.exports = {
+  findMediaFiles : findMediaFiles,
+  processDirectory : processDirectory,
+  sortFileListByDate : sortFileListByDate,
+  writeMediaListFile : writeMediaListFile
+};

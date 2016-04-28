@@ -58,7 +58,8 @@ var main = function() {
  thumbnails for all items.
  */
 var processDirectory = function(directory) {
-  directory_list(directory, sourceDir, cachedDir).then(function(relativeFilesList) {
+  directory_list.processDirectory(directory, sourceDir, cachedDir)
+    .then(function(relativeFilesList) {
   	var startProcessor = filesToProcess.length === 0;
   	filesToProcess = filesToProcess.concat(relativeFilesList);
 
