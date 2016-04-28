@@ -15,7 +15,7 @@ sudo brew install exiftool redis
 
 ## Ubuntu:
 sudo apt-get update
-sudo apt-get install libimage-exiftool-perl libvips-dev build-essential libav-tools redis-server
+sudo apt-get install git nodejs libimage-exiftool-perl libvips-dev build-essential libav-tools redis-server -y
 
 curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 sudo apt-get install -y nodejs
