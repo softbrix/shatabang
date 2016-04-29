@@ -101,7 +101,7 @@ module.exports = function(pathToUse) {
   };
 
   var getFileFromIndex = function(idx) {
-    return path.join(pathToUse, chars[idx-1]);
+    return path.join(pathToUse, chars.charAt(idx-1));
   };
 
 
