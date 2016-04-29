@@ -11,10 +11,12 @@ var init = function(config) {
   var idx = shIndex(idx_dir);
 
   task_queue.registerTaskProcessor('create_image_finger', function(data, job, done) {
-    var sourceFile = path.join(config.cacheDir, '1920', data.file);
+    var sourceDir = path.join(config.cacheDir, '1920');
+    var sourceFile = path.join(sourceDir, data.file);
     if(shFiles.exists(sourceFile)) {
       thumbnailer.create_image_finger(sourceFile, function(b85) {
-        idx.put(b85, sourceFile);
+        var relative = path.relative(sourceDir, sourceFile); 
+        idx.put(b85, relative);
         done();
       });
     } else {
