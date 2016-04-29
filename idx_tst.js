@@ -1,4 +1,5 @@
-var idx = require('./modules/shatabang_index');
+"use strict"
+var idx = require('./modules/shatabang_index')('./idx_tst');
 var _ = require('underscore');
 var ProgressBar = require('progress');
 
@@ -10,8 +11,9 @@ var logSearch = function(k) {
   console.log("idx.search('"+k+"'):",idx.search(k));
 };
 
+logGet('asa');
+logSearch('sas');
 
-idx.usePath('./idx_tst');
 
 idx.put('as', 'the beste1');
 idx.put('asa', 'the beste2');
@@ -22,9 +24,16 @@ idx.put('asa', 'the beste');
 idx.put('asa', 'the beste1');
 idx.put('asa', 'the beste2');
 
-var noOfItems = 2000;
+var noOfItems = 10000;
 
 var bar = new ProgressBar('[:bar] :percent :elapseds :etas', { total: noOfItems });
+
+var arr = [];
+var chars='abcdefghijklmnopqrstuvwxyz';
+var buckets = chars.length;
+_.times(buckets, function(i) {
+  arr[i] = 0;
+}, arr);
 
 /* Fill with garbage **/
 _.times(noOfItems, function(n) {
@@ -35,9 +44,14 @@ _.times(noOfItems, function(n) {
     idx.put(k, v);
   });
 
+  arr[parseInt(k ,36) % buckets] ++;
+
   bar.tick();
 });
 
+_.times(buckets, function(i) {
+  console.log(chars[i], arr[i]);
+}, arr);
 
 bar = new ProgressBar('[:bar] :percent :elapseds :etas', { total: noOfItems });
 /** Put plenty items in single file */

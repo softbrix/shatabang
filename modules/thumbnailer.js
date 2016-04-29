@@ -2,6 +2,7 @@
 
 var Q = require('q');
 var fs = require('fs-extra');
+var base85 = require('base85');
 var path = require('path');
 var sharp = require('sharp');
 var ffmpeg = require('fluent-ffmpeg');
@@ -104,5 +105,18 @@ module.exports = {
   	var srcFileEdited = new Date(sourceSync.mtime);
   	//console.log(destFileEdited.getTime(),' < ', srcFileEdited.getTime());
   	return destFileEdited.getTime() < srcFileEdited.getTime();
+  },
+  create_image_finger : function create_image_finger(sourceFile, callback) {
+    var image = sharp(sourceFile);
+    image
+      .rotate()
+      .resize(10, 10).
+      greyscale().
+      raw().
+      toBuffer().
+      then(function(buffer) {
+        var b85 = base85.encode(buffer);
+        callback(b85);
+      });
   }
 };

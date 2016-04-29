@@ -3,7 +3,7 @@
 var directory_list = require('./modules/directory_list');
 var shFiles = require('./modules/shatabang_files');
 var mediaInfo = require('./modules/media_info');
-var idx = require('./modules/shatabang_index');
+var shIndex = require('./modules/shatabang_index');
 var thumbnailer = require('./modules/thumbnailer');
 var _ = require('underscore');
 var path = require('path');
@@ -17,11 +17,10 @@ if(process.argv.length < 4) {
 var sourceDir = process.argv[2];
 var cachedDir = process.argv[3];
 
+var idx = shIndex(path.join(cachedDir, 'idx_tst'));
 var bar, filesToProcess = [];
 
 var main = function() {
-
-  idx.usePath(path.join(cachedDir, 'idx_tst'));
 
   shFiles.listSubDirs(sourceDir, function(error, directories) {
     if (error) {

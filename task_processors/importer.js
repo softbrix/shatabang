@@ -16,7 +16,6 @@ module.exports = function(src, destDir) {
       task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 300, height: 200});
       task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true});
 
-
       //task_queue.queueTask('prepare_video', { file: newDest});
     });
 };

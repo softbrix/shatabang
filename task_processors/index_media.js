@@ -1,13 +1,13 @@
 "use strict"
 var task_queue = require('../modules/task_queue');
 var mediaInfo = require('../modules/media_info');
-var idx = require('../modules/shatabang_index');
+var shIndex = require('../modules/shatabang_index');
 var _ = require('underscore');
 var path = require('path');
 
 
 var init = function(config) {
-  idx.usePath(path.join(config.cacheDir, 'idx_tst'));
+  var idx = shIndex(path.join(config.cacheDir, 'idx_tst'));
   var storageDir = config.storageDir;
 
   task_queue.registerTaskProcessor('index_media', function(data, job, done) {
