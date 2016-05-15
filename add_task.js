@@ -4,6 +4,7 @@ var path = require('path');
 var ProgressBar = require('progress');
 var shFiles =   require('./modules/shatabang_files');
 var task_queue = require('./modules/task_queue');
+var importer = require('./task_processors/importer');
 
 var config = require('./config_server.json');
 
@@ -23,6 +24,11 @@ if(argv._[0] === 'create_image_finger') {
     task_queue.queueTask('create_image_finger', { title: elem, file: elem});
   };
   sourceDir = path.join(config.cacheDir, '1920');
+} else if(argv._[0] === 'import') {
+  action = function(elem) {
+    importer(elem, config.storageDir);
+  };
+  sourceDir = path.join(config.storageDir, 'upload');
 }
 
 
