@@ -173,6 +173,9 @@ module.exports = function(pathToUse) {
     search : function(searchStr) {
       var keys = _idx[0].items();
       return _.filter(keys, function(item){ return item.indexOf(searchStr) >= 0; });
+    },
+    keys : function() {
+      return _idx[0].items();
     }
   };
 };

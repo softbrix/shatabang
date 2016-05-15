@@ -23,6 +23,8 @@
 			<a onclick="zoomIn(); return false;" class="zoomBtn btn btn-primary btn-sm "> + </a>
 			<a onclick="zoomOut(); return false;" class="zoomBtn btn btn-primary btn-sm"> - </a>
 			Mode: <input type="checkbox" name="viewMode" data-on-text="View" data-off-text="Edit" data-size="small" checked>
+			<a title="Find duplicates" id="findDupliBtn" style="display: none"><i class="fa fa-files-o" aria-hidden="true"></i></a>
+
 			<a href="/logout" id="logoutBtn"  class="btn btn-default btn-sm" style="float:right;">Logout</a>
 			<span id="username" style="float:right"></span>
 			<a class="fancyboxLink btn btn-primary btn-sm" data-fancybox-type="iframe" href="upload.html" style="float: right"> Upload </a>
@@ -46,8 +48,6 @@
 
 		<!-- Wrapper -->
 			<div id="wrapper">
-
-
 				<!-- Main -->
 					<div id="gallery" />
 
@@ -180,11 +180,14 @@
 							$(".shImage").addClass('fancybox');
 							$("#gallery").off("click", ".shImage", clickHandler);
 							$("#selectedHeader").hide();
+							$("#findDupliBtn").hide();
+							$("#gallery").show();
 						} else {
 							$("body").addClass('editMode');
 							$(".shImage").removeClass('fancybox');
 							$("#gallery").on("click", ".shImage", clickHandler);
 							$("#selectedHeader").show();
+							$("#findDupliBtn").show();
 						}
 					}
 				});
@@ -211,6 +214,11 @@
 					clearSelect();
 				});
 
+				$('#findDupliBtn').click(function() {
+					$("#gallery").hide();
+					loadDuplicates();
+				});
+
 				window.onresize = setImgWidth;
 			}
 
@@ -225,6 +233,26 @@
 								 'class="shImage fancybox'+classes+'" rel="gallery1">'+
 								 icon +
 								 '<img src="'+imgThumb+'" alt="'+imgThumb+'" /></a>';
+				}
+
+
+				function loadDuplicates() {
+					axios.get('/api/duplicates/list').then(function(response) {
+				    if(response.status === 200 && response.data) {
+							console.log(response.data);
+							var container = $('<div>Monkey</div>').addClass('duplicatesList');
+							$("#wrapper").append(container);
+							var list = response.data;
+							list.forEach(function(item) {
+								var row = $('<div></div>');
+								row.innerHtml = item.key;
+								container.append(row);
+								item.items.forEach(function(img) {
+										row.append(generateImageElement(img));
+								});
+							});
+				    }
+				  });
 				}
 			</script>
 

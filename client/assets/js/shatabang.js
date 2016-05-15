@@ -1,4 +1,4 @@
-
+"use strict"
 /** This is the shatabang code */
 
 
@@ -12,6 +12,23 @@ function deleteImages(imageList) {
     }
   });
 }
+var baseUrl = "./images/";
+var moveFileRegexp = /(.+)(mp4|avi|mov|mpe?g)$/gi;
+var imageWidth = 300;
+
+function generateImageElement(media) {
+  var thumb = media, bigMedia, isVideo;
+  if(moveFileRegexp.test(media)) {
+    thumb = media.replace(moveFileRegexp, '$1jpg');
+    bigMedia = "./media/" + media;
+    isVideo = true;
+  } else {
+    bigMedia = baseUrl + '1920/' + media;
+    isVideo = false;
+  }
+  var imgSrc = baseUrl + imageWidth + '/' +thumb;
+  return appendStr(imgSrc, bigMedia, media, isVideo);
+}
 
 (function($) {
   axios.get('/api/account').then(function(response) {
@@ -23,7 +40,6 @@ function deleteImages(imageList) {
     }
   });
 
-  var imageWidth = 300;
   var elem = $('#gallery');
   var imageHolder = {};
   var folders;
@@ -63,23 +79,10 @@ function deleteImages(imageList) {
     }
 
     limit = limit ? limit : Number.max_value;
-    var baseUrl = "./images/";
-    var moveFileRegexp = /(.+)(mp4|avi|mov|mpe?g)$/gi;
     var images = folderInfo.images;
     for(var i = folderInfo.ptr, j = 0; i < folderInfo.size && j < limit; ++i, ++j) {
       if (images.hasOwnProperty(i)) {
-        var media = images[i];
-        var thumb = media, bigMedia, isVideo;
-        if(moveFileRegexp.test(media)) {
-          thumb = media.replace(moveFileRegexp, '$1jpg');
-          bigMedia = "./media/" + media;
-          isVideo = true;
-        } else {
-          bigMedia = baseUrl + '1920/' + media;
-          isVideo = false;
-        }
-        var imgSrc = baseUrl + imageWidth + '/' +thumb;
-        elem.append(appendStr(imgSrc, bigMedia, images[i], isVideo));
+        elem.append(generateImageElement(images[i]));
       }
     }
     folderInfo.ptr = i;
