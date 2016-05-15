@@ -27,10 +27,9 @@ if(argv._[0] === 'create_image_finger') {
 } else if(argv._[0] === 'import') {
   sourceDir = path.join(config.storageDir, 'upload');
   action = function(elem) {
-    importer(path.join(sourceDir, elem), config.storageDir);
+    return importer(path.join(sourceDir, elem), config.storageDir);
   };
 }
-
 
 console.log("Reading dir: " + sourceDir);
 
@@ -54,8 +53,9 @@ var main = function() {
     });
 
     relativeFilesList.forEach(function(elem) {
-      action(elem);
-      bar.tick();
+      return action(elem).then(function() {
+        bar.tick();
+      });
     });
 
     done();
