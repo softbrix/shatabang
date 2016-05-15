@@ -1,5 +1,6 @@
 'use strict';
 
+var async_lib = require('async');
 var path = require('path');
 var ProgressBar = require('progress');
 var shFiles =   require('./modules/shatabang_files');
@@ -20,14 +21,15 @@ var action;
 var sourceDir = config.storageDir;
 
 if(argv._[0] === 'create_image_finger') {
-  action = function(elem) {
+  action = function(elem, cb) {
     task_queue.queueTask('create_image_finger', { title: elem, file: elem});
+    cb();
   };
   sourceDir = path.join(config.cacheDir, '1920');
 } else if(argv._[0] === 'import') {
   sourceDir = path.join(config.storageDir, 'upload');
-  action = function(elem) {
-    return importer(path.join(sourceDir, elem), config.storageDir);
+  action = function(elem, cb) {
+    importer(path.join(sourceDir, elem), config.storageDir).then(cb, cb);
   };
 }
 
@@ -52,9 +54,10 @@ var main = function() {
       return path.relative(sourceDir, item);
     });
 
-    relativeFilesList.forEach(function(elem) {
-      return action(elem).then(function() {
+    async_lib.each(relativeFilesList, function(elem, callback) {
+      action(elem, function() {
         bar.tick();
+        callback();
       });
     });
 
