@@ -10,6 +10,10 @@ process.once( 'SIGTERM', function ( sig ) {
   });
 });
 
+var disconnect = function() {
+  queue.shutdown(0);
+};
+
 module.exports = {
   queueTask : function(name, params, priority) {
     var job = queue.create(name, params);
@@ -30,5 +34,6 @@ module.exports = {
     queue.process(name, function(job, done) {
       taskProcessor(job.data, job, done);
     });
-  }
+  },
+  disconnect : disconnect
 };

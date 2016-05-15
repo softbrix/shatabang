@@ -51,7 +51,14 @@ var main = function() {
       action(elem);
       bar.tick();
     });
+
+    done();
   });
+};
+
+var done = function() {
+  console.log("Disconnecting queue");
+  task_queue.disconnect();
 };
 
 
