@@ -3,7 +3,6 @@
 var express        = require("express"),
     bodyParser     = require('body-parser'),
     compression    = require('compression'),
-    flash          = require('connect-flash'),
     shFiles        = require('./modules/shatabang_files'),
     upload_route   = require('./routes/uploads'),
     images_route   = require('./routes/images'),
