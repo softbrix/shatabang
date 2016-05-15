@@ -25,10 +25,10 @@ if(argv._[0] === 'create_image_finger') {
   };
   sourceDir = path.join(config.cacheDir, '1920');
 } else if(argv._[0] === 'import') {
-  action = function(elem) {
-    importer(elem, config.storageDir);
-  };
   sourceDir = path.join(config.storageDir, 'upload');
+  action = function(elem) {
+    importer(path.join(sourceDir, elem), config.storageDir);
+  };
 }
 
 
