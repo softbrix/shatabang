@@ -54,14 +54,19 @@ var main = function() {
       return path.relative(sourceDir, item);
     });
 
-    async_lib.each(relativeFilesList, function(elem, callback) {
+    var queue = async_lib.queue(function(elem, callback) {
       action(elem, function() {
         bar.tick();
         callback();
       });
-    });
+    }, 4);
+    queue.push(relativeFilesList);
 
-    done();
+    queue.drain = function() {
+        console.log('all items have been processed');
+        done();
+    };
+
   });
 };
 
