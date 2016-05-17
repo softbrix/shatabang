@@ -7,7 +7,7 @@ var init = function(config) {
 
   task_queue.registerTaskProcessor('update_directory_list', function(data, job, done) {
     directory_list.processDirectory(data.dir, storageDir, cacheDir)
-      .then(done, done);
+      .then(function() { done(); }, done);
   });
 };
 
