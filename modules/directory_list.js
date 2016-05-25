@@ -44,7 +44,7 @@ var findMediaFiles = function(directory, sourceDir) {
 
 var writeMediaListFile = function(directory, cachedDir, relativeFilesList) {
   var deffered = Q.defer();
-  var mediaListFile = path.join(cachedDir, directory, 'media.lst');
+  var mediaListFile = path.join(cachedDir, 'info', directory, 'media.lst');
   //console.log(mediaListFile);
 
   shFiles.writeFile(mediaListFile, relativeFilesList, function(err) {

@@ -4,9 +4,6 @@ var express        = require("express"),
     bodyParser     = require('body-parser'),
     compression    = require('compression'),
     shFiles        = require('./modules/shatabang_files'),
-    upload_route   = require('./routes/uploads'),
-    images_route   = require('./routes/images'),
-    duplicates_route = require('./routes/duplicates'),
     session        = require('express-session'),
     sha256         = require('sha256'),
     kue            = require('kue'),
@@ -44,9 +41,10 @@ if(!shFiles.exists(deleteDir)) {
   shFiles.mkdirsSync(deleteDir);
 }
 var routes = [];
-routes.push({path: 'upload', route: upload_route});
-routes.push({path: 'images', route: images_route});
-routes.push({path: 'duplicates', route: duplicates_route});
+routes.push({path: 'upload', route: require('./routes/uploads')});
+routes.push({path: 'images', route: require('./routes/images')});
+routes.push({path: 'duplicates', route: require('./routes/duplicates')});
+routes.push({path: 'dirs', route: require('./routes/dirs')});
 
 routes.forEach(function(itm) {
   itm.route.initialize(config);

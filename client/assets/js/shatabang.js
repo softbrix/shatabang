@@ -46,7 +46,7 @@ function generateImageElement(media) {
   var activeFolder;
 
   var loadImageList = function(folder) {
-    return axios.get('/images/'+folder+'/media.lst')
+    return axios.get('/images/info/'+folder+'/media.lst')
       .then(function (response) {
         var images = response.data.split(',');
         //images = images/*.slice(-200)*/.reverse();
@@ -97,8 +97,8 @@ function generateImageElement(media) {
   }
 
 
-  axios.get('/images/dirs.lst').then(function(response) {
-    folders = response.data.split(',');
+  axios.get('/api/dirs/list').then(function(response) {
+    folders = response.data;
     // Sort folders descending
     folders = folders.sort(function(a,b){return b-a;});
     elem.html('');

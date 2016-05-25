@@ -107,6 +107,7 @@ module.exports = {
      var deffered = Q.defer();
      findAvaliableFileName(destination).then(function(newDestination) {
        //console.log('newDest', newDestination, path.dirname(newDestination));
+       // TODO: This should probably be removed 
        var error = fs.mkdirsSync(path.dirname(newDestination));
        if (error) {
          console.log(newDestination, 'Error with new destination: ', error.message || error);
