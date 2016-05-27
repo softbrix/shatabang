@@ -22,4 +22,4 @@ npm install
 npm install pm2 -g
 
 pm2 start server.js --name="shatabang"
-pm2 start task_processor.js --name="task processor"
+pm2 start task_processor.js --name="task_processor"

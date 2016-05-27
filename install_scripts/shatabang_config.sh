@@ -1,6 +1,8 @@
 #!/bin/bash
 
 #configure config json
+read -p "Enter port > " -e port
+
 read -p "Enter storage folder > " -e storage
 
 read -p "Enter cache folder > " -e cache
@@ -22,9 +24,10 @@ do
   fi
 done
 
-config_file="{\n  \"storageDir\" : \"$storage\",\n  \"cacheDir\" : \"$cache\",\n  \"server_salt\" : \"$salt\",\n  \"admin_hash\" : \"$password\"\n}"
+config_file="{\n  \"port\" : \"$port\",\n  \"storageDir\" : \"$storage\",\n  \"cacheDir\" : \"$cache\",\n  \"server_salt\" : \"$salt\",\n  \"admin_hash\" : \"$password\"\n}"
 
 echo -e "Writing config file: \n $config_file"
 
 echo -e "$config_file" > config_server.json
 
+upnpc -e 'Shatabang image library' -r $port
