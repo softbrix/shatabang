@@ -41,7 +41,7 @@ function generateImageElement(media) {
   });
 
   var elem = $('#gallery');
-  var imageHolder = {};
+  var imageHolder = window.imageHolder = {};
   var folders;
   var activeFolder;
 
@@ -73,7 +73,7 @@ function generateImageElement(media) {
     return undefined;
   };
 
-  var loadImages = function(folderInfo, limit) {
+  var loadImages = window.loadImages = function(folderInfo, limit) {
     if(typeof folderInfo === "undefined") {
       return;
     }
@@ -91,17 +91,28 @@ function generateImageElement(media) {
     }
   };
 
-  function loadMoreImages() {
+  window.loadFromYear = function(year) {
+    activeFolder = _.indexOf(folders, "" + year);
+    clearImageList();
+    loadImages(imageHolder[year], 100);
+    loaded();
+  };
+
+  var loadMoreImages = function() {
     loadImages(imageHolder[folders[activeFolder]], 100);
     loaded();
-  }
+  };
+
+  var clearImageList = window.clearImageList = function() {
+    elem.html('');
+  };
 
 
   axios.get('/api/dirs/list').then(function(response) {
     folders = response.data;
     // Sort folders descending
     folders = folders.sort(function(a,b){return b-a;});
-    elem.html('');
+    clearImageList();
     activeFolder = 0;
     // Todo: This mix all images from different years
     loadImageList(folders[0])

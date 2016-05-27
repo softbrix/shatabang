@@ -74,6 +74,7 @@
   },
   "devDependencies": {
     "bootstrap": "^3.3.6",
+    "bootstrap-datepicker": "1.6.1",
     "bootstrap-social": "^4.11.0",
     "bootstrap-switch": "^3.3.2",
     "font-awesome": "^4.5.0",

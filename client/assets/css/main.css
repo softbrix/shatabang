@@ -131,20 +131,19 @@
 
 	@media screen and (max-width: 480px) {
 		html, body {
-			min-width: 320px;
+			dth: 320px;
 		}
 
 		#header {
 			bottom: 0;
 			padding: 0;
 		}
-		#header .fa {
-			font-size: 1.6em;
-			margin: 5px;
-		}
 		#wrapper {
 	    margin-top: 0;
 		}
+		#calendar-wrapper {
+	    bottom: 30px;
+	  }
 		.notMobile {
 			display: none !important;
 		}
@@ -157,6 +156,9 @@
 		}
 		#wrapper {
 	    margin-top: 30px;
+		}
+		#calendar-wrapper {
+			top: 30px;
 		}
 		.onlyMobile {
 			display: none !important;
@@ -936,7 +938,7 @@
 
 /* Table */
 
-	.table-wrapper {
+	/*.table-wrapper {
 		-webkit-overflow-scrolling: touch;
 		overflow-x: auto;
 	}
@@ -953,7 +955,7 @@
 		}
 
 			table tbody tr:nth-child(2n + 1) {
-				background-color: #34363b;
+				/* background-color: #34363b; *
 			}
 
 		table td {
@@ -1467,6 +1469,18 @@
 			border-top: 1px solid black;
 		}
 
+		#calendar-wrapper .datepicker-inline {
+			margin: auto;
+		}
+
+		#calendar-wrapper {
+			position: fixed;
+			z-index: 100;
+	    background: #fefefe;
+	    left: 0;
+	    right: 0;
+		}
+
 		#header a {
 			margin-left: 5px;
 			text-align: center;
@@ -1479,9 +1493,9 @@
 			/* background-color: cadetblue; */
 		}
 
-		#header a.zoomBtn {
-			/* width: 20px; */
-			/* height: 24px; */
+		#header .fa {
+			font-size: 20px;
+			margin: 2px 5px 0 5px;
 		}
 
 		#header h1 {
