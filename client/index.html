@@ -20,14 +20,25 @@
 	<body>
 
 		<div id="header" class="header" style="display: none">
-			<a onclick="zoomIn(); return false;" class="zoomBtn btn btn-primary btn-sm "> + </a>
-			<a onclick="zoomOut(); return false;" class="zoomBtn btn btn-primary btn-sm"> - </a>
-			Mode: <input type="checkbox" name="viewMode" data-on-text="View" data-off-text="Edit" data-size="small" checked>
+			<a onclick="zoomIn(); return false;" class="zoomBtn">
+				<span class=" btn btn-primary btn-sm notMobile"> + </span>
+			  <i class="fa fa-plus-square onlyMobile" aria-hidden="true"></i>
+		  </a>
+			<a onclick="zoomOut(); return false;" class="zoomBtn">
+				<span class=" btn btn-primary btn-sm notMobile"> - </span>
+			  <i class="fa fa-minus-square onlyMobile" aria-hidden="true"></i>
+		  </a>
+			<span class="notMobile">Mode: </span>
+			<input type="checkbox" name="viewMode" data-on-text="View" data-off-text="Edit" data-size="small" checked>
 			<a title="Find duplicates" id="findDupliBtn" style="display: none"><i class="fa fa-files-o" aria-hidden="true"></i></a>
 
-			<a href="/logout" id="logoutBtn"  class="btn btn-default btn-sm" style="float:right;">Logout</a>
-			<span id="username" style="float:right"></span>
-			<a class="fancyboxLink btn btn-primary btn-sm" data-fancybox-type="iframe" href="upload.html" style="float: right"> Upload </a>
+			<i class="fa fa-user onlyMobile" aria-hidden="true" style="float:right;"></i>
+			<a href="/logout" id="logoutBtn" class="btn btn-default btn-sm notMobile" style="float:right;">Logout</a>
+			<span id="username" style="float:right" class="notMobile"></span>
+			<a class="fancyboxLink" data-fancybox-type="iframe" href="upload.html" style="float: right">
+				<span class=" btn btn-primary btn-sm notMobile"> Upload</span>
+				<i class="fa fa-upload onlyMobile" aria-hidden="true" style="float:right;"></i>
+			</a>
 		</div>
 		<div id="selectedHeader" class="header subHeader" style="display: none">
 			Selection: <span id="selectCnt">0</span>

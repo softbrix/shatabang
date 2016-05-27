@@ -36,9 +36,12 @@ var sort_file = function(sourceFile, destDir) {
 };
 
 var moveFile = function(sourceFile, destinationDir, fileName) {
-  var destination = path.join(destinationDir, fileName);
 
-  //console.log('process', sourceFile, destination);
+  if(!shFiles.exists(destinationDir)) {
+    shFiles.mkdirsSync(destinationDir);
+  }
+
+  var destination = path.join(destinationDir, fileName);
 
   return shFiles.moveFile(sourceFile, destination);
 };
