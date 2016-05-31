@@ -45,6 +45,7 @@ routes.push({path: 'upload', route: require('./routes/uploads')});
 routes.push({path: 'images', route: require('./routes/images')});
 routes.push({path: 'duplicates', route: require('./routes/duplicates')});
 routes.push({path: 'dirs', route: require('./routes/dirs')});
+routes.push({path: 'auth', route: require('./routes/auth'), public: true});
 
 routes.forEach(function(itm) {
   itm.route.initialize(config);
@@ -165,7 +166,6 @@ app.get('/logout', function(req, res) {
 /// End Authentication
 
 // Secure the api and images path
-app.all('/api/*', requireAuthentication);
 app.all('/images/*', requireAuthentication);
 app.all('/media/*', requireAuthentication);
 
@@ -174,7 +174,11 @@ app.use('/media', express.static(storageDir));
 
 // Map the routes
 routes.forEach(function(itm) {
-  app.use('/api/' + itm.path, itm.route);
+  var path = '/api/' + itm.path;
+  if(itm.public !== true) {
+    app.all(path + '/*', requireAuthentication);
+  }
+  app.use(path, itm.route);
 });
 
 kue.app.set('title', 'Shatabang Work que');

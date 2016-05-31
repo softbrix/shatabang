@@ -60,9 +60,18 @@
 			<div class="calendar-bootstrap"></div>
 		</div>
 
-		<a href="/auth/google" id="loginBtn" style="display: none" class="loginBtn btn btn-social btn-google btn-lg">
-			<i class="fa fa-google"></i>
-			Sign In with Google</a>
+		<div id="loginAlternatives" style="display: none">
+			<a href="/auth/google" id="googleLoginBtn" style="display: none" class="loginBtn btn btn-social btn-google btn-lg">
+				<i class="fa fa-google"></i>
+				Sign In with Google
+			</a>
+
+			<form action="/loginform" id="adminLoginform" style="display: none" method="post">
+			    <div><label>Username:</label><input type="text" name="username"/></div>
+			    <div><label>Password:</label><input type="password" name="password"/></div>
+			    <div><input type="submit" value="Log In"/></div>
+			</form>
+		</div>
 
 		<!-- Wrapper -->
 			<div id="wrapper">

@@ -380,7 +380,7 @@
 		text-align: right;
 	}
 
-/* Button */
+/* Button
 
 	input[type="submit"],
 	input[type="reset"],
@@ -516,7 +516,7 @@
 			opacity: 0.35;
 		}
 
-/* Form */
+/* Form
 
 	form {
 		margin: 0 0 2em 0;
@@ -738,7 +738,7 @@
 		opacity: 1.0;
 	}
 
-/* Icon */
+/* Icon
 
 	.icon {
 		text-decoration: none;
@@ -759,7 +759,7 @@
 			display: none;
 		}
 
-/* List */
+/* List 
 
 	ol {
 		list-style: decimal;
@@ -1315,7 +1315,7 @@
 
 /* Wrapper */
 
-	#loginBtn {
+	#loginAlternatives {
 		display: block;
 		margin: 40px auto;
 		width: 250px;

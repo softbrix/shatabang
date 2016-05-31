@@ -31,12 +31,22 @@ function generateImageElement(media) {
 }
 
 (function($) {
+  // TODO: Display error
   axios.get('/api/account').then(function(response) {
     if(response.status === 200 && response.data.user) {
       $('#username').html(response.data.user.displayName);
       $('#header').show();
     } else {
-      $('#loginBtn').show();
+      axios.get('/api/auth/list').then(function(response) {
+        $('#loginAlternatives').show();
+        var auth_list = response.data;
+        if(auth_list.indexOf('admin') > -1) {
+          $('#adminLoginform').show();
+        }
+        if(auth_list.indexOf('google') > -1) {
+          $('#googleLoginBtn').show();
+        }
+      });
     }
   });
 
