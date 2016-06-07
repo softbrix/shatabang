@@ -1,4 +1,5 @@
 "use strict"
+/* global _, axios, window */
 /** This is the shatabang code */
 
 
@@ -52,6 +53,8 @@ function generateImageElement(media) {
 
   var elem = $('#gallery');
   var imageHolder = window.imageHolder = {};
+  var imageTree = {};
+  var imageList = [];
   var folders;
   var activeFolder;
 
@@ -61,6 +64,24 @@ function generateImageElement(media) {
         var images = response.data.split(',');
         //images = images/*.slice(-200)*/.reverse();
         console.log(images);
+
+        // "2016/03/14/222624.jpg"
+        var fileNameRegexp = /^([\d]{4}).?(\d{2}).?(\d{2}).?(\d{2})(\d{2})(\d{2})/;
+
+        images.forEach(function(fileName) {
+          var result = fileNameRegexp.exec(fileName);
+          var date = new Date();
+          if(result !== undefined && result !== null) {
+            date = new Date(result[1], result[2], result[3], result[4], result[5], result[6]);
+          } else {
+              console.log('Unknown date or file type' ,fileName);
+          }
+          var yearObj = imageTree[date.getFullYear()] = imageTree[date.getFullYear()] || {parent: imageTree};
+          var monthObj = yearObj[date.getMonth()] = yearObj[date.getMonth()] || {parent:  yearObj};
+          var dayObj = monthObj[date.getDate()] = monthObj[date.getDate()] || {parent:  monthObj};
+          var imgList = dayObj.list = dayObj.list || [];
+          imgList.push({date: date, img: fileName});
+        });
 
         imageHolder[folder] = {
           images : images,
@@ -83,22 +104,18 @@ function generateImageElement(media) {
     return undefined;
   };
 
-  var loadImages = window.loadImages = function(folderInfo, limit) {
-    if(typeof folderInfo === "undefined") {
-      return;
-    }
-
+  var ptr =  {
+    start: 0, end: 0
+  };
+  var loadImages = window.loadImages = function(images, limit) {
     limit = limit ? limit : Number.max_value;
-    var images = folderInfo.images;
-    for(var i = folderInfo.ptr, j = 0; i < folderInfo.size && j < limit; ++i, ++j) {
+    // Now we load forward
+    for(var i = ptr.end, j = 0; i < images.length && j < limit; ++i, ++j) {
       if (images.hasOwnProperty(i)) {
         elem.append(generateImageElement(images[i]));
       }
     }
-    folderInfo.ptr = i;
-    if(folderInfo.ptr === folderInfo.size && j < limit) {
-      loadImages(getNextYear(), limit - j);
-    }
+    ptr.end = i;
   };
 
   window.loadFromYear = function(year) {
@@ -109,13 +126,42 @@ function generateImageElement(media) {
   };
 
   var loadMoreImages = function() {
-    loadImages(imageHolder[folders[activeFolder]], 100);
+    if(imageList === undefined || imageList.length === 0) {
+      createImageListFromTree(imageTree /*  asc/desc */);
+    }
+    loadImages(imageList, 300);
     loaded();
   };
 
   var clearImageList = window.clearImageList = function() {
     elem.html('');
   };
+
+  function createImageListFromTree(imageTree) {
+    imageList = [];
+    folders.forEach(function(year) {
+      var yearObj = imageTree[year];
+      if(yearObj !== undefined) {
+        yearObj.ptr = imageList.length;
+        _.range(12, 0, -1).forEach(function(month) {
+          var monthObj = yearObj[month];
+          if(monthObj !== undefined) {
+            monthObj.ptr = imageList.length;
+            _.range(31, 0, -1).forEach(function(day) {
+              var dayObj = monthObj[day];
+              if(dayObj !== undefined) {
+                dayObj.ptr = imageList.length;
+                var sortedList = _.sortBy(dayObj.list, 'date').reverse();
+                sortedList.forEach(function(el) {
+                  imageList.push(el.img);
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  }
 
 
   axios.get('/api/dirs/list').then(function(response) {
@@ -124,16 +170,20 @@ function generateImageElement(media) {
     folders = folders.sort(function(a,b){return b-a;});
     clearImageList();
     activeFolder = 0;
-    // Todo: This mix all images from different years
+    // This loads the first years image list
     loadImageList(folders[0])
-      .then(loadMoreImages)
+      .then(function() {
+        loadMoreImages();
+        // Load the rest of the images
+        folders.slice(1).forEach(function(folder) {
+          loadImageList(folder).then(function() {
+            imageList = undefined;
+          });
+        });
+      })
       .catch(function (response) {
         console.log(response);
       });
-
-    folders.slice(1).forEach(function(folder) {
-      loadImageList(folder);
-    });
   });
   //});
 
