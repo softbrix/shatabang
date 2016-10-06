@@ -147,6 +147,9 @@
 		.notMobile {
 			display: none !important;
 		}
+		.subHeader {
+			bottom: 30px;
+		}
 	}
 
 	@media screen and (min-width: 481px) {
@@ -163,6 +166,19 @@
 		.onlyMobile {
 			display: none !important;
 		}
+		.subHeader {
+			top: 30px;
+		}
+	}
+
+	#upload_btn {
+		transition: all 0.5s ease;
+	}
+
+	#upload_btn.uploading {
+		color: lightgray;
+		min-width: 200px;
+		text-align: left;
 	}
 
 	body {
@@ -759,7 +775,7 @@
 			display: none;
 		}
 
-/* List 
+/* List
 
 	ol {
 		list-style: decimal;
@@ -1464,7 +1480,6 @@
 		}
 
 		.subHeader {
-    	top: 30px;
 			background-color: #E2E2E0;
 			border-top: 1px solid black;
 		}
@@ -1585,7 +1600,6 @@
 				font-size: 0.9em;
 				padding: 0 1.15em;
 			}
-
 	}
 
 /* Main */

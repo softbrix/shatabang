@@ -58,6 +58,30 @@ function generateImageElement(media) {
   var folders;
   var activeFolder;
 
+  var importImages = function(images) {
+    // "2016/03/14/222624.jpg"
+    var fileNameRegexp = /^([\d]{4}).?(\d{2}).?(\d{2}).?(\d{2})(\d{2})(\d{2})/;
+
+    images.forEach(function(fileName) {
+      var result = fileNameRegexp.exec(fileName);
+      var date = new Date();
+      if(result !== undefined && result !== null) {
+        date = new Date(result[1], result[2]-1, result[3], result[4], result[5], result[6]);
+      } else {
+          console.log('Unknown date or file type' ,fileName);
+      }
+      var yearObj = imageTree[date.getFullYear()] = imageTree[date.getFullYear()] || {parent: imageTree};
+      // Month is numbered from 0 - 11. Compensate with +1
+      var monthObj = yearObj[date.getMonth()+1] = yearObj[date.getMonth()+1] || {parent:  yearObj};
+      var dayObj = monthObj[date.getDate()] = monthObj[date.getDate()] || {parent:  monthObj};
+      var imgList = dayObj.list = dayObj.list || [];
+      var newObj = {date: date, img: fileName};
+      if(imgList.indexOf(newObj) === -1) {
+          imgList.push(newObj);
+      }
+    });
+  };
+
   var loadImageList = function(folder) {
     return axios.get('/images/info/'+folder+'/media.lst')
       .then(function (response) {
@@ -65,23 +89,7 @@ function generateImageElement(media) {
         //images = images/*.slice(-200)*/.reverse();
         console.log(images);
 
-        // "2016/03/14/222624.jpg"
-        var fileNameRegexp = /^([\d]{4}).?(\d{2}).?(\d{2}).?(\d{2})(\d{2})(\d{2})/;
-
-        images.forEach(function(fileName) {
-          var result = fileNameRegexp.exec(fileName);
-          var date = new Date();
-          if(result !== undefined && result !== null) {
-            date = new Date(result[1], result[2], result[3], result[4], result[5], result[6]);
-          } else {
-              console.log('Unknown date or file type' ,fileName);
-          }
-          var yearObj = imageTree[date.getFullYear()] = imageTree[date.getFullYear()] || {parent: imageTree};
-          var monthObj = yearObj[date.getMonth()] = yearObj[date.getMonth()] || {parent:  yearObj};
-          var dayObj = monthObj[date.getDate()] = monthObj[date.getDate()] || {parent:  monthObj};
-          var imgList = dayObj.list = dayObj.list || [];
-          imgList.push({date: date, img: fileName});
-        });
+        importImages(images);
 
         imageHolder[folder] = {
           images : images,
@@ -96,16 +104,8 @@ function generateImageElement(media) {
       });
   };
 
-  var getNextYear = function() {
-    if((activeFolder+1) < folders.length) {
-      ++activeFolder;
-      return imageHolder[folders[activeFolder]];
-    }
-    return undefined;
-  };
-
   var ptr =  {
-    start: 0, end: 0
+    start: 0, end: 0, loaded: 0
   };
   var loadImages = window.loadImages = function(images, limit) {
     limit = limit ? limit : Number.max_value;
@@ -113,6 +113,7 @@ function generateImageElement(media) {
     for(var i = ptr.end, j = 0; i < images.length && j < limit; ++i, ++j) {
       if (images.hasOwnProperty(i)) {
         elem.append(generateImageElement(images[i]));
+        ++ptr.loaded;
       }
     }
     ptr.end = i;
@@ -166,6 +167,11 @@ function generateImageElement(media) {
 
   axios.get('/api/dirs/list').then(function(response) {
     folders = response.data;
+    if(folders.length === 0) {
+      loaded();
+      return;
+    }
+
     // Sort folders descending
     folders = folders.sort(function(a,b){return b-a;});
     clearImageList();
@@ -178,6 +184,9 @@ function generateImageElement(media) {
         folders.slice(1).forEach(function(folder) {
           loadImageList(folder).then(function() {
             imageList = undefined;
+            if(ptr.loaded < 1000) {
+              loadMoreImages();
+            }
           });
         });
       })
@@ -185,6 +194,22 @@ function generateImageElement(media) {
         console.log(response);
       });
   });
+
+  setInterval(function() {
+    axios.get('/api/upload/imported')
+      .then(function (response) {
+        var images = response.data;
+        if(images !== undefined && images.length > 0) {
+          console.log('imported', images);
+          importImages(images);
+          imageList = undefined;
+          clearImageList();
+          ptr.end = ptr.start;
+          // TODO: Should only update current position
+          loadMoreImages();
+        }
+      });
+  }, 10 * 1000);
   //});
 
   /*  var elem = document.getElementById("myvideo");

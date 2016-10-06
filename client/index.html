@@ -39,11 +39,21 @@
 			<i class="fa fa-user onlyMobile" aria-hidden="true" style="float:right;"></i>
 			<a href="/logout" id="logoutBtn" class="btn btn-default btn-sm notMobile" style="float:right;">Logout</a>
 			<span id="username" style="float:right" class="notMobile"></span>
-			<a class="fancyboxLink" data-fancybox-type="iframe" href="upload.html" style="float: right">
-				<span class=" btn btn-primary btn-sm notMobile"> Upload</span>
+			<a class="fancyboxLink" href="#upload_form" style="float: right">
+				<span class=" btn btn-primary btn-sm notMobile" id="upload_btn"> Upload</span>
 				<i class="fa fa-upload onlyMobile" aria-hidden="true" style="float:right;"></i>
 			</a>
 		</div>
+
+		<div id="upload_form" style="display: none; min-width: 480px; width: 90%">
+			<form id="uploadForm" action="./api/upload/single" class="dropzone">
+				<!--input type="file" name="uploaded" multiple="multiple" accept="image/*,video/*"/ -->
+				<div class="fallback">
+				    <input name="file" type="file" multiple />
+				</div>
+			</form>
+		</div>
+
 		<div id="selectedHeader" class="header subHeader" style="display: none">
 			Selection: <span id="selectCnt">0</span>
 			<a id="clrSlct" class="btn btn-xs btn-default">Clear</a>
@@ -106,6 +116,9 @@
 
 			var setImgWidth = function() {
 				var elem = findElementAtScrollTop($('#gallery'));
+				if(elem === undefined) {
+					return;
+				}
 
 				imagesPWidth = Math.ceil(imagesPWidth);
 				var ratio = 100/imagesPWidth;
@@ -234,68 +247,7 @@
 
 			function loaded() {
 				setImgWidth();
-				$(".fancyboxLink").fancybox();
 				enableFancyboxOnImages();
-
-				var viewMode = true;
-
-				var clickHandler = function(event) {
-					event.stopPropagation();
-					event.preventDefault();
-					console.log(event);
-					$( this ).toggleClass('selected');
-
-					updateSlctCnt();
-				};
-
-				$("[name='viewMode']").bootstrapSwitch({
-					onSwitchChange : function(event, newViewMode) {
-						viewMode = newViewMode;
-						if (newViewMode) {
-							$("body").removeClass('editMode');
-							$(".shImage").addClass('fancybox');
-							$("#gallery").off("click", ".shImage", clickHandler);
-							$("#selectedHeader").hide();
-							$("#findDupliBtn").hide();
-							$("#gallery").show();
-						} else {
-							$("body").addClass('editMode');
-							$(".shImage").removeClass('fancybox');
-							$("#gallery").on("click", ".shImage", clickHandler);
-							$("#selectedHeader").show();
-							$("#findDupliBtn").show();
-						}
-					}
-				});
-				var clearSelect = function() {
-					$(".shImage").removeClass('selected'); updateSlctCnt();
-				}
-				$('#clrSlct').click(function(){ clearSelect(); });
-				$('#allSlct').click(function(){ $(".shImage").addClass('selected'); updateSlctCnt(); });
-				$('#invSlct').click(function(){
-					$(".shImage.selected").addClass('oldSelected').removeClass('selected');
-					$(".shImage:not(.oldSelected)").addClass('selected');
-					$(".shImage.oldSelected").removeClass('oldSelected');
-					updateSlctCnt();
-				});
-
-				$('#delImg').click(function() {
-					var ids = [];
-					$.each(getSelectedImages(), function(id, el) {
-						ids.push($(el).data('ref'));
-						$(el).remove();
-					});
-					console.log(ids);
-					deleteImages(ids);
-					clearSelect();
-				});
-
-				$('#findDupliBtn').click(function() {
-					$("#gallery").hide();
-					loadDuplicates();
-				});
-
-				window.onresize = setImgWidth;
 			}
 
 				function appendStr(imgThumb, imgBig, reference, isVideo) {
@@ -315,10 +267,14 @@
 				function loadDuplicates() {
 					axios.get('/api/duplicates/list').then(function(response) {
 				    if(response.status === 200 && response.data) {
-							console.log(response.data);
-							var container = $('<div>Monkey</div>').addClass('duplicatesList');
-							$("#wrapper").append(container);
 							var list = response.data;
+							if(list.length === 0) {
+								$("#wrapper").html('<h3 style="text-align: center"> --- No Duplicates --- </h3>');
+								return ;
+							}
+							console.log(list);
+							var container = $('<div></div>').addClass('duplicatesList');
+							$("#wrapper").append(container);
 							list.forEach(function(item) {
 								var row = $('<div></div>');
 								row.innerHtml = item.key;
@@ -330,6 +286,134 @@
 				    }
 				  });
 				}
+
+
+				$(function() {
+					$(".fancyboxLink").fancybox();
+
+					var viewMode = true;
+
+					var clickHandler = function(event) {
+						event.stopPropagation();
+						event.preventDefault();
+						console.log(event);
+						$( this ).toggleClass('selected');
+
+						updateSlctCnt();
+					};
+
+					$("[name='viewMode']").bootstrapSwitch({
+						onSwitchChange : function(event, newViewMode) {
+							viewMode = newViewMode;
+							if (newViewMode) {
+								$("body").removeClass('editMode');
+								$(".shImage").addClass('fancybox');
+								$("#gallery").off("click", ".shImage", clickHandler);
+								$("#selectedHeader").hide();
+								$("#findDupliBtn").hide();
+								$("#gallery").show();
+							} else {
+								$("body").addClass('editMode');
+								$(".shImage").removeClass('fancybox');
+								$("#gallery").on("click", ".shImage", clickHandler);
+								$("#selectedHeader").show();
+								$("#findDupliBtn").show();
+							}
+						}
+					});
+					var clearSelect = function() {
+						$(".shImage").removeClass('selected'); updateSlctCnt();
+					}
+					$('#clrSlct').click(function(){ clearSelect(); });
+					$('#allSlct').click(function(){ $(".shImage").addClass('selected'); updateSlctCnt(); });
+					$('#invSlct').click(function(){
+						$(".shImage.selected").addClass('oldSelected').removeClass('selected');
+						$(".shImage:not(.oldSelected)").addClass('selected');
+						$(".shImage.oldSelected").removeClass('oldSelected');
+						updateSlctCnt();
+					});
+
+					$('#delImg').click(function() {
+						var ids = [];
+						$.each(getSelectedImages(), function(id, el) {
+							ids.push($(el).data('ref'));
+							$(el).remove();
+						});
+						console.log(ids);
+						deleteImages(ids);
+						clearSelect();
+					});
+
+					$('#findDupliBtn').click(function() {
+						$("#gallery").hide();
+						loadDuplicates();
+					});
+
+					window.onresize = setImgWidth;
+				});
+
+
+				// Init upload form
+				$(function() {
+					var defaultBg = '#337ab7';
+					var lastProgress, lastProgressTime = undefined;
+
+					var preventNavigation = function (e) {
+						var confirmationMessage = 'Uploads going on. Are you sure you want to leave this page?';
+
+				    (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+				    return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+					};
+
+				  Dropzone.options.uploadForm = {
+				    //paramName: "file", // The name that will be used to transfer the file
+				    maxFilesize: 2000, // MB
+				    maxFiles : 999,
+						init: function() {
+					    this.on("addedfile", function(file) {
+								console.log("Dropzone added file.");
+							});
+							this.on("totaluploadprogress", function(progress, totalBytes, totalSent) {
+								console.log('Progress', progress, totalBytes, totalSent);
+								var elem = $('#upload_btn');
+
+								var timeLeft = "";
+								if(lastProgressTime !== undefined) {
+									var deltaTime = Date.now() - lastProgressTime;
+									var deltaProgress = progress - lastProgress;
+									timeLeft = ((100 - progress) * deltaProgress) / deltaTime * 1000;
+									timeLeft = Math.round(timeLeft)/10;
+								}
+								lastProgressTime = Date.now();
+								lastProgress = progress;
+
+
+								var txt = Math.round(progress) + '% / ' + timeLeft + 's';
+								elem.html(txt);
+
+								var lower = progress;
+								var upper = Math.min(100, lower + 10);
+								elem.css('background', 'linear-gradient(90deg, '+defaultBg+' '+lower+'%, #FFFFFF '+upper+'%)');
+								elem.addClass('uploading');
+							});
+							this.on("sending", function(file, xhr, formData) {
+							  // Will send the filesize along with the file as POST data.
+							  formData.append("filesize", file.size);
+								window.addEventListener('beforeunload', preventNavigation, false);
+							});
+							this.on("complete", function() {
+								window.removeEventListener('beforeunload', preventNavigation, false);
+								var elem = $('#upload_btn');
+								elem.html('Upload complete').css('background', 'green');
+								elem.removeClass('uploading');
+								setTimeout(function() {
+										elem.html('Upload').css('background', defaultBg);
+								}, 4000);
+								lastProgressTime = undefined
+							});
+					  }
+				  };
+				});
 			</script>
 
 			<script src="assets/js/shatabang.js"></script>
