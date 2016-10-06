@@ -30,16 +30,16 @@ var storageDir = config.storageDir; //'/Volumes/Mini\ Stick/sorted/';
 var cacheDir = config.cacheDir; // '/Volumes/Mini\ Stick/cache/';
 var deleteDir = config.deletedDir = path.join(storageDir, 'deleted');
 var uploadDir = config.uploadDir = path.join(storageDir, 'upload');
+var importDir = config.importDir = path.join(storageDir, 'import');
 
-// Check that upload dir exists
-if(!shFiles.exists(uploadDir)) {
-  console.log("Upload dir does not exists. Trying to create it.");
-  shFiles.mkdirsSync(uploadDir);
-}
-if(!shFiles.exists(deleteDir)) {
-  console.log("Delete dir does not exists. Trying to create it.");
-  shFiles.mkdirsSync(deleteDir);
-}
+// Check that directories exists
+[uploadDir, importDir, deleteDir, path.join(cacheDir, 'info')].forEach(function(directory) {
+  if(!shFiles.exists(directory)) {
+    console.log("Directory dir does not exists. Trying to create it.", directory);
+    shFiles.mkdirsSync(directory);
+  }
+});
+
 var routes = [];
 routes.push({path: 'upload', route: require('./routes/uploads')});
 routes.push({path: 'images', route: require('./routes/images')});
