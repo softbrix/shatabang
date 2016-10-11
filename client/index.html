@@ -356,7 +356,7 @@
 				// Init upload form
 				$(function() {
 					var defaultBg = '#337ab7';
-					var lastProgress, lastProgressTime = undefined;
+					var last = undefined;
 
 					var preventNavigation = function (e) {
 						var confirmationMessage = 'Uploads going on. Are you sure you want to leave this page?';
@@ -375,24 +375,65 @@
 							});
 							this.on("totaluploadprogress", function(progress, totalBytes, totalSent) {
 								console.log('Progress', progress, totalBytes, totalSent);
+
+								if(last === undefined) {
+									last = {
+										time : Date.now(),
+										progress: progress,
+										totalSent: totalSent,
+										totalBytes: totalBytes
+									}
+									return;
+								}
+
+								if(totalSent === 0) {
+									last = undefined;
+									return;
+								}
+
+								var deltaTime = (Date.now() - last.time) / 1000;
+
+								if(deltaTime < 0.1) {
+									return;
+								}
+
 								var elem = $('#upload_btn');
 
 								var timeLeft = "";
-								if(lastProgressTime !== undefined) {
-									var deltaTime = Date.now() - lastProgressTime;
-									var deltaProgress = progress - lastProgress;
-									timeLeft = ((100 - progress) * deltaProgress) / deltaTime * 1000;
-									timeLeft = Math.round(timeLeft)/10;
+
+								var deltaProgress = progress - last.progress;
+								var deltaSent = totalSent - last.totalSent;
+
+								var speed = deltaSent / deltaTime;
+
+								timeLeft = (totalBytes - totalSent) / speed;
+								timeLeft = Math.round(timeLeft);
+
+								last.time = Date.now();
+								last.progress = progress;
+								last.totalSent = totalSent;
+								last.totalBytes = totalBytes;
+
+								var metric = "";
+								if(speed > 1024) {
+									speed /= 1024;
+									metric = "K";
 								}
-								lastProgressTime = Date.now();
-								lastProgress = progress;
+								if(speed > 1024) {
+									speed /= 1024;
+									metric = "M";
+								}
+								speed = Math.round(speed*10)/10;
 
+								console.log(speed, metric+'B/s', deltaSent, deltaTime);
 
-								var txt = Math.round(progress) + '% / ' + timeLeft + 's';
+								var txt = Math.round(progress) + '%';
+								txt += '/ ' + timeLeft + 's ';
+								txt += '/ ' + speed + metric + 'B/s';
 								elem.html(txt);
 
 								var lower = progress;
-								var upper = Math.min(100, lower + 10);
+								var upper = Math.min(100, lower + 2);
 								elem.css('background', 'linear-gradient(90deg, '+defaultBg+' '+lower+'%, #FFFFFF '+upper+'%)');
 								elem.addClass('uploading');
 							});
@@ -401,15 +442,27 @@
 							  formData.append("filesize", file.size);
 								window.addEventListener('beforeunload', preventNavigation, false);
 							});
+							this.on("success", function(file) {
+								var dropzone = this;
+								// Remove the file once it is done
+								setTimeout(function() {
+									dropzone.removeFile(file);
+								}, 4000);
+							});
 							this.on("complete", function() {
+								console.log('complete');
+							});
+							this.on("queuecomplete", function() {
+								console.log('queuecomplete');
 								window.removeEventListener('beforeunload', preventNavigation, false);
 								var elem = $('#upload_btn');
 								elem.html('Upload complete').css('background', 'green');
 								elem.removeClass('uploading');
 								setTimeout(function() {
+										// Reset the upload button
 										elem.html('Upload').css('background', defaultBg);
 								}, 4000);
-								lastProgressTime = undefined
+								last = undefined;
 							});
 					  }
 				  };
