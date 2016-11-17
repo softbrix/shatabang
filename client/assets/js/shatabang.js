@@ -83,7 +83,7 @@ function generateImageElement(media) {
   };
 
   var loadImageList = function(folder) {
-    return axios.get('/images/info/'+folder+'/media.lst')
+    return axios.get('./images/info/'+folder+'/media.lst')
       .then(function (response) {
         var images = response.data.split(',');
         //images = images/*.slice(-200)*/.reverse();
