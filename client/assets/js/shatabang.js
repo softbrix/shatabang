@@ -4,7 +4,7 @@
 
 
 function deleteImages(imageList) {
-  axios.post('/api/images/delete', imageList).then(function(response) {
+  axios.post('./api/images/delete', imageList).then(function(response) {
     if(response.status === 200) {
       console.log(response.data);
     } else {
@@ -33,12 +33,12 @@ function generateImageElement(media) {
 
 (function($) {
   // TODO: Display error
-  axios.get('/api/account').then(function(response) {
+  axios.get('./api/account').then(function(response) {
     if(response.status === 200 && response.data.user) {
       $('#username').html(response.data.user.displayName);
       $('#header').show();
     } else {
-      axios.get('/api/auth/list').then(function(response) {
+      axios.get('./api/auth/list').then(function(response) {
         $('#loginAlternatives').show();
         var auth_list = response.data;
         if(auth_list.indexOf('admin') > -1) {
@@ -167,7 +167,7 @@ function generateImageElement(media) {
   }
 
 
-  axios.get('/api/dirs/list').then(function(response) {
+  axios.get('./api/dirs/list').then(function(response) {
     folders = response.data;
     if(folders.length === 0) {
       loaded();
@@ -198,7 +198,7 @@ function generateImageElement(media) {
   });
 
   setInterval(function() {
-    axios.get('/api/upload/imported')
+    axios.get('./api/upload/imported')
       .then(function (response) {
         var images = response.data;
         if(images !== undefined && images.length > 0) {

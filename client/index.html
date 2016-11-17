@@ -275,7 +275,7 @@
 
 
 				function loadDuplicates() {
-					axios.get('/api/duplicates/list').then(function(response) {
+					axios.get('./api/duplicates/list').then(function(response) {
 				    if(response.status === 200 && response.data) {
 							var list = response.data;
 							if(list.length === 0) {
