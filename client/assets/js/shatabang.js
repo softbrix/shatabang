@@ -89,7 +89,9 @@ function generateImageElement(media) {
         //images = images/*.slice(-200)*/.reverse();
         console.log(images);
 
-        importImages(images);
+        if(folder !== 'import') {
+          importImages(images);
+        }
 
         imageHolder[folder] = {
           images : images,

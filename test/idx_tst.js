@@ -1,5 +1,5 @@
 "use strict"
-var idx = require('./modules/shatabang_index')('./idx_tst');
+var idx = require('../modules/shatabang_index')('./idx_tst');
 var _ = require('underscore');
 var ProgressBar = require('progress');
 
@@ -15,16 +15,19 @@ logGet('asa');
 logSearch('sas');
 
 
-idx.put('as', 'the beste1');
-idx.put('asa', 'the beste2');
-idx.put('asas', 'the beste3');
-idx.put('asasas', 'the beste4');
+//idx.put('as', 'the beste1');
+//idx.put('asa', 'the beste2');
+//idx.put('asas', 'the beste3');
+//idx.put('asasas', 'the beste4');
 
-idx.put('asa', 'the beste');
-idx.put('asa', 'the beste1');
-idx.put('asa', 'the beste2');
+//idx.put('asa', 'the beste');
+//idx.put('asa', 'the beste1');
+//idx.put('asa', 'the beste2');
 
-var noOfItems = 10000;
+idx.put('*$HDv>J7{$}s&N*+Gm=sZ@+9E!W:L)!ZhT)?SofkHM^{YKE&FTADDFRErY%YDvfprAd-)[DWp6/u$9+@zFJ%1xLq{gBz+/cx(4D]H<ixour7fiuT[.AHJcZgurQAf', 'aa');
+logGet('*$HDv>J7{$}s&N*+Gm=sZ@+9E!W:L)!ZhT)?SofkHM^{YKE&FTADDFRErY%YDvfprAd-)[DWp6/u$9+@zFJ%1xLq{gBz+/cx(4D]H<ixour7fiuT[.AHJcZgurQAf');
+
+var noOfItems = 1;
 
 var bar = new ProgressBar('[:bar] :percent :elapseds :etas', { total: noOfItems });
 
@@ -35,7 +38,7 @@ _.times(buckets, function(i) {
   arr[i] = 0;
 }, arr);
 
-/* Fill with garbage **/
+/* Fill with garbage **
 _.times(noOfItems, function(n) {
   var k = (Math.random() * 10e20).toString(36).substring(0,_.random(2, 20));
 
@@ -54,7 +57,7 @@ _.times(buckets, function(i) {
 }, arr);
 
 bar = new ProgressBar('[:bar] :percent :elapseds :etas', { total: noOfItems });
-/** Put plenty items in single file */
+/** Put plenty items in single file *
 var k = "D5320";
 _.times(noOfItems, function(n) {
     var v = (Math.random() * 10e20).toString(36);
@@ -71,3 +74,5 @@ logGet('asa');
 logSearch('sas');
 logSearch('as');
 logSearch('es');
+
+*/

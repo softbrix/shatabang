@@ -63,7 +63,7 @@ var main = function() {
     queue.push(relativeFilesList);
 
     queue.drain = function() {
-        console.log('all items have been processed');
+        console.log('All items have been processed');
         done();
     };
 

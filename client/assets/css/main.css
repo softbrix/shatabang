@@ -2074,6 +2074,19 @@
 		}
 
 /* Footer */
+#import_form {
+	display: none;
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	z-index: 5;
+	padding: 10px;
+	padding-top: 60px;
+	background-color: gray;
+}
+
 
 	#footer .copyright {
 		color: #505051;

@@ -5,7 +5,7 @@ var Q = require('q');
 var exec = require('child_process').exec;
 var fs = require('fs-extra');
 
-var createFileEditFallback = function(fileHandlingMethod, source, newDestination, deffered) {
+var fileEditFallback = function(fileHandlingMethod, source, newDestination, deffered) {
   var command = fileHandlingMethod + '"' + source + '"' + ' "' + newDestination + '"';
   //console.log(command);
   return function(error) {
@@ -59,11 +59,15 @@ module.exports = {
             if (err) {
               callback(err);
             }
+            if(files === undefined) {
+              callback('Directory not found');
+            }
 
             var mediaFiles = /^(?!\.).+([mj]pe?g|png|mp4|m4a|mov|bmp|avi)$/i;
             files = files.filter(function(item) {
               return mediaFiles.test(path.basename(item));
             });
+
 
             callback(undefined, files);
         });
@@ -107,15 +111,13 @@ module.exports = {
      var deffered = Q.defer();
      findAvaliableFileName(destination).then(function(newDestination) {
        //console.log('newDest', newDestination, path.dirname(newDestination));
-       // TODO: This should probably be removed 
-       var error = fs.mkdirsSync(path.dirname(newDestination));
+       // TODO: This should probably be removed
+       /*var error = fs.mkdirsSync(path.dirname(newDestination));
        if (error) {
          console.log(newDestination, 'Error with new destination: ', error.message || error);
-       }
+       }*/
 
-       var fileOpCallback = createFileEditFallback("mv", source, newDestination, deffered);
-
-       fs.rename(source, newDestination, fileOpCallback);
+       fs.rename(source, newDestination, fileEditFallback("mv", source, newDestination, deffered));
      });
      return deffered.promise;
    },
@@ -123,14 +125,12 @@ module.exports = {
      var deffered = Q.defer();
      findAvaliableFileName(destination).then(function(newDestination) {
        //console.log('newDest', newDestination, path.dirname(newDestination));
-       var error = fs.mkdirsSync(path.dirname(newDestination));
+       /*var error = fs.mkdirsSync(path.dirname(newDestination));
        if (error) {
          console.log(newDestination, 'Error with new destination: ', error.message || error);
-       }
+       }*/
 
-       var fileOpCallback = createFileEditFallback("cp", source, newDestination, deffered);
-
-       fs.copy(source, newDestination, fileOpCallback);
+       fs.copy(source, newDestination, fileEditFallback("mv", source, newDestination, deffered));
      });
      return deffered.promise;
    },

@@ -30,7 +30,12 @@ var touchFile = function(filepath) {
 
 
 var getIdFromKey = function(key) {
-  return ((parseInt(key, 36) * 2) % chars.length) + 1;
+  var sanitized = key.replace(/[^\d\w.]+/g, '');
+  var num = parseInt(sanitized, 36);
+  if(isNaN(num)) {
+    num = 1;
+  }
+  return ((num * 2) % chars.length) + 1;
 };
 
 var putToFile = function(fileName, value, key) {
@@ -72,6 +77,7 @@ var addValue = function(idx, key, value) {
     idx[key] = new StringSet();
   }
   idx[key].add(value);
+  console.log('__idx', key, idx);
 };
 
 module.exports = function(pathToUse) {
@@ -97,6 +103,7 @@ module.exports = function(pathToUse) {
     if(_.isUndefined(_idx[i])) {
       _idx[i] = readFile(getFileFromIndex(i));
     }
+    console.log('__i', i);
     return _idx[i];
   };
 
@@ -148,6 +155,8 @@ module.exports = function(pathToUse) {
         return;
       }
       var idx = getIndexFromKey(key);
+
+      console.log('__idx', idx);
 
       addValue(idx, key, value);
 

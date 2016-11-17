@@ -86,6 +86,15 @@ router.get('/imported',function(req,res) {
    res.end();
 });
 
+router.get('/import/list',function(req,res) {
+  var last = imported_cache[imported_cache.length - 1];
+  res.setHeader('Last-Modified', new Date(last.time));
+
+  // This should send the list with files to be imported
+  res.send("Abc").status(200);
+ res.end();
+});
+
 // TODO: Clear old items in imported_cache
 
 

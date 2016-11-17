@@ -39,19 +39,25 @@
 			<i class="fa fa-user onlyMobile" aria-hidden="true" style="float:right;"></i>
 			<a href="/logout" id="logoutBtn" class="btn btn-default btn-sm notMobile" style="float:right;">Logout</a>
 			<span id="username" style="float:right" class="notMobile"></span>
-			<a class="fancyboxLink" href="#upload_form" style="float: right">
-				<span class=" btn btn-primary btn-sm notMobile" id="upload_btn"> Upload</span>
+			<a href="#import_form" style="float: right" onclick="toggleImport()">
+				<span class=" btn btn-primary btn-sm notMobile" id="upload_btn">Import</span>
 				<i class="fa fa-upload onlyMobile" aria-hidden="true" style="float:right;"></i>
 			</a>
 		</div>
 
-		<div id="upload_form" style="display: none; min-width: 480px; width: 90%">
+		<div id="import_form">
 			<form id="uploadForm" action="./api/upload/single" class="dropzone">
 				<!--input type="file" name="uploaded" multiple="multiple" accept="image/*,video/*"/ -->
 				<div class="fallback">
 				    <input name="file" type="file" multiple />
 				</div>
 			</form>
+			<div id="imported_image_list" style="height: 100px; background: pink;">
+				TODO: Here we list recently imported images
+			</div>
+			<div id="import_settings" style="height: 100px; background: pink;">
+				TODO: Here we list settings regarding import. Owerwrite duplicates, auto import. etc.
+			</div>
 		</div>
 
 		<div id="selectedHeader" class="header subHeader" style="display: none">
@@ -113,6 +119,10 @@
 			var imagesPWidth = Math.ceil($('body').width() / imageWidth);
 			imagesPWidth = Math.max(4, imagesPWidth); // At least 4 images in with
 			var zoomMultiplicator = 2;
+
+			var toggleImport = function() {
+				$('#import_form').toggle();
+			};
 
 			var setImgWidth = function() {
 				var elem = findElementAtScrollTop($('#gallery'));

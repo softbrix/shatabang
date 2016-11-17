@@ -4,10 +4,12 @@ var sort_file = require('../modules/sort_file');
 var path = require('path');
 
 module.exports = function(src, destDir) {
+   console.log(src, destDir);
     return sort_file(src, destDir).then(function(newDest) {
       console.log('NewDest', newDest);
       var relativeDest = path.relative(destDir, newDest);
       console.log('Relative', relativeDest);
+      //task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
       task_queue.queueTask('index_media', { title: relativeDest, file: newDest});
       var directory = relativeDest.split(path.sep)[0];
       console.log('dir', directory);
@@ -17,5 +19,7 @@ module.exports = function(src, destDir) {
       task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true});
 
       //task_queue.queueTask('prepare_video', { file: newDest});
+
+      return relativeDest;
     });
 };

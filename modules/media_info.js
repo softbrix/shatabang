@@ -40,6 +40,7 @@ var processFile = function(item) {
     var extension = path.extname(item);
 
     if(exifRegexp.test(path.basename(item))) {
+      //console.log('exifRegexp true');
       if(isImage.test(path.basename(item))) {
         //console.log('use exif native');
         new ExifImage({ image : item}, function (error, exifData) {
@@ -55,8 +56,10 @@ var processFile = function(item) {
               deffered.resolve({
                   CreateDate : exifData.exif.CreateDate,
                   ModifyDate : exifData.image.ModifyDate,
+                  Width: exifData.exif.ExifImageWidth,
+                  Height: exifData.exif.ExifImageHeight,
                   //Tags : exifData.image.XPKeywords,
-                  //origInfo : exifData
+                  origInfo : exifData
               });
             }
         });

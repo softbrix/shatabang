@@ -2,16 +2,19 @@
 var kue = require('kue');
 var queue = kue.createQueue();
 
-
-process.once( 'SIGTERM', function ( sig ) {
-  queue.shutdown( 5000, function(err) {
-    console.log( 'Kue shutdown: ', err || '' );
-    process.exit( 0 );
-  });
+var disconnected = false;
+process.once( 'SIGTERM', function () {
+  if(!disconnected) {
+      disconnect();
+  }
 });
 
-var disconnect = function() {
-  queue.shutdown(0);
+var disconnect = function disconnect() {
+  queue.shutdown(0, function(err) {
+    console.log( 'Kue shutdown: ', err||'' );
+    process.exit( 0 );
+  });
+  disconnected = true;
 };
 
 module.exports = {
