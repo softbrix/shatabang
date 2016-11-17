@@ -1,16 +1,10 @@
 "use strict"
-var mediaInfo = require('../modules/media_info');
-var directoryList = require('../modules/directory_list');
-var exifHelper = require('../modules/exif_helper');
+var Q = require('q');
 var thumbnailer = require('../modules/thumbnailer');
 var shFiles = require('../modules/shatabang_files');
 var shIndex = require('../modules/shatabang_index');
 var importer = require('./importer');
 var path = require('path');
-
-function infoFile(filename) {
-  return filename + '.shinfo';
-}
 
 /**
 This method will process te configured import folder and update the index,
@@ -19,7 +13,6 @@ thumbnail and finger for each item in the import folder.
 var init = function(config, task_queue) {
   var importDir = config.importDir,
   storageDir = config.storageDir,
-  cacheDir = config.cacheDir,
   idx_dir = path.join(config.cacheDir, 'idx_finger'),
   duplicatesDir = path.join(storageDir, 'duplicates');
 
@@ -32,15 +25,10 @@ var init = function(config, task_queue) {
           console.error(err);
           return done(err);
         }
-        console.log(mediaFiles.length);
-        //var filesWithNoInfo = mediaFiles.filter(function(filename) {
-        //    var infoFileName = infoFile(filename);
-        //    return !shFiles.exists(infoFileName);
-        //});
-
         var idx = shIndex(idx_dir);
 
-        mediaFiles.forEach(function(filePath) {
+        syncLoop(mediaFiles, function(filePath) {
+          var deferred = Q.defer();
           // This needs to run synchronolusly. Add to cache after each update.
           thumbnailer.create_image_finger(filePath, function(b85Finger) {
             var items = idx.get(b85Finger);
@@ -50,6 +38,7 @@ var init = function(config, task_queue) {
               var newPath = path.join(duplicatesDir, path.basename(filePath));
               shFiles.moveFile(filePath, newPath);
               console.log("Exists", newPath);
+              deferred.resolve(newPath);
             } else {
               console.log("new file");
               importer(filePath, storageDir).then(function(relativePath) {
@@ -60,38 +49,40 @@ var init = function(config, task_queue) {
                   time: current_timestamp(),
                   path: relativePath
                 });*/
+                deferred.resolve(relativePath);
               });
             }
-
-            /*var relPath = path.relative(storageDir, filePath);
-            task_queue.queueTask('resize_image', { title: relPath, file: relPath, width: 300, height: 200});
-            mediaInfo.readMediaInfo(filePath).then(function (exifData) {
-              var exifDate = exifHelper.getDate(exifData);
-              var infoFilePath = infoFile(filePath);
-              var infoFileData = {
-                'finger': b85Finger,
-                'date': exifDate.date,
-                'time': exifDate.time,
-                'width': exifData.Width,
-                'height': exifData.Height,
-                'tags' : exifData.Tags
-              };
-              shFiles.writeFile(infoFilePath, JSON.stringify(infoFileData));
-            });*/
           });
+          return deferred.promise;
+        }).then(function(importedFiles) {
+          done(importedFiles);
         });
 
-        //var importReady = mediaFiles.map(function(filePath) {
-        //  return path.relative(storageDir, filePath);
-        //});
-
-        //directoryList.writeMediaListFile('import', cacheDir, importReady);
-
-        done();
 
       });
   });
 };
+
+function syncLoop(list, method) {
+  var deferred = Q.defer();
+  if(list === undefined) {
+    deferred.resolve([]);
+  }
+  var i = 0;
+  var next = function() {
+    console.log('nextloop', i);
+    if(i < list.length) {
+      method(list[i], i).then(next, next);
+    } else {
+      deferred.resolve(i);
+    }
+    ++i;
+  };
+  next();
+  return deferred.promise;
+}
+
+
 
 module.exports = {
   init : init
