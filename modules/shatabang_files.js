@@ -5,7 +5,7 @@ var Q = require('q');
 var exec = require('child_process').exec;
 var fs = require('fs-extra');
 
-var fileEditFallback = function(fileHandlingMethod, source, newDestination, deffered) {
+var fileEditFallback = function(fileHandlingMethod, source, newDestination, deferred) {
   var command = fileHandlingMethod + '"' + source + '"' + ' "' + newDestination + '"';
   //console.log(command);
   return function(error) {
@@ -14,23 +14,23 @@ var fileEditFallback = function(fileHandlingMethod, source, newDestination, deff
         exec(command, function(error/*, stdout, stderr*/) {
           if (error) {
             console.log(command, error);
-            deffered.reject(error);
+            deferred.reject(error);
           } else {
-            deffered.resolve(newDestination, source);
+            deferred.resolve(newDestination, source);
           }
         });
       } else {
         console.error('Move error', error);
-        deffered.reject(error);
+        deferred.reject(error);
       }
     } else {
-      deffered.resolve(newDestination, source);
+      deferred.resolve(newDestination, source);
     }
   };
 };
 
 var findAvaliableFileName = function(destination, retryCnt) {
-  var deffered = Q.defer();
+  var deferred = Q.defer();
   var newDestination = destination;
   if (retryCnt > 0) {
     var fileInfo = path.parse(destination);
@@ -41,15 +41,15 @@ var findAvaliableFileName = function(destination, retryCnt) {
   fs.access(newDestination, fs.F_OK, function(err) {
     if (!err) {
       findAvaliableFileName(destination, (retryCnt || 0) + 1).then(function(name) {
-        deffered.resolve(name);
+        deferred.resolve(name);
       }, function(error) {
-        deffered.reject(error);
+        deferred.reject(error);
       });
     } else {
-      deffered.resolve(newDestination);
+      deferred.resolve(newDestination);
     }
   });
-  return deffered.promise;
+  return deferred.promise;
 };
 
 module.exports = {
@@ -108,7 +108,7 @@ module.exports = {
      }
    },
    moveFile : function(source, destination) {
-     var deffered = Q.defer();
+     var deferred = Q.defer();
      findAvaliableFileName(destination).then(function(newDestination) {
        //console.log('newDest', newDestination, path.dirname(newDestination));
        // TODO: This should probably be removed
@@ -117,12 +117,12 @@ module.exports = {
          console.log(newDestination, 'Error with new destination: ', error.message || error);
        }*/
 
-       fs.rename(source, newDestination, fileEditFallback("mv", source, newDestination, deffered));
+       fs.rename(source, newDestination, fileEditFallback("mv", source, newDestination, deferred));
      });
-     return deffered.promise;
+     return deferred.promise;
    },
    copyFile : function(source, destination) {
-     var deffered = Q.defer();
+     var deferred = Q.defer();
      findAvaliableFileName(destination).then(function(newDestination) {
        //console.log('newDest', newDestination, path.dirname(newDestination));
        /*var error = fs.mkdirsSync(path.dirname(newDestination));
@@ -130,18 +130,18 @@ module.exports = {
          console.log(newDestination, 'Error with new destination: ', error.message || error);
        }*/
 
-       fs.copy(source, newDestination, fileEditFallback("mv", source, newDestination, deffered));
+       fs.copy(source, newDestination, fileEditFallback("mv", source, newDestination, deferred));
      });
-     return deffered.promise;
+     return deferred.promise;
    },
    deleteFile : function(source) {
-     var deffered = Q.defer();
+     var deferred = Q.defer();
      fs.unlink(source, function(err) {
        if(err) {
-         deffered.reject(err);
+         deferred.reject(err);
        }
-       deffered.resolve();
+       deferred.resolve();
      });
-     return deffered;
+     return deferred;
    }
 };

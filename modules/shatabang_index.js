@@ -77,7 +77,7 @@ var addValue = function(idx, key, value) {
     idx[key] = new StringSet();
   }
   idx[key].add(value);
-  console.log('__idx', key, idx);
+  // console.log('__idx', key, idx);
 };
 
 module.exports = function(pathToUse) {
@@ -103,7 +103,7 @@ module.exports = function(pathToUse) {
     if(_.isUndefined(_idx[i])) {
       _idx[i] = readFile(getFileFromIndex(i));
     }
-    console.log('__i', i);
+    // console.log('__i', i);
     return _idx[i];
   };
 
@@ -119,7 +119,7 @@ module.exports = function(pathToUse) {
       if(err) {
         return;
       }
-      console.log("The file was saved: ", fileName);
+      //console.log("The file was saved: ", fileName);
     });
   };
 
@@ -156,7 +156,7 @@ module.exports = function(pathToUse) {
       }
       var idx = getIndexFromKey(key);
 
-      console.log('__idx', idx);
+      // console.log('__idx', idx);
 
       addValue(idx, key, value);
 
