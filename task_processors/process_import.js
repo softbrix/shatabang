@@ -27,8 +27,15 @@ var init = function(config, task_queue) {
         }
         var idx = shIndex(idx_dir);
 
-        syncLoop(mediaFiles, function(filePath) {
+        syncLoop(mediaFiles, function(filePath, i) {
           var deferred = Q.defer();
+
+          var resolveFile = function(path) {
+            var len = mediaFiles.length;
+            job.progress(i, len, {nextSlide : i === len ? 'itsdone' : i + 1});
+            deferred.resolve(path);
+          };
+          
           // This needs to run synchronolusly. Add to cache after each update.
           thumbnailer.create_image_finger(filePath, function(b85Finger) {
             var items = idx.get(b85Finger);
@@ -38,7 +45,7 @@ var init = function(config, task_queue) {
               var newPath = path.join(duplicatesDir, path.basename(filePath));
               shFiles.moveFile(filePath, newPath);
               console.log("Exists", newPath);
-              deferred.resolve(newPath);
+              resolveFile(newPath);
             } else {
               //console.log("new file");
               importer(filePath, storageDir).then(function(relativePath) {
@@ -49,7 +56,7 @@ var init = function(config, task_queue) {
                   time: current_timestamp(),
                   path: relativePath
                 });*/
-                deferred.resolve(relativePath);
+                resolveFile(relativePath);
               });
             }
           });
