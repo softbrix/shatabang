@@ -11,9 +11,9 @@ This method will process te configured import folder and update the index,
 thumbnail and finger for each item in the import folder.
 **/
 var init = function(config, task_queue) {
-  var importDir = config.importDir,
-  storageDir = config.storageDir,
+  var storageDir = config.storageDir,
   idx_dir = path.join(config.cacheDir, 'idx_finger'),
+  importDir = path.join(storageDir, 'import'),
   duplicatesDir = path.join(storageDir, 'duplicates');
 
   shFiles.mkdirsSync(duplicatesDir);
@@ -40,7 +40,7 @@ var init = function(config, task_queue) {
               console.log("Exists", newPath);
               deferred.resolve(newPath);
             } else {
-              console.log("new file");
+              //console.log("new file");
               importer(filePath, storageDir).then(function(relativePath) {
                 // TODO: add to imported list
                 idx.put(b85Finger, relativePath);
@@ -70,7 +70,7 @@ function syncLoop(list, method) {
   }
   var i = 0;
   var next = function() {
-    console.log('nextloop', i);
+    //console.log('nextloop', i);
     if(i < list.length) {
       method(list[i], i).then(next, next);
     } else {
@@ -81,8 +81,6 @@ function syncLoop(list, method) {
   next();
   return deferred.promise;
 }
-
-
 
 module.exports = {
   init : init

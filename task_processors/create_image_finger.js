@@ -1,11 +1,10 @@
 "use strict"
-var task_queue = require('../modules/task_queue');
 var thumbnailer = require('../modules/thumbnailer');
 var shFiles = require('../modules/shatabang_files');
 var shIndex = require('../modules/shatabang_index');
 var path = require('path');
 
-var init = function(config) {
+var init = function(config, task_queue) {
   var idx_dir = path.join(config.cacheDir, 'idx_finger');
 
   var idx = shIndex(idx_dir);

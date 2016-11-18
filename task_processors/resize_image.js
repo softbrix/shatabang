@@ -1,9 +1,8 @@
 "use strict"
-var task_queue = require('../modules/task_queue');
 var thumbnailer = require('../modules/thumbnailer');
 var path = require('path');
 
-var init = function(config) {
+var init = function(config, task_queue) {
   var storageDir = config.storageDir, cacheDir = config.cacheDir;
 
   task_queue.registerTaskProcessor('resize_image', function(data, job, done) {

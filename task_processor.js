@@ -1,8 +1,11 @@
 "use strict";
 
+var task_queue = require('./modules/task_queue');
+
 var processors = [
     require('./task_processors/create_image_finger'),
     require('./task_processors/index_media'),
+    require('./task_processors/process_import'),
     require('./task_processors/update_directory_list'),
     require('./task_processors/resize_image')
   ];
@@ -10,10 +13,11 @@ var processors = [
 var config = require('./config_server.json');
 
 processors.forEach(function(processor) {
-  processor.init(config);
+  processor.init(config, task_queue);
 });
 
 console.log("Running task processor...");
 
-
-// TODO: Scan import folder every five minutes
+setInterval(function() {
+  task_queue.queueTask('update_import_directory', {});
+}, 10000);
