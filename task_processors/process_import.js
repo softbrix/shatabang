@@ -14,6 +14,7 @@ var init = function(config, task_queue) {
   var storageDir = config.storageDir,
   idx_dir = path.join(config.cacheDir, 'idx_finger'),
   importDir = path.join(storageDir, 'import'),
+  unknownDir = path.join(storageDir, 'unknown'),
   duplicatesDir = path.join(storageDir, 'duplicates');
 
   shFiles.mkdirsSync(duplicatesDir);
@@ -35,19 +36,17 @@ var init = function(config, task_queue) {
             job.progress(i, len, {nextSlide : i === len ? 'itsdone' : i + 1});
             deferred.resolve(path);
           };
-          
+
           // This needs to run synchronolusly. Add to cache after each update.
           thumbnailer.create_image_finger(filePath, function(b85Finger) {
             var items = idx.get(b85Finger);
             if(items.length > 0) {
-              // TODO: Move to duplicates folders
-
               var newPath = path.join(duplicatesDir, path.basename(filePath));
               shFiles.moveFile(filePath, newPath);
               console.log("Exists", newPath);
               resolveFile(newPath);
             } else {
-              //console.log("new file");
+              console.log("new file");
               importer(filePath, storageDir).then(function(relativePath) {
                 // TODO: add to imported list
                 idx.put(b85Finger, relativePath);
@@ -57,13 +56,18 @@ var init = function(config, task_queue) {
                   path: relativePath
                 });*/
                 resolveFile(relativePath);
+              }, function() {
+                console.log("Failed to import");
+                // Failed to import move to unknown dir
+                shFiles.moveFile(filePath, path.join(unknownDir, path.basename(filePath)));
+                deferred.reject();
               });
             }
           });
           return deferred.promise;
         }).then(function(importedFiles) {
           done(importedFiles);
-        });
+        }, done);
 
 
       });

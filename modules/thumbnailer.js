@@ -43,13 +43,18 @@ module.exports = {
         // and then create a gif/png thumbnail with multiple images
         try {
           ffmpeg(sourceFileName)
+            .on('error', function(err) {
+              deffered.reject(err);
+            })
+            .on('end', function() {
+                deffered.resolve(outputFileName);
+            })
             .screenshots({
               timestamps: ['50%'],
               filename: path.basename(outputFileName),
               folder: path.dirname(outputFileName),
               size: size
             });
-            deffered.resolve();
         } catch(err) {
           console.log('catched', err);
           deffered.reject(sourceFileName + ':' + err);
@@ -107,16 +112,38 @@ module.exports = {
   	return destFileEdited.getTime() < srcFileEdited.getTime();
   },
   create_image_finger : function create_image_finger(sourceFile, callback) {
-    var image = sharp(sourceFile);
-    image
-      .rotate()
-      .resize(10, 10).
-      greyscale().
-      raw().
-      toBuffer().
-      then(function(buffer) {
-        var b85 = base85.encode(buffer);
-        callback(b85);
+    var generateFinger = function(sourceFile, callback) {
+      var image = sharp(sourceFile);
+      image
+        .rotate()
+        .resize(10, 10).
+        greyscale().
+        raw().
+        toBuffer().
+        then(function(buffer) {
+          var b85 = base85.encode(buffer);
+          callback(b85);
+        });
+    };
+
+    // Is this a supported movie file?
+    if(mp4jsRegexp.test(path.basename(sourceFile))) {
+      var tmpOutputImage = sourceFile + '.png';
+      var width = 1920;
+      var height = 1080;
+      var isMaxSize = true;
+      this.generateThumbnail(sourceFile, tmpOutputImage, width, height, isMaxSize)
+        .then(function(newSource) {
+          generateFinger(newSource, function(b85) {
+            // Cleanup before callback
+            fs.unlink(tmpOutputImage);
+            callback(b85);
+          });
       });
+    } else {
+      generateFinger(sourceFile, callback);
+    }
+
+
   }
 };
