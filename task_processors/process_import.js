@@ -29,6 +29,7 @@ var init = function(config, task_queue) {
         var idx = shIndex(idx_dir);
 
         syncLoop(mediaFiles, function(filePath, i) {
+          console.log("Processing", i, filePath);
           var deferred = Q.defer();
 
           var resolveFile = function(path) {
