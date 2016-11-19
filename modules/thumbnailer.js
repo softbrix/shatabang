@@ -113,6 +113,11 @@ module.exports = {
   },
   create_image_finger : function create_image_finger(sourceFile, callback) {
     var generateFinger = function(sourceFile, callback) {
+      try {
+        fs.statSync(sourceFile);
+      } catch (e) {
+        callback("ERROR");
+      }
       var image = sharp(sourceFile);
       image
         .rotate()
@@ -122,7 +127,7 @@ module.exports = {
         toBuffer().
         then(function(buffer) {
           var b85 = base85.encode(buffer);
-          callback(b85);
+          callback(undefined, b85);
         });
     };
 
@@ -134,10 +139,10 @@ module.exports = {
       var isMaxSize = true;
       this.generateThumbnail(sourceFile, tmpOutputImage, width, height, isMaxSize)
         .then(function(newSource) {
-          generateFinger(newSource, function(b85) {
+          generateFinger(newSource, function(error, b85) {
             // Cleanup before callback
             fs.unlink(tmpOutputImage);
-            callback(b85);
+            callback(error, b85);
           });
       });
     } else {

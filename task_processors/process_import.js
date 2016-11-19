@@ -38,7 +38,12 @@ var init = function(config, task_queue) {
           };
 
           // This needs to run synchronolusly. Add to cache after each update.
-          thumbnailer.create_image_finger(filePath, function(b85Finger) {
+          thumbnailer.create_image_finger(filePath, function(err, b85Finger) {
+            if(err) {
+              console.error(err);
+              return deferred.reject(err);
+            }
+
             var items = idx.get(b85Finger);
             if(items.length > 0) {
               var newPath = path.join(duplicatesDir, path.basename(filePath));

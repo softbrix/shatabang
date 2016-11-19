@@ -12,7 +12,7 @@ var init = function(config, task_queue) {
   task_queue.registerTaskProcessor('create_image_finger', function(data, job, done) {
     var sourceFile = path.join(config.storageDir, data.file);
     if(shFiles.exists(sourceFile)) {
-      thumbnailer.create_image_finger(sourceFile, function(b85) {
+      thumbnailer.create_image_finger(sourceFile, function(error, b85) {
         idx.put(b85, data.file);
         done();
       });
