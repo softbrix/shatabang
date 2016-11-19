@@ -71,7 +71,8 @@ var init = function(config, task_queue) {
           });
           return deferred.promise;
         }).then(function(importedFiles) {
-          done(importedFiles);
+          console.log('files imported:', importedFiles);
+          done();
         }, done);
 
 

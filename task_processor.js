@@ -18,6 +18,14 @@ processors.forEach(function(processor) {
 
 console.log("Running task processor...");
 
-setInterval(function() {
-  task_queue.queueTask('update_import_directory', {});
-}, 10000);
+var queImport = function() {
+  setTimeout(function() {
+    task_queue.queueTask('update_import_directory', {}, 'low')
+    .on('complete', queImport)
+    .on('failed', function(errorMessage){
+      console.log('Job failed', errorMessage);
+      queImport();
+    });
+  }, 10000);
+};
+queImport();
