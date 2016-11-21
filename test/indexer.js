@@ -1,10 +1,10 @@
 "use strict"
 
-var directory_list = require('./modules/directory_list');
-var shFiles = require('./modules/shatabang_files');
-var mediaInfo = require('./modules/media_info');
-var shIndex = require('./modules/shatabang_index');
-var thumbnailer = require('./modules/thumbnailer');
+var directory_list = require('../modules/directory_list');
+var shFiles = require('../modules/shatabang_files');
+var mediaInfo = require('../modules/media_info');
+var shIndex = require('../modules/shatabang_index');
+var thumbnailer = require('../modules/thumbnailer');
 var _ = require('underscore');
 var path = require('path');
 var ProgressBar = require('progress');

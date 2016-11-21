@@ -26,6 +26,9 @@ var GOOGLE_CLIENT_ID      = config.google_client_id,
     ADMIN_HASH = config.admin_hash,
     SERVER_SALT = config.server_salt;
 
+var BASE_URL = config.baseUrl || '/';
+var PORT = config.port || 3000;
+
 var storageDir = config.storageDir; //'/Volumes/Mini\ Stick/sorted/';
 var cacheDir = config.cacheDir; // '/Volumes/Mini\ Stick/cache/';
 var deleteDir = config.deletedDir = path.join(storageDir, 'deleted');
@@ -129,13 +132,13 @@ app.get('/auth/google', passport.authenticate('google',
 // the process by verifying the assertion.  If valid, the user will be
 // logged in.  Otherwise, authentication has failed.
 app.get('/auth/google/return',
-  passport.authenticate('google', { successRedirect: '/',
-                                    failureRedirect: '/?bad=true' }));
+  passport.authenticate('google', { successRedirect: BASE_URL,
+                                    failureRedirect: BASE_URL + '?bad=true' }));
 
 app.use('/loginform', bodyParser.urlencoded({ extended: true }));
 app.post('/loginform',
-  passport.authenticate('local', { failureRedirect: '/login.html' }),
-    function(req, res) { res.redirect('/'); }
+  passport.authenticate('local', { failureRedirect: BASE_URL + 'login.html' }),
+    function(req, res) { res.redirect(BASE_URL); }
   );
 
 // Simple route middleware to ensure user is authenticated.
@@ -173,19 +176,18 @@ app.use('/images', express.static(cacheDir));
 app.use('/media', express.static(storageDir));
 
 // Map the routes
-routes.forEach(function(itm) {
-  var path = '/api/' + itm.path;
-  if(itm.public !== true) {
+routes.forEach(function(route) {
+  var path = '/api/' + route.path;
+  if(route.public !== true) {
     app.all(path + '/*', requireAuthentication);
   }
-  app.use(path, itm.route);
+  app.use(path, route.route);
 });
 
 kue.app.set('title', 'Shatabang Work que');
 app.use('/kue', kue.app);
 app.use('/', express.static(__dirname + "/client/"));
 
-var port = config.port || 3000;
-app.listen(port, function(){
-    console.log("Working on port " + port);
+app.listen(PORT, function(){
+    console.log("Working on port " + PORT);
 });

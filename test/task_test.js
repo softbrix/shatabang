@@ -1,5 +1,5 @@
 "use strict"
-var task_queue = require('./modules/task_queue');
+var task_queue = require('../modules/task_queue');
 
 
 task_queue.registerTaskProcessor('tags', function(data, job, done) {
