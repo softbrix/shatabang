@@ -38,6 +38,10 @@ var getIdFromKey = function(key) {
   return ((num * 2) % chars.length) + 1;
 };
 
+/**
+This method adds the key and value to the file directly
+@deprecated No longer used when Index is in memory
+**/
 var putToFile = function(fileName, value, key) {
   if(_.isUndefined(key)) {
     key = "";
@@ -51,8 +55,10 @@ var putToFile = function(fileName, value, key) {
   }
 };
 
+/**
+Read the index items from the file
+**/
 var readFile = function(fileName) {
-  //console.log('Loads file: ' + fileName);
   try {
     var idx = {};
     var data = fs.readFileSync(fileName, defaultEncoding);
