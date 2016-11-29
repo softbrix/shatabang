@@ -46,6 +46,7 @@ var importDir = config.importDir = path.join(storageDir, 'import');
 var routes = [];
 routes.push({path: 'upload', route: require('./routes/uploads')});
 routes.push({path: 'images', route: require('./routes/images')});
+routes.push({path: 'faces', route: require('./routes/faces')});
 routes.push({path: 'duplicates', route: require('./routes/duplicates')});
 routes.push({path: 'dirs', route: require('./routes/dirs')});
 routes.push({path: 'auth', route: require('./routes/auth'), public: true});
