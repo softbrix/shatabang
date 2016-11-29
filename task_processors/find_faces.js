@@ -15,6 +15,8 @@ var init = function(config, task_queue) {
     var relativeFilePath = data.file;
     var sourceFileName = path.join(storageDir, relativeFilePath);
 
+    console.log('Detecting faces', sourceFileName);
+
     faced.detect(path.resolve(sourceFileName), function worker(faces, image, file) {
       if (!faces) {
         var errorMsg = "Could not open " + file;

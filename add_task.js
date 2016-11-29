@@ -31,6 +31,19 @@ if(argv._[0] === 'create_image_finger') {
   action = function(elem, cb) {
     importer(path.join(sourceDir, elem), config.storageDir).then(cb, cb);
   };
+} else if(argv._[0] === 'find_faces') {
+  if (argv._.length < 2) {
+    console.log('Must give folder as second parameter');
+    process.exit(1);
+  }
+  var subPath = ""+argv._[1];
+  sourceDir = path.join(config.storageDir, subPath);
+  action = function(elem, cb) {
+    var filePath = path.join(subPath, elem);
+    console.log('find_faces', { title: elem, file: filePath});
+    task_queue.queueTask('find_faces', { title: elem, file: filePath});
+    cb();
+  };
 }
 
 console.log("Reading dir: " + sourceDir);
@@ -64,7 +77,7 @@ var main = function() {
 
     queue.drain = function() {
         console.log('All items have been processed');
-        done();
+        setTimeout(done, 5000);
     };
 
   });
