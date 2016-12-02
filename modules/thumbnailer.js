@@ -47,7 +47,7 @@ module.exports = {
               deffered.reject(err);
             })
             .on('end', function() {
-                deffered.resolve(outputFileName);
+                deffered.resolve();
             })
             .screenshots({
               timestamps: ['50%'],
