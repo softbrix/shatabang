@@ -118,7 +118,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/',function(req,res){
-      res.sendFile(__dirname + "/client/index.html");
+      res.sendFile(__dirname + "/client_old/index.html");
 });
 
 // Redirect the user to Google for authentication.  When complete, Google
@@ -187,7 +187,8 @@ routes.forEach(function(route) {
 
 kue.app.set('title', 'Shatabang Work que');
 app.use('/kue', kue.app);
-app.use('/', express.static(__dirname + "/client/"));
+app.use('/', express.static(__dirname + "/client_old/"));
+app.use('/new/', express.static(__dirname + "/client/dist/"));
 
 app.listen(PORT, function(){
     console.log("Working on port " + PORT);
