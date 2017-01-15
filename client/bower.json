@@ -2,6 +2,9 @@
   "name": "client",
   "dependencies": {
     "ember": "~2.10.0",
-    "ember-cli-shims": "0.1.3"
+    "ember-cli-shims": "0.1.3",
+    "axios": "^0.15.3",
+    "fancybox": "^2.1.6",
+    "dropzone": "^4.3.0"
   }
 }

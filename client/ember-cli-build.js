@@ -20,5 +20,24 @@ module.exports = function(defaults) {
   // please specify an object with the list of modules as keys
   // along with the exports of each module as its value.
 
+  app.import('bower_components/axios/dist/axios.js');
+  // TODO: Add minified files for production or is the resulting assets.js minified
+
+  app.import('bower_components/fancybox/source/jquery.fancybox.css');
+  app.import('bower_components/fancybox/lib/jquery.mousewheel.pack.js');
+  app.import('bower_components/fancybox/source/jquery.fancybox.pack.js');
+
+  app.import('bower_components/dropzone/dist/dropzone.js');
+  app.import('bower_components/dropzone/dist/basic.css');
+  app.import('bower_components/dropzone/dist/dropzone.css');
+
+  app.import('vendor/thirdParty.css');
+  app.import('vendor/thirdParty.js');
+
+  app.import('vendor/oldIndex.js');
+  app.import('vendor/shatabang.js');
+
+
+
   return app.toTree();
 };

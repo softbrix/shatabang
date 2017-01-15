@@ -1,0 +1,83 @@
+<div id="header" class="header" style="display: none">
+  <a onclick="zoomIn(); return false;" class="zoomBtn">
+    <span class=" btn btn-primary btn-sm notMobile"> + </span>
+    <i class="fa fa-plus-square onlyMobile" aria-hidden="true"></i>
+  </a>
+  <a onclick="zoomOut(); return false;" class="zoomBtn">
+    <span class=" btn btn-primary btn-sm notMobile"> - </span>
+    <i class="fa fa-minus-square onlyMobile" aria-hidden="true"></i>
+  </a>
+  <span class="notMobile">Mode: </span>
+  <input type="checkbox" name="viewMode" data-on-text="View" data-off-text="Edit" data-size="small" checked>
+  <a title="Toggle calendar" onclick="toggleCalendar(); return false;" >
+    <i class="fa fa-calendar" aria-hidden="true"></i>
+  </a>
+  <!-- TODO: Move into tools menu item -->
+  <a title="Find duplicates" id="findDupliBtn" style="display: none"><i class="fa fa-files-o" aria-hidden="true"></i></a>
+
+  <i class="fa fa-user onlyMobile" aria-hidden="true" style="float:right;"></i>
+  <a href="http://localhost:3000/logout" id="logoutBtn" class="btn btn-default btn-sm notMobile" style="float:right;">Logout</a>
+  <span id="username" style="float:right" class="notMobile"></span>
+  <a href="#import_form" style="float: right" onclick="toggleImport()">
+    <span class=" btn btn-primary btn-sm notMobile" id="upload_btn">Import</span>
+    <i class="fa fa-upload onlyMobile" aria-hidden="true" style="float:right;"></i>
+  </a>
+</div>
+
+<div id="import_form" onclick="toggleImport()">
+  <form id="uploadForm" action="http://localhost:3000/api/upload/single" class="dropzone" onclick="event.stopPropagation()">
+    <!--input type="file" name="uploaded" multiple="multiple" accept="image/*,video/*"/ -->
+    <div class="fallback">
+        <input name="file" type="file" multiple />
+    </div>
+  </form>
+</div>
+
+<div id="selectedHeader" class="header subHeader" style="display: none">
+  Selection: <span id="selectCnt">0</span>
+  <a id="clrSlct" class="btn btn-xs btn-default">Clear</a>
+  <a id="allSlct" class="btn btn-xs btn-default">Select all</a>
+  <a id="invSlct" class="btn btn-xs btn-default">Invert</a>
+  | Tags:
+  <a id="addTag" class="btn btn-xs btn-default">Add</a>
+  <a id="delTag" class="btn btn-xs btn-default">Delete</a>
+  <a id="edtTag" class="btn btn-xs btn-default">Edit</a>
+  | Image:
+  <a id="delImg" class="btn btn-xs btn-default">Delete</a>
+</div>
+<div id="calendar-wrapper" style="display: none;">
+  <div class="calendar-bootstrap"></div>
+</div>
+
+<div id="loginAlternatives" style="display: none">
+  <a href="./auth/google" id="googleLoginBtn" style="display: none" class="loginBtn btn btn-social btn-google btn-lg">
+    <i class="fa fa-google"></i>
+    Sign In with Google
+  </a>
+
+  <form action="http://localhost:3000/loginform" id="adminLoginform" style="display: none" method="post">
+      <div><label>Username:</label><input type="text" name="username"/></div>
+      <div><label>Password:</label><input type="password" name="password"/></div>
+      <div><input type="submit" value="Log In"/></div>
+  </form>
+</div>
+
+<div id="filleTop"></div>
+<!-- Wrapper -->
+  <div id="wrapper">
+    <!-- Main -->
+      <div id="gallery" />
+  </div>
+  <div id="filleBottom"></div>
+
+<!-- Scripts
+  <script src="./assets/js/skel.min.js"></script>
+  <script src="./assets/js/util.js"></script>
+
+-->
+
+{{#link-to 'faces' class="button"}}
+  View Faces
+{{/link-to}}
+
+{{outlet}}
