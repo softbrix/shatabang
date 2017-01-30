@@ -32,10 +32,8 @@ if(argv._[0] === 'create_image_finger') {
     importer(path.join(sourceDir, elem), config.storageDir).then(cb, cb);
   };
 } else if(argv._[0] === 'find_faces') {
-  if (argv._.length < 2) {
-    console.log('Must give folder as second parameter');
-    process.exit(1);
-  }
+  minTwoParams();
+
   var subPath = ""+argv._[1];
   sourceDir = path.join(config.storageDir, subPath);
   action = function(elem, cb) {
@@ -45,16 +43,22 @@ if(argv._[0] === 'create_image_finger') {
     cb();
   };
 } else if(argv._[0] === 'resize_images') {
-  if (argv._.length < 2) {
-    console.log('Must give folder as second parameter');
-    process.exit(1);
-  }
-  var subPath = ""+argv._[1];
-  sourceDir = path.join(config.storageDir, subPath);
+  minTwoParams();
 
+  sourceDir = path.join(config.storageDir, ""+argv._[1]);
   task_queue.queueTask('resize_images_in_folder', { title: sourceDir, dir: sourceDir});
 
-  return;
+  return done();
+} else if(argv._[0] === 'update_directory') {
+  minTwoParams();
+
+  var directory = ""+argv._[1];
+  task_queue.queueTask('update_directory_list', { title: directory, dir: directory});
+
+  return done();
+} else {
+  console.log('Unknown action: ' + argv._[0]);
+  process.exit(1);
 }
 
 console.log("Reading dir: " + sourceDir);
@@ -88,16 +92,24 @@ var main = function() {
 
     queue.drain = function() {
         console.log('All items have been processed');
-        setTimeout(done, 5000);
+        done();
     };
 
   });
 };
 
-var done = function() {
+function done() {
   console.log("Disconnecting queue");
-  task_queue.disconnect();
-};
+  setTimeout(function() {
+    task_queue.disconnect();
+  }, 5000);
+}
 
+function minTwoParams() {
+  if (argv._.length < 2) {
+    console.log('Must give folder as second parameter');
+    process.exit(1);
+  }
+}
 
 main();
