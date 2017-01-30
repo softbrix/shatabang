@@ -8,7 +8,8 @@ var processors = [
     require('./task_processors/find_faces'),
     require('./task_processors/process_import'),
     require('./task_processors/update_directory_list'),
-    require('./task_processors/resize_image')
+    require('./task_processors/resize_image'),
+    require('./task_processors/resize_images_in_folder')
   ];
 
 var config = require('./config_server.json');

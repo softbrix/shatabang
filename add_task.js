@@ -44,6 +44,17 @@ if(argv._[0] === 'create_image_finger') {
     task_queue.queueTask('find_faces', { title: elem, file: filePath});
     cb();
   };
+} else if(argv._[0] === 'resize_images') {
+  if (argv._.length < 2) {
+    console.log('Must give folder as second parameter');
+    process.exit(1);
+  }
+  var subPath = ""+argv._[1];
+  sourceDir = path.join(config.storageDir, subPath);
+
+  task_queue.queueTask('resize_images_in_folder', { title: sourceDir, dir: sourceDir});
+
+  return;
 }
 
 console.log("Reading dir: " + sourceDir);
