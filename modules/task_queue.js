@@ -5,12 +5,12 @@ var queue = kue.createQueue();
 var disconnected = false;
 process.once( 'SIGTERM', function () {
   if(!disconnected) {
-      disconnect();
+      disconnect(0);
   }
 });
 
-var disconnect = function disconnect() {
-  queue.shutdown(0, function(err) {
+var disconnect = function disconnect(timeout) {
+  queue.shutdown(timeout || 0, function(err) {
     console.log( 'Kue shutdown: ', err||'' );
     process.exit( 0 );
   });
