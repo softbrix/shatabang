@@ -1,4 +1,5 @@
-"use strict"
+"use strict";
+
 var shFiles = require('../modules/shatabang_files');
 var path = require('path');
 
