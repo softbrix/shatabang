@@ -1,0 +1,15 @@
+web:
+  image: 'softbrix/shatabang'
+  restart: always
+  hostname: 'h.sehr.se/shatabang/'
+  environment:
+   - PORT=3001
+    #GITLAB_OMNIBUS_CONFIG: |
+    #  external_url 'https://g.sehr.se'
+    #  gitlab_rails['gitlab_shell_ssh_port'] = 10022
+    #  gitlab_rails['backup_upload_remote_directory'] = '.'
+  ports:
+    - '3001:3001'
+  volumes:
+    - '/opt/shatabang/cache:/mnt/cache'
+    - '/opt/shatabang/sorterat:/mnt/sorterat'

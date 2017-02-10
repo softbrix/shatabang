@@ -1,6 +1,8 @@
 redis-server &
 
-mongod --dbpath data/ &
+#pm2 start server.js
+
+#pm2 start task_processor.js
 
 node task_processor.js &
 
