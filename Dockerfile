@@ -8,13 +8,11 @@ RUN mkdir -p /usr/src/shatabang
 WORKDIR /usr/src/shatabang
 
 RUN apt-get update && apt-get install -y \
-# RUN apk update && apk add \
   git \
   libopencv-dev \
   libimage-exiftool-perl \
   libvips-dev \
-  libav-tools \
-  redis-server
+  libav-tools
 
 # libav-tools will install avprobe, need to create a symbolic link so it
 # can be use by the node package fluent-ffmpeg.
@@ -29,12 +27,9 @@ COPY package.json /usr/src/shatabang
 
 # Install app dependencies
 RUN npm install
-RUN npm install pm2 -g
 
 COPY . /usr/src/shatabang
-
-# Start the redis server
-RUN service redis-server start
+COPY install_scripts/docker_config_server.json /usr/src/shatabang/config_server.json
 
 EXPOSE 3001
 CMD ./start.sh && sh
