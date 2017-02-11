@@ -1,0 +1,15 @@
+web:
+  image: 'softbrix/shatabang'
+  restart: always
+  hostname: 'h.sehr.se/shatabang/'
+  environment:
+   - PORT=3001
+  ports:
+    - '3001:3001'
+  volumes:
+    - './cache:/mnt/cache'
+    - './data/sorted/:/mnt/sorterat'
+  links:
+    - "redis:redis"
+redis:
+  image: redis
