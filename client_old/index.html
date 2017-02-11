@@ -47,17 +47,10 @@
 
 		<div id="import_form">
 			<form id="uploadForm" action="./api/upload/single" class="dropzone">
-				<!--input type="file" name="uploaded" multiple="multiple" accept="image/*,video/*"/ -->
 				<div class="fallback">
 				    <input name="file" type="file" multiple />
 				</div>
 			</form>
-			<div id="imported_image_list" style="height: 100px; background: pink;">
-				TODO: Here we list recently imported images
-			</div>
-			<div id="import_settings" style="height: 100px; background: pink;">
-				TODO: Here we list settings regarding import. Owerwrite duplicates, auto import. etc.
-			</div>
 		</div>
 
 		<div id="selectedHeader" class="header subHeader" style="display: none">
@@ -226,10 +219,14 @@
 
 			function enableFancyboxOnImages() {
 				$(".fancybox:not(.isVideo)").fancybox({
-		        padding : 0
+		        padding : 0,
 						/*,
 						openEffect	: 'elastic',
     				closeEffect	: 'elastic',*/
+						 beforeShow: function () {
+							 var bigHref = this.href.replace('/images/1920/', '/media/');
+							 this.title += '<a download="' + bigHref + '" href="' + bigHref + '">Download</a>';
+						 }
 		    });
 
 				$(".fancybox.isVideo").fancybox({
@@ -377,14 +374,16 @@
 
 				  Dropzone.options.uploadForm = {
 				    //paramName: "file", // The name that will be used to transfer the file
-				    maxFilesize: 2000, // MB
-				    maxFiles : 999,
+				    maxFilesize: 5000, // MB
+				    maxFiles : 9999,
 						init: function() {
+							var totalFileSize = 0;
+
 					    this.on("addedfile", function(file) {
 								console.log("Dropzone added file.");
+								totalFileSize += file.size;
 							});
 							this.on("totaluploadprogress", function(progress, totalBytes, totalSent) {
-								console.log('Progress', progress, totalBytes, totalSent);
 
 								if(last === undefined) {
 									last = {
@@ -435,8 +434,6 @@
 								}
 								speed = Math.round(speed*10)/10;
 
-								console.log(speed, metric+'B/s', deltaSent, deltaTime);
-
 								var txt = Math.round(progress) + '%';
 								txt += '/ ' + timeLeft + 's ';
 								txt += '/ ' + speed + metric + 'B/s';
@@ -463,7 +460,6 @@
 								console.log('complete');
 							});
 							this.on("queuecomplete", function() {
-								console.log('queuecomplete');
 								window.removeEventListener('beforeunload', preventNavigation, false);
 								var elem = $('#upload_btn');
 								elem.html('Upload complete').css('background', 'green');

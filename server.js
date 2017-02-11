@@ -7,7 +7,6 @@ var express        = require("express"),
     session        = require('express-session'),
     sha256         = require('sha256'),
     kue            = require('kue'),
-    redis          = require("redis"),
     redisStore     = require( 'connect-redis' )( session ),
     app            = express(),
     path           = require('path'),
@@ -26,6 +25,8 @@ var GOOGLE_CLIENT_ID      = config.google_client_id,
     ADMIN_HASH = config.admin_hash,
     SERVER_SALT = config.server_salt;
 
+var REDIS_HOST = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
+var REDIS_PORT = process.env.REDIS_PORT_6379_TCP_PORT || 6379;
 var BASE_URL = config.baseUrl || '/';
 var PORT = config.port || 3000;
 
@@ -61,7 +62,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(obj, done) {
-//  console.log('deserializeUser', obj.displayName);
+  // console.log('deserializeUser', obj.displayName);
   done(null, obj);
 });
 
@@ -107,12 +108,16 @@ if(GOOGLE_CLIENT_ID) {
 
 app.use(bodyParser.json());
 app.use(compression());
-app.use( session({
+app.use(session({
 	secret: SERVER_SALT,
 	name:   'cookie67',
   resave: true,
   saveUninitialized: true,
-  store: new redisStore({ host: 'localhost', port: 6379, client: redis.createClient(),ttl :  900})
+  store: new redisStore({
+    host: REDIS_HOST,
+    port: REDIS_PORT,
+    ttl :  900
+  })
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -138,7 +143,7 @@ app.get('/auth/google/return',
 
 app.use('/loginform', bodyParser.urlencoded({ extended: true }));
 app.post('/loginform',
-  passport.authenticate('local', { failureRedirect: BASE_URL + 'login.html' }),
+  passport.authenticate('local', { failureRedirect: BASE_URL + '?bad=true' }),
     function(req, res) { res.redirect(BASE_URL); }
   );
 
@@ -156,6 +161,11 @@ function requireAuthentication(req, res, next) {
 
 app.get('/api/account', function(req, res) {
   var sess = req.session;
+  if(sess === undefined) {
+    // The client is missing a session, return unauthorized response
+    res.send().status(500);
+    return false;
+  }
   if (!sess.views) {
     sess.views  = 0;
   }
@@ -191,5 +201,5 @@ app.use('/', express.static(__dirname + "/client_old/"));
 app.use('/new/', express.static(__dirname + "/client/dist/"));
 
 app.listen(PORT, function(){
-    console.log("Working on port " + PORT);
+  console.log("Working on port " + PORT);
 });

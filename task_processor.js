@@ -8,7 +8,8 @@ var processors = [
     require('./task_processors/find_faces'),
     require('./task_processors/process_import'),
     require('./task_processors/update_directory_list'),
-    require('./task_processors/resize_image')
+    require('./task_processors/resize_image'),
+    require('./task_processors/resize_images_in_folder')
   ];
 
 var config = require('./config_server.json');
@@ -19,8 +20,9 @@ processors.forEach(function(processor) {
 
 console.log("Running task processor...");
 
+var timeOut = 0;
 var queImport = function() {
-  setTimeout(function() {
+  timeOut = setTimeout(function() {
     task_queue.queueTask('update_import_directory', {}, 'low')
     .on('complete', queImport)
     .on('failed', function(errorMessage){
@@ -30,3 +32,9 @@ var queImport = function() {
   }, 10000);
 };
 queImport();
+
+process.on('SIGINT', function () {
+  console.log('Got SIGINT. Shuting down the queue.');
+  clearTimeout(timeOut);
+  task_queue.disconnect(10000);
+});

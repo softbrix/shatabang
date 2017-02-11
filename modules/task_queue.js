@@ -1,16 +1,26 @@
-"use strict"
+"use strict";
+
 var kue = require('kue');
-var queue = kue.createQueue();
+
+var host = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
+var port = process.env.REDIS_PORT_6379_TCP_PORT || 6379;
+
+var queue = kue.createQueue({
+  redis: {
+    host: host,
+    port: port
+  }
+});
 
 var disconnected = false;
 process.once( 'SIGTERM', function () {
   if(!disconnected) {
-      disconnect();
+      disconnect(0);
   }
 });
 
-var disconnect = function disconnect() {
-  queue.shutdown(0, function(err) {
+var disconnect = function disconnect(timeout) {
+  queue.shutdown(timeout || 0, function(err) {
     console.log( 'Kue shutdown: ', err||'' );
     process.exit( 0 );
   });
