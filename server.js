@@ -63,7 +63,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(obj, done) {
-//  console.log('deserializeUser', obj.displayName);
+  // console.log('deserializeUser', obj.displayName);
   done(null, obj);
 });
 
@@ -109,7 +109,7 @@ if(GOOGLE_CLIENT_ID) {
 
 app.use(bodyParser.json());
 app.use(compression());
-app.use( session({
+app.use(session({
 	secret: SERVER_SALT,
 	name:   'cookie67',
   resave: true,
@@ -117,7 +117,6 @@ app.use( session({
   store: new redisStore({
     host: REDIS_HOST,
     port: REDIS_PORT,
-    client: redis.createClient(),
     ttl :  900
   })
 }));
@@ -145,7 +144,7 @@ app.get('/auth/google/return',
 
 app.use('/loginform', bodyParser.urlencoded({ extended: true }));
 app.post('/loginform',
-  passport.authenticate('local', { failureRedirect: BASE_URL + 'login.html' }),
+  passport.authenticate('local', { failureRedirect: BASE_URL + '?bad=true' }),
     function(req, res) { res.redirect(BASE_URL); }
   );
 
@@ -165,7 +164,7 @@ app.get('/api/account', function(req, res) {
   var sess = req.session;
   if(sess === undefined) {
     // The client is missing a session, return unauthorized response
-    res.send().status(401);
+    res.send().status(500);
     return false;
   }
   if (!sess.views) {
@@ -202,7 +201,5 @@ app.use('/kue', kue.app);
 app.use('/', express.static(__dirname + "/client/"));
 
 app.listen(PORT, function(){
-  console.log(REDIS_HOST, REDIS_PORT);
-    console.log("Working on port " + PORT);
-    console.log(process.env);
+  console.log("Working on port " + PORT);
 });

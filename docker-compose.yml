@@ -10,6 +10,6 @@ web:
     - './cache:/mnt/cache'
     - './data/sorted/:/mnt/sorterat'
   links:
-    - "db:redis"
-db:
+    - "redis:redis"
+redis:
   image: redis

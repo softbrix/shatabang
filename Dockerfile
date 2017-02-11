@@ -7,7 +7,7 @@ RUN mkdir -p /mnt/cache
 RUN mkdir -p /usr/src/shatabang
 WORKDIR /usr/src/shatabang
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
   git \
   libopencv-dev \
   libimage-exiftool-perl \
@@ -28,7 +28,12 @@ COPY package.json /usr/src/shatabang
 # Install app dependencies
 RUN npm install
 
-COPY . /usr/src/shatabang
+COPY client /usr/src/shatabang/client
+COPY modules /usr/src/shatabang/modules
+COPY routes /usr/src/shatabang/routes
+COPY task_processors /usr/src/shatabang/task_processors
+COPY *.js /usr/src/shatabang/
+COPY *.sh /usr/src/shatabang/
 COPY install_scripts/docker_config_server.json /usr/src/shatabang/config_server.json
 
 EXPOSE 3001
