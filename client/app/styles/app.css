@@ -3,6 +3,8 @@ html, body, .fullSize{
   width: 100%;
 }
 
+/** Login page **/
+
 .fixedPosition {
   position: fixed;
   top: 0;
@@ -15,7 +17,6 @@ html, body, .fullSize{
 		background-repeat:  no-repeat;
 		background-attachment: fixed;
 		background-size:  cover;
-		background-color: #999;
 }
 
 .wrapper {
@@ -35,10 +36,20 @@ html, body, .fullSize{
   min-width: 100px;
   max-width: 450px;
   margin: auto;
-  color: #fff;
   padding: 2em;
   position: relative;
   top: 50px;
+}
+
+.message h1, .message p {
+  color: #fff;
+}
+
+.message .errorMessage {
+  font-size: 1.2em;
+  margin-top: 10px;
+  padding: 2px 4px;
+  background: #FAA;
 }
 
 #adminLoginform input {
@@ -48,4 +59,10 @@ html, body, .fullSize{
 
 #adminLoginform input[type="text"], #adminLoginform input[type="password"] {
     width: 100%;
+}
+
+/** Face page **/
+
+.face_list img {
+    width: 100px;
 }

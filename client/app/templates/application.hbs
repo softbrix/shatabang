@@ -76,13 +76,16 @@
 
 -->
 
-{{#link-to 'faces' class="button"}}
-  View Faces
-{{/link-to}}
 
-{{#link-to 'login' class="button"}}
-  View Login
-{{/link-to}}
+{{#if session.isAuthenticated}}
+  {{#link-to 'faces' class="button"}}
+    View Faces
+  {{/link-to}}
+  
+  <a {{action 'invalidateSession' class="button"}}>Logout</a>
+{{else}}
+  {{#link-to 'login' class="button"}}Login{{/link-to}}
+{{/if}}
 
 {{fullscreen-toggle}}
 

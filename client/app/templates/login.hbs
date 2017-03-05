@@ -3,10 +3,14 @@
     <div class="message">
       <h1>Shatabang!</h1>
       <p>Your own photo album for the Web</p>
-      <form action="./loginform" id="adminLoginform" method="post">
-			    <div><input type="text" name="username" placeholder="Username"/></div>
-			    <div><input type="password" name="password" placeholder="Password"/></div>
-			    <div><input type="submit" value="Log In" style="float: right"/></div>
+      <form {{action 'authenticate' on='submit'}} id="adminLoginform">
+			    <div>{{input id='username' placeholder='Enter Username' value=username}}</div>
+			    <div>{{input id='password' placeholder='Enter Password' type='password' value=password}}</div>
+			    <div>
+            {{#if errorMessage}}
+            <p style="float: left;" class="errorMessage">{{errorMessage}}</p>
+          {{/if}}
+          <input type="submit" value="Log In" style="float: right"/></div>
           <div style="clear: both;"></div>
 			</form>
     </div>
