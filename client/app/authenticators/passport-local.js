@@ -28,6 +28,7 @@ export default BaseAuthenticator.extend({
     @public
   */
   restore(data) {
+    console.log(data);
     // TODO: Call /api/account
     /*this._assertToriiIsPresent();
 
@@ -88,6 +89,7 @@ export default BaseAuthenticator.extend({
       $.post( '/api/user/invalidate')
         .done(resolve)
         .fail(function(resp) {
+          console.log(resp);
           reject('Unknown authorization error');
         });
     });

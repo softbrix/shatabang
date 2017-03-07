@@ -27,8 +27,9 @@ var GOOGLE_CLIENT_ID      = config.google_client_id,
 
 var REDIS_HOST = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
 var REDIS_PORT = process.env.REDIS_PORT_6379_TCP_PORT || 6379;
-var BASE_URL = config.baseUrl || '/';
-var PORT = config.port || 3000;
+config.baseUrl = config.baseUrl || '/';
+config.port = config.port || 3000;
+config.passport = passport;
 
 var storageDir = config.storageDir; //'/Volumes/Mini\ Stick/sorted/';
 var cacheDir = config.cacheDir; // '/Volumes/Mini\ Stick/cache/';
@@ -51,10 +52,7 @@ routes.push({path: 'faces', route: require('./routes/faces')});
 routes.push({path: 'duplicates', route: require('./routes/duplicates')});
 routes.push({path: 'dirs', route: require('./routes/dirs')});
 routes.push({path: 'auth', route: require('./routes/auth'), public: true});
-
-routes.forEach(function(itm) {
-  itm.route.initialize(config);
-});
+routes.push({path: 'user', route: require('./routes/user'), public: true});
 
 passport.serializeUser(function(user, done) {
   console.log('serializeUser', user.displayName);
@@ -123,7 +121,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/',function(req,res){
-      res.sendFile(__dirname + "/client_old/index.html");
+      res.sendFile(__dirname + "/client/dist/index.html");
 });
 
 // Redirect the user to Google for authentication.  When complete, Google
@@ -138,14 +136,8 @@ app.get('/auth/google', passport.authenticate('google',
 // the process by verifying the assertion.  If valid, the user will be
 // logged in.  Otherwise, authentication has failed.
 app.get('/auth/google/return',
-  passport.authenticate('google', { successRedirect: BASE_URL,
-                                    failureRedirect: BASE_URL + '?bad=true' }));
-
-app.use('/loginform', bodyParser.urlencoded({ extended: true }));
-app.post('/loginform',
-  passport.authenticate('local', { failureRedirect: BASE_URL + '?bad=true' }),
-    function(req, res) { res.redirect(BASE_URL); }
-  );
+  passport.authenticate('google', { successRedirect: config.baseUrl,
+                                    failureRedirect: config.baseUrl + '?bad=true' }));
 
 // Simple route middleware to ensure user is authenticated.
 //   Use this route middleware on any resource that needs to be protected.  If
@@ -159,24 +151,6 @@ function requireAuthentication(req, res, next) {
   res.send().status(401);
 }
 
-app.get('/api/account', function(req, res) {
-  var sess = req.session;
-  if(sess === undefined) {
-    // The client is missing a session, return unauthorized response
-    res.send().status(500);
-    return false;
-  }
-  if (!sess.views) {
-    sess.views  = 0;
-  }
-  sess.views++;
-  res.json({ user: req.user });
-});
-
-app.get('/logout', function(req, res) {
-  req.logout();
-  res.redirect('/');
-});
 /// End Authentication
 
 // Secure the api and images path
@@ -192,14 +166,16 @@ routes.forEach(function(route) {
   if(route.public !== true) {
     app.all(path + '/*', requireAuthentication);
   }
+  // initialize the route
+  route.route.initialize(config);
+  // connect the route
   app.use(path, route.route);
 });
 
 kue.app.set('title', 'Shatabang Work que');
 app.use('/kue', kue.app);
-app.use('/', express.static(__dirname + "/client_old/"));
-app.use('/new/', express.static(__dirname + "/client/dist/"));
+app.use('/', express.static(__dirname + "/client/dist/"));
 
-app.listen(PORT, function(){
-  console.log("Working on port " + PORT);
+app.listen(config.port, function(){
+  console.log("Working on port " + config.port);
 });

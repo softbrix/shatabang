@@ -3,8 +3,8 @@ var _ = require('underscore');
 var express = require('express');
 var router  = express.Router();
 
-
 var auth_methods = [];
+
 router.initialize = function(config) {
   [{conf : 'admin_hash', name : 'admin'},
    {conf : 'google_client_id', name : 'google'} ]
