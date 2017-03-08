@@ -24,17 +24,16 @@ RUN ln -s /usr/bin/avconv /usr/bin/ffmpeg
 #Install source
 # TODO: git checkout
 COPY package.json /usr/src/shatabang
-
-# Install app dependencies
-RUN npm install
-
 COPY client /usr/src/shatabang/client
 COPY modules /usr/src/shatabang/modules
 COPY routes /usr/src/shatabang/routes
 COPY task_processors /usr/src/shatabang/task_processors
 COPY *.js /usr/src/shatabang/
-COPY *.sh /usr/src/shatabang/
 COPY install_scripts/docker_config_server.json /usr/src/shatabang/config_server.json
 
+# Install app dependencies
+RUN npm install
+RUN npm run build_client
+
 EXPOSE 3001
-CMD ./start.sh && sh
+CMD npm run start && sh
