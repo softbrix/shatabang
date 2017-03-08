@@ -9,6 +9,8 @@ const Router = Ember.Router.extend({
 Router.map(function() {
   this.route('faces');
   this.route('login');
+  this.route('upload');
+  this.route('media');
 });
 
 export default Router;

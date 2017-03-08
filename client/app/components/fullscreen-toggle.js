@@ -2,10 +2,11 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   actions: {
-    toggleFullscreen: function() {
-      alert('Är du full');
+    toggleFullscreen: function(event) {
 
-      /*if (elem.requestFullscreen) {
+      // Find correct element to show full screen
+      let elem = event.target;
+      if (elem.requestFullscreen) {
         elem.requestFullscreen();
       } else if (elem.msRequestFullscreen) {
         elem.msRequestFullscreen();
@@ -13,7 +14,7 @@ export default Ember.Component.extend({
         elem.mozRequestFullScreen();
       } else if (elem.webkitRequestFullscreen) {
         elem.webkitRequestFullscreen();
-      }*/
+      }
     }
   }
 });

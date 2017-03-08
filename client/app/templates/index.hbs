@@ -1,3 +1,4 @@
+{{outlet}}
 <div id="header" class="header" style="display: none">
   <a onclick="zoomIn(); return false;" class="zoomBtn">
     <span class=" btn btn-primary btn-sm notMobile"> + </span>
@@ -47,11 +48,6 @@
     Sign In with Google
   </a>
 
-  <form action="http://localhost:3000/loginform" id="adminLoginform" style="display: none" method="post">
-      <div><label>Username:</label><input type="text" name="username"/></div>
-      <div><label>Password:</label><input type="password" name="password"/></div>
-      <div><input type="submit" value="Log In"/></div>
-  </form>
 </div>
 
 <div id="filleTop"></div>
@@ -68,18 +64,4 @@
 
 -->
 
-
-{{#if session.isAuthenticated}}
-  {{#link-to 'faces' class="button"}}
-    View Faces
-  {{/link-to}}
-
-  <a {{action 'invalidateSession' class="button"}}>Logout</a>
-{{else}}
-  You are not logged in!
-  {{#link-to 'login' class="button"}}Login{{/link-to}}
-{{/if}}
-
-{{fullscreen-toggle}}
-
-{{outlet}}
+This is index
