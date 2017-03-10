@@ -20,17 +20,19 @@
   <!-- TODO: Move into tools menu item ->
   <a title="Find duplicates" id="findDupliBtn" style="display: none"><i class="fa fa-files-o" aria-hidden="true"></i></a-->
 
-  <i class="fa fa-user onlyMobile" aria-hidden="true" style="float:right;"></i>
-  <a {{action 'invalidateSession'}} class="btn btn-default btn-sm notMobile" id="logoutBtn" style="float:right;">Logout</a>
-  <span id="username" style="float:right" class="notMobile"></span>
+  {{user-info class="float_right"}}
+
+
 
   {{#link-to 'upload' class="button float_right" }}
     <span class=" btn btn-primary btn-sm notMobile" id="upload_btn">Import</span>
       <i class="fa fa-upload onlyMobile float_right" aria-hidden="true"></i>
   {{/link-to}}
 
-  {{#link-to 'faces' class="button"}}
-    View Faces
+  {{#link-to 'faces' class="button float_right"}}
+    <span class=" btn btn-primary btn-sm notMobile" id="upload_btn">
+      View Faces
+    </span>
   {{/link-to}}
 </div>
 

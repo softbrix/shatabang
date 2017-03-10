@@ -1,0 +1,13 @@
+<a onclick={{action 'toggleShowUserInfo'}}>
+  {{userName}}
+  <i class="fa fa-user" aria-hidden="true"></i>
+{{yield}}</a>
+
+{{#if showUserInfo}}
+<div id="userInfo" class="header_part header_popup">
+  <!-- Add link to user info page -->
+<hr>
+<a {{action 'invalidateSession'}} class="btn btn-default btn-sm" id="logoutBtn">Logout</a>
+</div>
+
+{{/if}}

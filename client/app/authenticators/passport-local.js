@@ -30,7 +30,7 @@ export default BaseAuthenticator.extend({
   restore(data) {
     console.log('restore user',data);
     return new Ember.RSVP.Promise(function(resolve, reject){
-      $.get( '/api/user/me')
+      $.get( '/api/users/me')
         .done(resolve)
         .fail(function(resp) {
           if(resp.status === 401) {
@@ -73,7 +73,7 @@ export default BaseAuthenticator.extend({
       return Ember.RSVP.reject('Password must not be null');
     }
     return new Ember.RSVP.Promise(function(resolve, reject){
-      $.post( '/api/user/authenticate', { username: username, password: password })
+      $.post( '/api/users/authenticate', { username: username, password: password })
         .done(resolve)
         .fail(function(resp) {
           if(resp.status === 401) {
@@ -97,7 +97,7 @@ export default BaseAuthenticator.extend({
   invalidate(data) {
     console.log(data);
     return new Ember.RSVP.Promise(function(resolve, reject){
-      $.post( '/api/user/invalidate')
+      $.post( '/api/users/invalidate')
         .done(resolve)
         .fail(function(resp) {
           console.log(resp);

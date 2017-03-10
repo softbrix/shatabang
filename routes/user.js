@@ -32,7 +32,16 @@ router.get('/me', function(req, res) {
     sess.views  = 0;
   }
   sess.views++;
-  res.json({ user: req.user });
+  res.json({
+    "data": {
+      "type": "user",
+      "id": "me",
+      "attributes": {
+        'username': req.user.name,
+        'user': req.user
+      }
+    }
+  });
 });
 
 module.exports = router;

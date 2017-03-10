@@ -94,6 +94,10 @@ body > .ember-view {
   float: left;
 }
 
+.back_to_index_btn {
+  margin: 8px;
+}
+
 
 /* Old main.css */
 @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic");
@@ -253,7 +257,7 @@ body > .ember-view {
 	@media screen and (min-width: 481px) {
 		#header {
 			top: 0;
-			padding: 0 1em;
+			padding: 0
 		}
 		#wrapper {
 	    padding-top: 30px;
@@ -1536,10 +1540,25 @@ body > .ember-view {
 		#header {
 			position: fixed;
 			left: 0;
-			background-color: #C2C2D0;
 			width: 100%;
-			z-index: 100;
+      padding-top: 3px;
 		}
+
+    .header_part, #header {
+      background-color: #C2C2D0;
+      z-index: 100;
+    }
+
+    .header_popup {
+      position: absolute;
+      top: 33px;
+      border-top: 1px solid black;
+      padding: 0.5em;
+    }
+
+    .header_popup hr, #header .header_popup a {
+      margin: 0
+    }
 
 		.subHeader {
 			background-color: #E2E2E0;

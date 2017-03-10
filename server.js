@@ -52,7 +52,7 @@ routes.push({path: 'faces', route: require('./routes/faces')});
 routes.push({path: 'duplicates', route: require('./routes/duplicates')});
 routes.push({path: 'dirs', route: require('./routes/dirs')});
 routes.push({path: 'auth', route: require('./routes/auth'), public: true});
-routes.push({path: 'user', route: require('./routes/user'), public: true});
+routes.push({path: 'users', route: require('./routes/user'), public: true});
 
 passport.serializeUser(function(user, done) {
   console.log('serializeUser', user.displayName);

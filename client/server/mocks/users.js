@@ -22,9 +22,15 @@ module.exports = function(app) {
   });
 
   userRouter.get('/me', function(req, res) {
-    res.send({
-      'username': 'arvid'
+    res.send({"data": {
+        "type": "user",
+        "id": "me",
+        "attributes": {
+          "username": 'arvid'
+        }
+      }
     });
+
   });
 
   userRouter.post('/invalidate', function(req, res) {
@@ -62,9 +68,9 @@ module.exports = function(app) {
   //
   // Andreas 2017-03-05: Enabled
   var bodyParser = require('body-parser');
-  app.use('/api/user', bodyParser.json());
-  app.use('/api/user', bodyParser.urlencoded({     // to support URL-encoded bodies
+  app.use('/api/users', bodyParser.json());
+  app.use('/api/users', bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
   }));
-  app.use('/api/user', userRouter);
+  app.use('/api/users', userRouter);
 };

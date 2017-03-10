@@ -1,6 +1,5 @@
-{{yield}}
 <a onclick={{action 'toggleFullscreen'}}>
-  <span class=" btn btn-primary btn-sm notMobile">
+  <span class=" btn btn-primary btn-sm notMobile"> {{yield}}
     {{#if isFullscreen}} Minimize {{else}} Maximize {{/if}} </span>
   <i class="fa fa-arrows-alt onlyMobile" aria-hidden="true"></i>
 </a>
