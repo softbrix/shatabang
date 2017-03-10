@@ -77,13 +77,6 @@
     "underscore": "*"
   },
   "devDependencies": {
-    "bootstrap": "^3.3.6",
-    "bootstrap-datepicker": "1.6.1",
-    "bootstrap-social": "^4.11.0",
-    "bootstrap-switch": "^3.3.2",
-    "font-awesome": "^4.5.0",
-    "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.0",
     "mocha": "~2.3.3",
     "npm-run-all": "^4.0.2",
     "should": "~7.1.0",
