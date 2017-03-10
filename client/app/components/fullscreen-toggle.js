@@ -2,19 +2,48 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   actions: {
-    toggleFullscreen: function(event) {
-
-      // Find correct element to show full screen
-      let elem = event.target;
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
-      } else if (elem.mozRequestFullScreen) {
-        elem.mozRequestFullScreen();
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
+    toggleFullscreen: function() {
+      if(this.get('isFullscreen')) {
+        if(cancelFullScreen()) {
+          this.set('isFullscreen', false);
+        }
+      } else {
+        if(requestFullscreen()) {
+          this.set('isFullscreen', true);
+        }
       }
     }
-  }
+  },
+  isFullscreen: false
 });
+
+function cancelFullScreen() {
+  if (document.cancelFullScreen) {
+    document.cancelFullScreen();
+  } else if (document.msCancelFullscreen) {
+    document.msCancelFullScreen();
+  } if (document.mozCancelFullScreen) {
+    document.mozCancelFullScreen();
+  } else if (document.webkitCancelFullScreen) {
+    document.webkitCancelFullScreen();
+  } else {
+    return false;
+  }
+  return true;
+}
+
+function requestFullscreen() {
+  let elem = document.body;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.msRequestFullscreen) {
+    elem.msRequestFullscreen();
+  } else if (elem.mozRequestFullScreen) {
+    elem.mozRequestFullScreen();
+  } else if (elem.webkitRequestFullscreen) {
+    elem.webkitRequestFullscreen();
+  } else {
+    return false;
+  }
+  return true;
+}

@@ -28,7 +28,18 @@ export default BaseAuthenticator.extend({
     @public
   */
   restore(data) {
-    console.log(data);
+    console.log('restore user',data);
+    return new Ember.RSVP.Promise(function(resolve, reject){
+      $.get( '/api/user/me')
+        .done(resolve)
+        .fail(function(resp) {
+          if(resp.status === 401) {
+            reject('Unknown username and/or password');
+          } else {
+            reject('Unknown authorization error');
+          }
+        });
+    });
     // TODO: Call /api/account
     /*this._assertToriiIsPresent();
 

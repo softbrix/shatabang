@@ -5,6 +5,11 @@ var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
     // Add options here
+    lessOptions: {
+      paths: [
+        'bower_components/bootstrap/less'
+      ]
+    }
   });
 
   // Use `app.import` to add additional libraries to the generated
@@ -22,21 +27,26 @@ module.exports = function(defaults) {
 
   app.import('bower_components/axios/dist/axios.js');
   // TODO: Add minified files for production or is the resulting assets.js minified
+  /*
+  'node_modules/font-awesome/css/font-awesome.min.css',
+  'node_modules/bootstrap/dist/css/bootstrap-theme.min.css',
+  'node_modules/bootstrap/dist/css/bootstrap.min.css',
+  'node_modules/bootstrap-social/bootstrap-social.css',
+  'node_modules/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css',
+  'node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.standalone.min.css',
+  'client/assets/dropzone/basic.min.css',
+  'client/assets/dropzone/dropzone.min.css'
 
-  app.import('bower_components/fancybox/source/jquery.fancybox.css');
-  app.import('bower_components/fancybox/lib/jquery.mousewheel.pack.js');
-  app.import('bower_components/fancybox/source/jquery.fancybox.pack.js');
 
-  app.import('bower_components/dropzone/dist/dropzone.js');
-  app.import('bower_components/dropzone/dist/basic.css');
-  app.import('bower_components/dropzone/dist/dropzone.css');
+  'node_modules/bootstrap/dist/bootstrap.js',
+  'node_modules/bootstrap-switch/dist/js/bootstrap-switch.min.js',
+  'node_modules/axios/dist/axios.min.js',
+  'node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
+  'node_modules/underscore/underscore-min.js',
+  'client/assets/dropzone/dropzone.min.js'
+  */
 
-  app.import('vendor/thirdParty.css');
-  app.import('vendor/thirdParty.js');
-
-  app.import('vendor/oldIndex.js');
-  app.import('vendor/shatabang.js');
-
+  app.import('bower_components/bootstrap/dist/js/bootstrap.js');
 
 
   return app.toTree();

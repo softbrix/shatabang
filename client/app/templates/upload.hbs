@@ -1,9 +1,22 @@
 
+<h1>Import new images</h1>
+{{#drop-zone
+  url='./api/upload/single'
+  clickable=true
+  addRemoveLinks=false
+  maxFilesize=5000
+  maxFiles=9999
+  thumbnailWidth=120
+  thumbnailHeight=120
 
+  addedfile=addedFileEvent
+  success=filesuccessEvent
+  complete=filecompleteEvent
+  sending=sendingEvent
+  queuecomplete=queuecompleteEvent
+}}{{/drop-zone}}
 
-<form id="uploadForm" action="./api/upload/single" class="dropzone" onclick="event.stopPropagation()">
-  <!--input type="file" name="uploaded" multiple="multiple" accept="image/*,video/*"/ -->
-  <div class="fallback">
-      <input name="file" type="file" multiple />
-  </div>
-</form>
+{{#if totalFileSize}}
+  Progress: {{progress}}%<br/>
+  Speed: {{speed}}kbs
+{{/if}}
