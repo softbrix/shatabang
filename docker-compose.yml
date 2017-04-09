@@ -1,7 +1,6 @@
 web:
   image: 'softbrix/shatabang'
   restart: always
-  hostname: 'h.sehr.se/shatabang/'
   environment:
    - PORT=3001
   ports:
