@@ -67,10 +67,10 @@ export default BaseAuthenticator.extend({
   */
   authenticate(username, password) {
     if(username === undefined || username.trim().length === 0) {
-      return Ember.RSVP.reject('Username must not be null');
+      return Ember.RSVP.reject('Username must not be empty');
     }
     if(password === undefined || password.trim().length === 0) {
-      return Ember.RSVP.reject('Password must not be null');
+      return Ember.RSVP.reject('Password must not be empty');
     }
     return new Ember.RSVP.Promise(function(resolve, reject){
       $.post( '/api/users/authenticate', { username: username, password: password })

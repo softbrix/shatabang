@@ -11,11 +11,12 @@ export default Ember.Component.extend({
         console.log('Do it!');
     }
   },
+  tstProp: 'abc123',
   didInsertElement() {
     this._super(...arguments);
 
     this.$('img').on('load', (e) => {
-      if(this.get('cropped')) {
+      if(this.get('cropped') || this.isDestroyed) {
         return;
       }
       console.log("Opa!",e.target);
@@ -26,8 +27,9 @@ export default Ember.Component.extend({
       canvas.getContext('2d').drawImage(e.target, item.l, item.t, item.w, item.h, 0, 0, item.w, item.h);
 
       e.target.src = canvas.toDataURL("image/png");
-
-      this.set('cropped', true);
+      if(!this.isDestroyed) {
+        this.set('cropped', true);
+      }
     });
   },
 });

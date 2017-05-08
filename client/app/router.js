@@ -10,7 +10,7 @@ Router.map(function() {
   this.route('faces');
   this.route('login');
   this.route('upload');
-  this.route('media');
+  this.route('media',  { path: '/media/:media_id' });
 });
 
 export default Router;
