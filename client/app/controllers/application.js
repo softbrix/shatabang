@@ -5,7 +5,6 @@ export default Ember.Controller.extend({
   mediaLoader: Ember.inject.service('media-list-loader'),
 
   init() {
-    console.log('init app');
-    this.get('mediaLoader').init();
+    this.get('mediaLoader');
   }
 });

@@ -3,21 +3,27 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   classNames: ['gallery'],
   scrollAlmostDown: Ember.inject.service('scroll-almost-down'),
-  mediaCount: 22,
-  mediaList: buildModel(20),
+  mediaLoader: Ember.inject.service('media-list-loader'),
+  mediaCount: 64,
+  mediaList: [],
 
   didInsertElement() {
     this._super(...arguments);
     console.log('aaaa index');
 
     var that = this;
-    var deregisterer = this.get('scrollAlmostDown').registerListener(function() {
-      that.incrementProperty('mediaCount', 100);
-      var mCount = that.get('mediaCount');
-      that.set('mediaList', buildModel(mCount));
-      console.log(mCount);
+    this.get('mediaLoader').iterator().then(function(it) {
+      console.log('got the iterator');
+      // Initial load
+      buildModel(that, that.get('mediaCount'), it);
+
+      var deregisterer = that.get('scrollAlmostDown').registerListener(function() {
+        buildModel(that, that.get('mediaCount'), it);
+      });
+
+      that.set('windowscrollCleanup', deregisterer);
     });
-    this.set('windowscrollCleanup', deregisterer);
+
     console.log('activate index');
     //collectAnalytics();
   },
@@ -29,13 +35,17 @@ export default Ember.Component.extend({
       cleanup();
     }
     //trackPageLeaveAnalytics();
+  },
+  didRender() {
+    this._super(...arguments);
+    console.log('gallery render');
   }
 });
 
-function buildModel(count) {
-  var a = [];
-  for(var i = 0; i < count; ++i) {
-    a.push({id: 'a' + (Math.sin(i)*Math.cos(i))});
+function buildModel(that, count, it) {
+  for(var i = 0; i < count && it.hasNext(); ++i) {
+    var o = it.next();
+    that.get('mediaList').pushObject({id: o.img});
   }
-  return a;
+  return that.get('mediaList');
 }
