@@ -3,6 +3,13 @@ import DibbaTree from 'npm:dibba_tree';
 
 const Promise = Ember.RSVP.Promise;
 
+function moveIteratorLast(it) {
+  while(it.hasNext()) {
+    it.next();
+  }
+  return it;
+}
+
 // "2016/03/14/222624.jpg"
 var fileNameRegexp = /^([\d]{4}).?(\d{2}).?(\d{2}).?(\d{2})(\d{2})(\d{2})/;
 function fileName2Date(fileName) {
@@ -71,7 +78,7 @@ export default Ember.Service.extend({
       // This loads the first years image list
       loadImageList(folders[0])
         .then(function() {
-          iteratorDeferred.resolve(tree.leafIterator());
+          iteratorDeferred.resolve(moveIteratorLast(tree.leafIterator()));
           // Load the rest of the images
           var promises = folders.slice(1).map(loadImageList);
           Promise.all(promises).then(values => {

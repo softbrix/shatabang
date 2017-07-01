@@ -43,7 +43,9 @@
     "express": "^4.15.0",
     "glob": "^4.5.3",
     "loader.js": "^4.0.10",
-    "morgan": "^1.8.1"
+    "morgan": "^1.8.1",
+    "safe-memory-cache": "^1.5.1",
+    "sjotorp_image": "1.0.0"
   },
   "engines": {
     "node": ">= 0.12.0"

@@ -43,9 +43,10 @@ export default Ember.Component.extend({
 });
 
 function buildModel(that, count, it) {
-  for(var i = 0; i < count && it.hasNext(); ++i) {
-    var o = it.next();
-    that.get('mediaList').pushObject({id: o.img});
+  for(var i = 0; i < count && it.hasPrev(); ++i) {
+    // TODO: Fix this in DibbaTree. Should be able to move to last node.
+    that.get('mediaList').pushObject(it._node.content);
+    it.prev();
   }
   return that.get('mediaList');
 }

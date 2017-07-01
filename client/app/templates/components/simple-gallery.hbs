@@ -1,9 +1,10 @@
 {{yield}}
 
 mcount: {{mediaCount}}
+m2count: {{mediaList.length}}
 
 {{#each mediaList as |media|}}
-  <p>{{media.id}}</p>
+  <p>{{media-gallery-item media=media}}</p>
 {{/each}}
 
 This is the simple gallery
