@@ -1,10 +1,12 @@
 {{yield}}
 
+<p style="position: fixed;
+    bottom: 0;
+    right: 0;border: 3px solid #73AD21">
 mcount: {{mediaCount}}
 m2count: {{mediaList.length}}
+</p>
 
-{{#each mediaList as |media|}}
-  <p>{{media-gallery-item media=media}}</p>
-{{/each}}
+{{#each mediaList as |media|}}{{media-gallery-item media=media}}{{/each}}
 
 This is the simple gallery
