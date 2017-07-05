@@ -45,32 +45,13 @@ export default Ember.Service.extend({
     if(imagesPWidth > 0) {
       imagesPWidth /= this.get('zoomMultiplicator');
       this.set('imagesPWidth', imagesPWidth);
-      this._setImgWidth();
     }
   },
   zoomOut() {
     var imagesPWidth = this.get('imagesPWidth');
-    if(imagesPWidth < 1000) {
+    if(imagesPWidth < 256) {
       imagesPWidth *= this.get('zoomMultiplicator');
-      this._setImgWidth();
-      // TODO: Move this into its own object
-      window.scrollCheck();
+      this.set('imagesPWidth', imagesPWidth);
     }
-  },
-  _setImgWidth() {
-    /*var elem = findElementAtScrollTop($('#gallery'));
-    if(elem === undefined) {
-      return;
-    }*/
-    var ratio = this.get('ratio');
-    console.log('ratio:', ratio);
-
-
-    var el = Ember.$('.shImage');
-    el.css('width',  ratio + '%');
-    var width = el.width();
-    el.css('height', (200 * (width/300)) + 'px');
-
-    //scrollToElement(elem);
   }
 });

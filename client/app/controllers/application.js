@@ -8,5 +8,9 @@ export default Ember.Controller.extend({
   init() {
     this.get('mediaLoader');
     this.get('imageWidthService');
+  },
+  actions: {
+    zoomIn: function() { this.get('imageWidthService').zoomIn(); },
+    zoomOut: function() { this.get('imageWidthService').zoomOut(); }
   }
 });

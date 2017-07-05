@@ -4,11 +4,11 @@
 
   {{fullscreen-toggle class="float_left"}}
 
-  <a onclick="zoomIn(); return false;" class="zoomBtn">
+  <a onclick={{action 'zoomIn'}} class="zoomBtn">
     <span class=" btn btn-primary btn-sm notMobile"> + </span>
     <i class="fa fa-plus-square onlyMobile" aria-hidden="true"></i>
   </a>
-  <a onclick="zoomOut(); return false;" class="zoomBtn">
+  <a onclick={{action 'zoomOut'}} class="zoomBtn">
     <span class=" btn btn-primary btn-sm notMobile"> - </span>
     <i class="fa fa-minus-square onlyMobile" aria-hidden="true"></i>
   </a>
