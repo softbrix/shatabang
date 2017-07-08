@@ -82,7 +82,7 @@ export default Ember.Service.extend({
           // Load the rest of the images
           var promises = folders.slice(1).map(loadImageList);
           Promise.all(promises).then(values => {
-            console.log(values);
+            console.log(values, tree.getSize());
           });
         })
         .catch(function (response) {

@@ -37,11 +37,11 @@ router.get('/me', function(req, res) {
       "type": "user",
       "id": "me",
       "attributes": {
-        'username': req.user.name,
+        'username': req.user.username,
         'user': req.user
       }
     }
-  });
+  }).end();
 });
 
 module.exports = router;
