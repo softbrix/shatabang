@@ -45,7 +45,7 @@
     "loader.js": "^4.0.10",
     "morgan": "^1.8.1",
     "safe-memory-cache": "^1.5.1",
-    "sjotorp_image": "1.0.0"
+    "sjotorp_image": "1.1.0"
   },
   "engines": {
     "node": ">= 0.12.0"

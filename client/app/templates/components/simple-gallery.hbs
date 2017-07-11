@@ -1,5 +1,13 @@
 {{yield}}
 
+{{#if activeMedia}}
+<div class="fullSize fixedPosition fullscreenMedia">
+  {{fullsize-media media=activeMedia path='./images/1920/'}}
+  <button class="float_right close_button" {{action 'resetActiveMedia'}}>Close</button>
+  {{activeMedia.img}}
+</div>
+{{/if}}
+
 <p style="position: fixed;
     bottom: 0;
     right: 0;border: 3px solid #73AD21">
@@ -7,6 +15,6 @@ mcount: {{mediaCount}}
 m2count: {{mediaList.length}}
 </p>
 
-{{#each mediaList as |media|}}{{media-gallery-item media=media}}{{/each}}
+{{#each mediaList as |media|}}{{media-gallery-item media=media click=(action 'mediaClicked' media)}}{{/each}}
 
 This is the simple gallery

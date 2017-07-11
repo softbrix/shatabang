@@ -1,7 +1,7 @@
 @import "bootstrap";
 @import "theme";
 
-html, body, .fullSize{
+html, body, .fullSize, .wrapper {
   height: 100%;
   width: 100%;
 }
@@ -26,11 +26,6 @@ body > .ember-view {
 		background-repeat:  no-repeat;
 		background-attachment: fixed;
 		background-size:  cover;
-}
-
-.wrapper {
-  height: 100%;
-  width: 100%;
 }
 
 .message {
@@ -70,6 +65,8 @@ body > .ember-view {
     width: 100%;
 }
 
+
+
 /** Face page **/
 
 .face_list img {
@@ -96,6 +93,34 @@ body > .ember-view {
 
 .back_to_index_btn {
   margin: 8px;
+}
+
+/* Gallery style */
+.fullscreenMedia {
+
+  .close_button {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+  }
+
+  background-color: black;
+  z-index: 999;
+  display: flex;
+  justify-content: center; /* align horizontal */
+  align-items: center; /* align vertical */
+
+  .fullsizeMedia {
+    position: absolute;
+    &.fullWidth {
+      width: 100%;
+      height: auto;
+    }
+    &.fullHeight {
+      height: 100%;
+      width: auto;
+    }
+  }
 }
 
 

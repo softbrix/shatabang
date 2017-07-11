@@ -14,7 +14,7 @@ module.exports = function(app) {
     res.send(images.replace(new RegExp("2017", 'g'), req.params.year)).end();
   });
 
-  imageRouter.get('/300/:year/:month/:day/:file', function(req, res) {
+  function renderImage(req, res, width, height, addStripes) {
     res.contentType('image/jpeg');
     var cachedData = cache.get(req.url);
     if(cachedData) {
@@ -22,11 +22,27 @@ module.exports = function(app) {
     } else {
       var fileName = JSON.stringify(req.params);
       var color = imageGenerator.generateColor(fileName);
-      imageGenerator.generateImage(300, 200, color, function(err, image) {
-        cache.set(req.url, image.data);
-        res.end(image.data);
+      imageGenerator.generateImage(width, height, color, function(err, image) {
+        if(addStripes) {
+          var whiteColor = {r: 255, g: 255, b: 255, a: 255};
+          imageGenerator.addStripes(image.data, whiteColor, function(err, image) {
+            cache.set(req.url, image.data);
+            res.end(image.data);
+          });
+        } else {
+          cache.set(req.url, image.data);
+          res.end(image.data);
+        }
       });
     }
+  }
+
+  imageRouter.get('/1920/:year/:month/:day/:file', function(req, res) {
+    renderImage(req, res, 1920, 1080, true);
+  });
+
+  imageRouter.get('/300/:year/:month/:day/:file', function(req, res) {
+    renderImage(req, res, 300, 200);
   });
 
   app.use('/images/', imageRouter);
