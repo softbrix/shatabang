@@ -32,8 +32,15 @@ COPY *.js /usr/src/shatabang/
 COPY install_scripts/docker_config_server.json /usr/src/shatabang/config_server.json
 
 # Install app dependencies
-RUN npm install
-RUN npm run build_client
+RUN npm install -g ember-cli && \
+    npm install -g bower && \
+    npm install && \
+    cd client && \
+     npm install && \
+     bower install --allow-root && \
+     ember -v && \
+     ember build && \
+    cd ..
 
 EXPOSE 3001
 CMD npm run start && sh
