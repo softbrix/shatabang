@@ -21,9 +21,15 @@ RUN ls /usr/bin/ff*
 RUN ln -s /usr/bin/avprobe /usr/bin/ffprobe
 RUN ln -s /usr/bin/avconv /usr/bin/ffmpeg
 
+RUN npm install -g ember-cli && \
+    npm install -g bower
+
+# Install app dependencies
+COPY package.json /usr/src/shatabang
+RUN npm install
+
 #Install source
 # TODO: git checkout
-COPY package.json /usr/src/shatabang
 COPY client /usr/src/shatabang/client
 COPY modules /usr/src/shatabang/modules
 COPY routes /usr/src/shatabang/routes
@@ -31,16 +37,11 @@ COPY task_processors /usr/src/shatabang/task_processors
 COPY *.js /usr/src/shatabang/
 COPY install_scripts/docker_config_server.json /usr/src/shatabang/config_server.json
 
-# Install app dependencies
-RUN npm install -g ember-cli && \
-    npm install -g bower && \
+# Install and build client
+RUN cd /usr/src/shatabang/client && \
     npm install && \
-    cd client && \
-     npm install && \
-     bower install --allow-root && \
-     ember -v && \
-     ember build && \
-    cd ..
+    bower install --allow-root && \
+    ember build production
 
 EXPOSE 3001
 CMD npm run start && sh
