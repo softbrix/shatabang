@@ -4,5 +4,5 @@ import config from '../config/environment';
 console.log(config.rootURL);
 
 export default DS.JSONAPIAdapter.extend({
-  namespace: './api'
+  namespace: config.rootURL + 'api'
 });
