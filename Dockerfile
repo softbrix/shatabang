@@ -39,9 +39,9 @@ COPY install_scripts/docker_config_server.json /usr/src/shatabang/config_server.
 
 # Install and build client
 RUN cd /usr/src/shatabang/client && \
-    npm install
-RUN bower install --allow-root
-RUN ember build --environment="production"
+    npm install && \
+    bower install --allow-root && \
+    ember build --environment="production"
 
 EXPOSE 3001
 CMD npm run start && sh
