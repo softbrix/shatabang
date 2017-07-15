@@ -7,7 +7,9 @@ module.exports = function(defaults) {
     // Add options here
     lessOptions: {
       paths: [
-        'bower_components/bootstrap/less'
+        'bower_components/bootstrap/less',
+        'bower_components/font-awesome/less',
+        'bower_components/font-awesome/fonts'
       ]
     }
   });
@@ -47,6 +49,13 @@ module.exports = function(defaults) {
   */
 
   app.import('bower_components/bootstrap/dist/js/bootstrap.js');
+
+  ['woff', 'woff2', 'ttf', 'svg'].forEach((suffix) => {
+    app.import('bower_components/font-awesome/fonts/fontawesome-webfont.' + suffix, {
+      destDir: 'fonts'
+    });
+  });
+
 
 
   return app.toTree();
