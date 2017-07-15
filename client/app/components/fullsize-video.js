@@ -25,10 +25,12 @@ function getScreenSize() {
 
 export default Ember.Component.extend({
   tagName: 'video',
-  attributeBindings: ['imgSrc:src', 'imgAlt:alt'],
+  attributeBindings: ['imgSrc:src', 'imgAlt:alt', 'controls', 'autoplay'],
   classNames: ['galleryImage', 'fullsizeMedia'],
   classNameBindings: ['isWider:fullWidth:fullHeight'],
 
+  controls: true,
+  autoplay: true,
   imgSize: {w: 1, h: 1},
   screenSize: {w: 1, h: 1},
 
