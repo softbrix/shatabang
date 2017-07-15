@@ -2,6 +2,7 @@ import Ember from 'ember';
 import DibbaTree from 'npm:dibba_tree';
 
 const Promise = Ember.RSVP.Promise;
+const movieFileRegexp = /(.+)(mp4|avi|mov|mpe?g)$/gi;
 
 function moveIteratorLast(it) {
   while(it.hasNext()) {
@@ -11,7 +12,7 @@ function moveIteratorLast(it) {
 }
 
 // "2016/03/14/222624.jpg"
-var fileNameRegexp = /^([\d]{4}).?(\d{2}).?(\d{2}).?(\d{2})(\d{2})(\d{2})/;
+const fileNameRegexp = /^([\d]{4}).?(\d{2}).?(\d{2}).?(\d{2})(\d{2})(\d{2})/;
 function fileName2Date(fileName) {
   var result = fileNameRegexp.exec(fileName);
   var date = new Date();
@@ -42,7 +43,23 @@ export default Ember.Service.extend({
       var importImages = function(images) {
         images.forEach(function(fileName) {
           var date = fileName2Date(fileName);
-          var newObj = {date: date, img: fileName};
+
+          var isVideo, bigMediaFileName;
+          if(movieFileRegexp.test(fileName)) {
+            bigMediaFileName = "./media/" + fileName;
+            fileName = fileName.replace(movieFileRegexp, '$1jpg');
+            isVideo = true;
+          } else {
+            bigMediaFileName = './images/1920/' + fileName;
+            isVideo = false;
+          }
+
+          var newObj = {
+            date: date,
+            img: fileName,
+            bigMedia: bigMediaFileName,
+            isVideo: isVideo
+          };
 
           var y = date.getFullYear();
           var m = date.getMonth()+1; // Month is numbered from 0 - 11. Compensate with +1

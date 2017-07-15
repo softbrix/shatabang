@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  tagName: 'img',
+  tagName: 'span',
   classNames: ['galleryImage'],
   attributeBindings: ['imgSrc:src', 'imgAlt:alt', 'imageWidth:style'],
 

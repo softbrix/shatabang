@@ -401,10 +401,16 @@ body > .ember-view {
 		text-decoration: none;
 	}
 
-	#gallery img.galleryImage {
+	#gallery .galleryImage {
 		display: inline-block;
     vertical-align: middle;
     border: 0;
+    overflow: hidden;
+    color: lightblue;
+    img {
+      width: 100%;
+      vertical-align: middle;
+    }
 	}
 
 	body.editMode
@@ -1720,7 +1726,7 @@ body > .ember-view {
 			/* padding: 4em 0 0 0; */
 		}
 
-		#header {
+		#header, #filleBottom  {
 			height: 30px;
 		}
 

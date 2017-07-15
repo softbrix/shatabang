@@ -22,11 +22,7 @@ function getScreenSize() {
             document.body.clientHeight;
   return {width: w, height: h};
 }
-
-var SMALL_PATH = './images/300/';
-
 export default Ember.Component.extend({
-  path: SMALL_PATH,
   tagName: 'img',
   attributeBindings: ['imgSrc:src', 'imgAlt:alt'],
   classNames: ['galleryImage', 'fullsizeMedia'],
@@ -52,8 +48,8 @@ export default Ember.Component.extend({
     this.set('screenSize', {w: size.width, h: size.height});
   },
 
-  imgSrc: Ember.computed('path', 'media', function() {
-    return  this.get('path') + this.get('media.img');
+  imgSrc: Ember.computed('media', function() {
+    return  this.get('media.bigMedia');
   }),
   imgAlt: Ember.computed('media', function() {
     return this.get('media.date') + ' - '+ this.get('media.img');

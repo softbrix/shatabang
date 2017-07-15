@@ -2,7 +2,11 @@
 
 {{#if activeMedia}}
 <div class="fullSize fixedPosition fullscreenMedia">
-  {{fullsize-media media=activeMedia path=BIG_PATH}}
+  {{#if activeMedia.isVideo}}
+    {{fullsize-video media=activeMedia}}
+  {{else}}
+    {{fullsize-image media=activeMedia}}
+  {{/if}}
   <div class="move_left"><a onclick={{action 'moveLeft'}}><i class="fa fa-angle-left" aria-hidden="true"></i></a></div>
   <div class="move_right"><a onclick={{action 'moveRight'}}><i class="fa fa-angle-right" aria-hidden="true"></i></a></div>
   <button class="float_right close_button" {{action 'resetActiveMedia'}}>Close</button>
