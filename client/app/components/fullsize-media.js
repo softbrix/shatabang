@@ -35,11 +35,6 @@ export default Ember.Component.extend({
   imgSize: {w: 1, h: 1},
   screenSize: {w: 1, h: 1},
 
-  didInsertElement: function() {
-      this.$().on('error', function() {
-        this.set('path', SMALL_PATH);
-      }.bind(this));
-  },
   init: function() {
     this._super(...arguments);
     getImgSize(this.get('imgSrc'), function(size) {
@@ -51,7 +46,6 @@ export default Ember.Component.extend({
   willDestroyElement() {
     this._super(...arguments);
     window.removeEventListener("resize", this.screenResize);
-    this.$().off();
   },
   screenResize: function() {
     var size = getScreenSize();
