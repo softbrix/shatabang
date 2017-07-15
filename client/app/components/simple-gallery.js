@@ -1,3 +1,4 @@
+/* global window */
 import Ember from 'ember';
 
 export default Ember.Component.extend({
@@ -7,6 +8,7 @@ export default Ember.Component.extend({
   mediaCount: 64,
   activeMedia: undefined,
   mediaList: [],
+  BIG_PATH: './images/1920/',
 
   didInsertElement() {
     this._super(...arguments);
@@ -36,16 +38,74 @@ export default Ember.Component.extend({
   actions: {
     mediaClicked: function(a) {
       this.set('activeMedia', a);
+      this.get('mediaLoader').iterator().then((it) => {
+        it.gotoPath(a.path);
+        this.set('activeMediaIterator', it);
+        this._preloadImages(it);
+      });
+      Ember.$(window).on('keydown', this._handleKey.bind(this));
     },
     resetActiveMedia: function() {
       this.set('activeMedia', undefined);
+      Ember.$(window).off('keydown');
+    },
+    moveRight: function() {
+      var it = this.get('activeMediaIterator');
+      if(it.hasPrev()) {
+        var prev = it.prev();
+        if(prev === this.get('activeMedia')) {
+          prev = it.prev();
+        }
+        this._preloadImages(it);
+        this.set('activeMedia', prev);
+      }
+    },
+    moveLeft: function() {
+      var it = this.get('activeMediaIterator');
+      if(it.hasNext()) {
+        var next = it.next();
+        if(next === this.get('activeMedia')) {
+          next = it.next();
+        }
+        this._preloadImages(it);
+        this.set('activeMedia', next);
+      }
+    }
+  },
+  _preloadImages: function(it) {
+    var path = it.getPath();
+    if(it.hasNext()) {
+      this._loadBigImage(it.next());
+      it.prev();
+    }
+    if(it.hasPrev()) {
+      this._loadBigImage(it.prev());
+    }
+    it.gotoPath(path);
+  },
+  _loadBigImage: function(media) {
+    if(media === undefined) {
+      return;
+    }
+    var curImg = new Image();
+    curImg.src = this.get('BIG_PATH') + media.img;
+  },
+  _handleKey: function(event) {
+    if(event.key === "ArrowLeft") {
+      this.actions.moveLeft.apply(this);
+    } else if(event.key === "ArrowRight") {
+      this.actions.moveRight.apply(this);
+    } else {
+      //console.log('unknown key', event.key);
     }
   }
 });
 
 function buildModel(that, count, it) {
   for(var i = 0; i < count && it.hasPrev(); ++i) {
-    that.get('mediaList').pushObject(it.prev());
+    var obj = it.prev();
+    obj.path = it.getPath();
+    that.get('mediaList').pushObject(obj);
   }
 
   return that.get('mediaList');

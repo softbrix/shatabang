@@ -52,6 +52,6 @@
   },
   "private": true,
   "dependencies": {
-    "dibba_tree": "0.3.0"
+    "dibba_tree": "0.4.1"
   }
 }

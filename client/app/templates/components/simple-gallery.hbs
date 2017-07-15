@@ -2,7 +2,9 @@
 
 {{#if activeMedia}}
 <div class="fullSize fixedPosition fullscreenMedia">
-  {{fullsize-media media=activeMedia path='./images/1920/'}}
+  {{fullsize-media media=activeMedia path=BIG_PATH}}
+  <div class="move_left"><a onclick={{action 'moveLeft'}}><i class="fa fa-angle-left" aria-hidden="true"></i></a></div>
+  <div class="move_right"><a onclick={{action 'moveRight'}}><i class="fa fa-angle-right" aria-hidden="true"></i></a></div>
   <button class="float_right close_button" {{action 'resetActiveMedia'}}>Close</button>
   {{activeMedia.img}}
 </div>
@@ -10,6 +12,7 @@
 
 <p style="position: fixed;
     bottom: 0;
+    color: white;
     right: 0;border: 3px solid #73AD21">
 mcount: {{mediaCount}}
 m2count: {{mediaList.length}}
