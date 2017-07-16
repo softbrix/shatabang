@@ -15,14 +15,33 @@ export default Ember.Component.extend({
 
     var that = this;
     this.get('mediaLoader').iterator().then(function(it) {
+      var loadMedia = function() {
+        return buildModel(that, that.get('mediaCount'), it);
+      };
       // Initial load
-      buildModel(that, that.get('mediaCount'), it);
+      loadMedia();
 
-      var deregisterer = that.get('scrollAlmostDown').registerListener(function() {
-        buildModel(that, that.get('mediaCount'), it);
+      that.get('mediaLoader').fullyLoadedPromise().then(function() {
+        console.log('fullyLoaded');
+        // Check if we have more to load or if we display to few
+        if(that.get('scrollAlmostDown').scrollCheck() ||
+           that.get('mediaList').length < that.get('mediaCount')) {
+          loadMedia();
+        }
+        var deregisterer = that.get('scrollAlmostDown').registerListener(function() {
+          var loadAndCheckSize = function() {
+            loadMedia();
+            setTimeout(function() {
+              if(that.get('scrollAlmostDown').scrollCheck()) {
+                loadAndCheckSize();
+              }
+            }, 200);
+          };
+          loadAndCheckSize();
+        });
+
+        that.set('windowscrollCleanup', deregisterer);
       });
-
-      that.set('windowscrollCleanup', deregisterer);
     });
 
     console.log('activate index');
@@ -108,5 +127,5 @@ function buildModel(that, count, it) {
     that.get('mediaList').pushObject(obj);
   }
 
-  return that.get('mediaList');
+  return i === count;
 }

@@ -9,8 +9,22 @@ export default Ember.Service.extend({
     return function() {
       Ember.$( window ).off('scroll', scrollChecker);
     };
-  }
+  },
+
+  scrollCheck: internalScrollCheck
 });
+
+function internalScrollCheck(lastS) {
+  if(lastS === undefined) {
+    lastS = 0;
+  }
+  var s = Ember.$(window).scrollTop(),
+  d = Ember.$(document).height(),
+  c = Ember.$(window).height();
+
+  var scrollPercent = (s / (d-c)) * 100;
+  return d === c || (scrollPercent > 90 && s >= lastS);
+}
 
 /*
 Create a new method for the given callback
@@ -22,15 +36,10 @@ function newScrollCheck(callback) {
     if(now - lastCallback < 500) {
       return;
     }
-    var s = Ember.$(window).scrollTop(),
-    d = Ember.$(document).height(),
-    c = Ember.$(window).height();
-
-    var scrollPercent = (s / (d-c)) * 100;
-    if(d === c || (scrollPercent > 90 && s >= lastS)) {
+    if(internalScrollCheck(lastS)) {
       lastCallback = now;
       Ember.run(callback);
     }
-    lastS = s;
+    lastS = Ember.$(window).scrollTop();
   };
 }

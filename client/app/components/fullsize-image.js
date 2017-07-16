@@ -63,10 +63,8 @@ export default Ember.Component.extend({
     var ratio = ((iSize.w / sSize.w) / (iSize.h / sSize.h));
     return ratio > 1;
   }),
-  mediaChanged: Ember.observer('media', function(sender, key, value, rev) {
-    // Executes whenever the "value" property changes
-    // See the addObserver method for more information about the callback arguments
-    console.log(sender, key, value, rev);
+  mediaChanged: Ember.observer('media', function() {
+    // Executes whenever the "media" property changes
     this._imgResize();
   })
 });

@@ -27,10 +27,12 @@ function fileName2Date(fileName) {
 export default Ember.Service.extend({
   tree : new DibbaTree(),
   iteratorDeferred: Ember.RSVP.defer(),
+  fullyLoadedDeferred: Ember.RSVP.defer(),
 
   init: function() {
     var tree = this.get('tree');
     var iteratorDeferred = this.get('iteratorDeferred');
+    var fullyLoadedDeferred = this.get('fullyLoadedDeferred');
 
     Ember.$.get('./api/dirs/list').then(function(folders) {
       if(folders.length === 0) {
@@ -95,12 +97,14 @@ export default Ember.Service.extend({
       // This loads the first years image list
       loadImageList(folders[0])
         .then(function() {
+          console.log('resolving');
           iteratorDeferred.resolve(moveIteratorLast(tree.leafIterator()));
           // Load the rest of the images
           var promises = folders.slice(1).map(loadImageList);
           Promise.all(promises).then(values => {
             console.log(values, tree.getSize());
-          });
+            fullyLoadedDeferred.resolve(values);
+          }).catch(fullyLoadedDeferred.reject);
         })
         .catch(function (response) {
           console.log(response);
@@ -110,5 +114,8 @@ export default Ember.Service.extend({
   },
   iterator: function() {
     return this.get('iteratorDeferred').promise;
+  },
+  fullyLoadedPromise: function() {
+      return this.get('fullyLoadedDeferred').promise;
   }
 });
