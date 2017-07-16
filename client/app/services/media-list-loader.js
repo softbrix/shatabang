@@ -4,12 +4,6 @@ import DibbaTree from 'npm:dibba_tree';
 const Promise = Ember.RSVP.Promise;
 const movieFileRegexp = /(.+)(mp4|avi|mov|mpe?g)$/gi;
 
-function moveIteratorLast(it) {
-  while(it.hasNext()) {
-    it.next();
-  }
-  return it;
-}
 
 // "2016/03/14/222624.jpg"
 const fileNameRegexp = /^([\d]{4}).?(\d{2}).?(\d{2}).?(\d{2})(\d{2})(\d{2})/;
@@ -26,13 +20,15 @@ function fileName2Date(fileName) {
 
 export default Ember.Service.extend({
   tree : new DibbaTree(),
-  iteratorDeferred: Ember.RSVP.defer(),
+  loadedDeferred: Ember.RSVP.defer(),
   fullyLoadedDeferred: Ember.RSVP.defer(),
+  isFullyLoaded: false,
 
   init: function() {
     var tree = this.get('tree');
-    var iteratorDeferred = this.get('iteratorDeferred');
+    var loadedDeferred = this.get('loadedDeferred');
     var fullyLoadedDeferred = this.get('fullyLoadedDeferred');
+    var that = this;
 
     Ember.$.get('./api/dirs/list').then(function(folders) {
       if(folders.length === 0) {
@@ -98,22 +94,27 @@ export default Ember.Service.extend({
       loadImageList(folders[0])
         .then(function() {
           console.log('resolving');
-          iteratorDeferred.resolve(moveIteratorLast(tree.leafIterator()));
+          loadedDeferred.resolve(tree);
           // Load the rest of the images
           var promises = folders.slice(1).map(loadImageList);
           Promise.all(promises).then(values => {
             console.log(values, tree.getSize());
+            that.set('isFullyLoaded', true);
             fullyLoadedDeferred.resolve(values);
           }).catch(fullyLoadedDeferred.reject);
         })
         .catch(function (response) {
           console.log(response);
-          iteratorDeferred.reject('Failed to resolve image tree' + response);
+          loadedDeferred.reject('Failed to resolve image tree' + response);
         });
     });
   },
-  iterator: function() {
-    return this.get('iteratorDeferred').promise;
+  loadedPromise: function() {
+    if(this.get('isFullyLoaded')) {
+      return Ember.RSVP.Promise.resolve(this.get('tree'));
+    } else {
+      return this.get('loadedDeferred').promise;
+    }
   },
   fullyLoadedPromise: function() {
       return this.get('fullyLoadedDeferred').promise;

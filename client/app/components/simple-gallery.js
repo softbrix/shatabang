@@ -14,7 +14,8 @@ export default Ember.Component.extend({
     this._super(...arguments);
 
     var that = this;
-    this.get('mediaLoader').iterator().then(function(it) {
+    this.get('mediaLoader').loadedPromise().then(function(tree) {
+      var it = moveIteratorLast(tree.leafIterator());
       var loadMedia = function() {
         return buildModel(that, that.get('mediaCount'), it);
       };
@@ -57,11 +58,12 @@ export default Ember.Component.extend({
   actions: {
     mediaClicked: function(a) {
       this.set('activeMedia', a);
-      this.get('mediaLoader').iterator().then((it) => {
-        it.gotoPath(a.path);
-        this.set('activeMediaIterator', it);
-        this._preloadImages(it);
-      });
+      
+      var it = this.get('mediaLoader.tree').leafIterator();
+      it.gotoPath(a.path);
+      this.set('activeMediaIterator', it);
+      this._preloadImages(it);
+
       Ember.$(window).on('keydown', this._handleKey.bind(this));
     },
     resetActiveMedia: function() {
@@ -119,6 +121,13 @@ export default Ember.Component.extend({
     }
   }
 });
+
+function moveIteratorLast(it) {
+  while(it.hasNext()) {
+    it.next();
+  }
+  return it;
+}
 
 function buildModel(that, count, it) {
   for(var i = 0; i < count && it.hasPrev(); ++i) {
