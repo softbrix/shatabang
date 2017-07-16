@@ -38,7 +38,7 @@ module.exports = function(app) {
   }
 
   imageRouter.get('/1920/:year/:month/:day/:file', function(req, res) {
-    renderImage(req, res, 1920, 1080, true);
+    renderImage(req, res, Math.round(100 + Math.random()*1820), Math.round(100 + Math.random()*980), true);
   });
 
   imageRouter.get('/300/:year/:month/:day/:file', function(req, res) {

@@ -107,12 +107,13 @@ body > .ember-view {
 
   background-color: black;
   z-index: 999;
-  display: flex;
-  justify-content: center; /* align horizontal */
-  align-items: center; /* align vertical */
 
   .fullsizeMedia {
     position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
     &.fullWidth {
       width: 100%;
       height: auto;
@@ -120,6 +121,17 @@ body > .ember-view {
     &.fullHeight {
       height: 100%;
       width: auto;
+    }
+  }
+
+  .isVideo {
+    .fullsizeMedia {
+      .fullWidth {
+        width: 80%;
+      }
+      .fullHeight {
+        max-width: 80%;
+      }
     }
   }
 

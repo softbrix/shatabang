@@ -33,21 +33,23 @@ export default Ember.Component.extend({
 
   init: function() {
     this._super(...arguments);
-    getImgSize(this.get('imgSrc'), function(size) {
-      this.set('imgSize', {w: size.width, h: size.height});
-    }.bind(this));
-    this.screenResize();
-    window.addEventListener("resize", this.screenResize.bind(this));
+    this._imgResize();
+    this._screenResize();
+    window.addEventListener("resize", this._screenResize.bind(this));
   },
   willDestroyElement() {
     this._super(...arguments);
-    window.removeEventListener("resize", this.screenResize);
+    window.removeEventListener("resize", this._screenResize);
   },
-  screenResize: function() {
+  _screenResize: function() {
     var size = getScreenSize();
     this.set('screenSize', {w: size.width, h: size.height});
   },
-
+  _imgResize: function() {
+    getImgSize(this.get('imgSrc'), function(size) {
+      this.set('imgSize', {w: size.width, h: size.height});
+    }.bind(this));
+  },
   imgSrc: Ember.computed('media', function() {
     return  this.get('media.bigMedia');
   }),
@@ -60,5 +62,11 @@ export default Ember.Component.extend({
 
     var ratio = ((iSize.w / sSize.w) / (iSize.h / sSize.h));
     return ratio > 1;
+  }),
+  mediaChanged: Ember.observer('media', function(sender, key, value, rev) {
+    // Executes whenever the "value" property changes
+    // See the addObserver method for more information about the callback arguments
+    console.log(sender, key, value, rev);
+    this._imgResize();
   })
 });

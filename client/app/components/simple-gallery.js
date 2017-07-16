@@ -91,12 +91,12 @@ export default Ember.Component.extend({
     curImg.src = this.get('BIG_PATH') + media.img;
   },
   _handleKey: function(event) {
-    if(event.key === "ArrowLeft") {
+    if(event.key === "ArrowLeft" || event.keyCode === 37) {
       this.actions.moveLeft.apply(this);
-    } else if(event.key === "ArrowRight") {
+    } else if(event.key === "ArrowRight" || event.keyCode === 39) {
       this.actions.moveRight.apply(this);
     } else {
-      //console.log('unknown key', event.key);
+      console.log('unknown key', event.key);
     }
   }
 });
