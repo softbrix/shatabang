@@ -23,7 +23,7 @@ router.post('/invalidate', function(req, res) {
 
 router.get('/me', function(req, res) {
   var sess = req.session;
-  if(sess === undefined) {
+  if(sess === undefined || req.user === undefined) {
     // The client is missing a session, return unauthorized response
     res.send().status(500);
     return false;

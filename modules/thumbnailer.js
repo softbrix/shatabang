@@ -7,7 +7,7 @@ var path = require('path');
 var sharp = require('sharp');
 var ffmpeg = require('fluent-ffmpeg');
 
-var mp4jsRegexp = /^(?!\.).+(m4a|mp4|mpe?g|mov)$/i;
+var mp4jsRegexp = /^(?!\.).+(m4a|mp4|mpe?g|mov|avi)$/i;
 
 var replaceExt = function(filePath, newExt) {
   var fileInfo = path.parse(filePath);

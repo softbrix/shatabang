@@ -23,12 +23,17 @@ console.log("Running task processor...");
 var timeOut = 0;
 var queImport = function() {
   timeOut = setTimeout(function() {
-    task_queue.queueTask('update_import_directory', {}, 'low')
-    .on('complete', queImport)
-    .on('failed', function(errorMessage){
-      console.log('Job failed', errorMessage);
+    try {
+      task_queue.queueTask('update_import_directory', {}, 'low')
+      .on('complete', queImport)
+      .on('failed', function(errorMessage){
+        console.log('Job failed', errorMessage);
+        queImport();
+      });
+    } catch(e) {
+      console.log('Taskprocessor catched error', e);
       queImport();
-    });
+    }
   }, 10000);
 };
 queImport();
