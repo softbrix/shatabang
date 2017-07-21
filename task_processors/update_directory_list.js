@@ -1,6 +1,5 @@
 "use strict"
 var directory_list = require('../modules/directory_list');
-var path = require('path');
 
 var init = function(config, task_queue) {
   var cacheDir = config.cacheDir,

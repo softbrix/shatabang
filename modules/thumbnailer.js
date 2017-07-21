@@ -47,7 +47,7 @@ module.exports = {
               deffered.reject(err);
             })
             .on('end', function() {
-                deffered.resolve();
+                deffered.resolve(outputFileName);
             })
             .screenshots({
               timestamps: ['50%'],
@@ -69,7 +69,7 @@ module.exports = {
               if(err) {
                 deffered.reject('sharp: ' +err);
               }
-              deffered.resolve();
+              deffered.resolve(outputFileName);
             });
         };
 
@@ -116,7 +116,7 @@ module.exports = {
       try {
         fs.statSync(sourceFile);
       } catch (e) {
-        callback("ERROR");
+        callback(e);
       }
       var image = sharp(sourceFile);
       image
