@@ -1,4 +1,5 @@
-"use strict"
+"use strict";
+
 var dir = require('node-dir');
 var path = require('path');
 var Q = require('q');

@@ -1,7 +1,7 @@
 "use strict"
 var taskProcess = require('../task_processors/find_faces');
 
-var relativeTestFile = "./2011/08/15/165257.JPG";
+var relativeTestFile = "./faces.JPG";
 
 var taskQueMock = {
   registerTaskProcessor : function(name, func) {
@@ -19,7 +19,7 @@ var taskQueMock = {
   }
 };
 var config = {
-  importDir : '../data/sorted/import/',
+  importDir : './data/',
   cacheDir : '../cache',
-  storageDir : '../data/sorted'};
+  storageDir : './data/'};
 taskProcess.init(config, taskQueMock);

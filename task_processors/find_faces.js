@@ -25,6 +25,7 @@ var init = function(config, task_queue) {
         return;
       }
       faces.forEach(function (face) {
+        // TODO: Clip face part from image. Max size 200x320px
         var faceInfo = {
           x: face.getX(),
           y: face.getY(),

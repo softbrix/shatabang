@@ -71,12 +71,13 @@
     "react-dom": "^0.14.7",
     "redis": "^2.5.3",
     "sha256": "0.2.0",
-    "sharp": "mansehr/sharp",
+    "sharp": "^0.18.2",
     "stringset": "^0.2.1",
     "touch": "^1.0.0",
     "underscore": "*"
   },
   "devDependencies": {
+    "electron-rebuild": "^1.6.0",
     "mocha": "~2.3.3",
     "npm-run-all": "^4.0.2",
     "should": "~7.1.0",

@@ -1,7 +1,7 @@
 {{yield}}
 
 {{#if activeMedia}}
-<div class="fullSize fixedPosition fullscreenMedia">
+<div class="fullSize fixedPosition fullscreenMedia {{if activeMedia.isVideo "isVideo"}}">
   {{#if activeMedia.isVideo}}
     {{fullsize-video media=activeMedia}}
   {{else}}
