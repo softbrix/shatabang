@@ -2,7 +2,7 @@
 var Q = require('q');
 var thumbnailer = require('../modules/thumbnailer');
 var shFiles = require('../modules/shatabang_files');
-var shIndex = require('../modules/shatabang_index');
+var shIndex = require('stureby_index');
 var importer = require('./importer');
 var path = require('path');
 

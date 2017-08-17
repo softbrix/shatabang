@@ -20,7 +20,12 @@ var getImageFileName = function(fileName) {
   return mp4jsRegexp.test(path.basename(fileName)) ? replaceExt(fileName, 'jpg') : fileName;
 };
 
+var isVideo = function(sourceFileName) {
+  return mp4jsRegexp.test(sourceFileName);
+}
+
 module.exports = {
+  isVideo: isVideo,
   generateThumbnail : function(sourceFileName, outputFileName, width, height, isMaxSize) {
     var deffered = Q.defer();
     fs.mkdirs(path.dirname(outputFileName), function(error) {
@@ -132,7 +137,8 @@ module.exports = {
     };
 
     // Is this a supported movie file?
-    if(mp4jsRegexp.test(path.basename(sourceFile))) {
+    let sourceFileName = path.basename(sourceFile);
+    if(isVideo(sourceFileName)) {
       var tmpOutputImage = sourceFile + '.png';
       var width = 1920;
       var height = 1080;
@@ -140,15 +146,15 @@ module.exports = {
       this.generateThumbnail(sourceFile, tmpOutputImage, width, height, isMaxSize)
         .then(function(newSource) {
           generateFinger(newSource, function(error, b85) {
-            // Cleanup before callback
-            fs.unlink(tmpOutputImage);
+            if(!error) {
+              // Cleanup before callback
+              fs.unlink(tmpOutputImage, console.log);
+            }
             callback(error, b85);
           });
       });
     } else {
       generateFinger(sourceFile, callback);
     }
-
-
   }
 };

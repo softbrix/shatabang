@@ -1,6 +1,6 @@
 "use strict"
 var mediaInfo = require('../modules/media_info');
-var shIndex = require('../modules/shatabang_index');
+var shIndex = require('stureby_index');
 var _ = require('underscore');
 var path = require('path');
 

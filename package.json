@@ -73,6 +73,7 @@
     "sha256": "0.2.0",
     "sharp": "^0.18.2",
     "stringset": "^0.2.1",
+    "stureby_index": "^2.0.0",
     "touch": "^1.0.0",
     "underscore": "*"
   },

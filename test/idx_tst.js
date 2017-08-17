@@ -1,5 +1,5 @@
 "use strict"
-var idx = require('../modules/shatabang_index')('./idx_tst');
+var idx = require('stureby_index')('./idx_tst');
 var _ = require('underscore');
 var ProgressBar = require('progress');
 

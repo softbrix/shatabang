@@ -1,7 +1,7 @@
 "use strict"
 var thumbnailer = require('../modules/thumbnailer');
 var shFiles = require('../modules/shatabang_files');
-var shIndex = require('../modules/shatabang_index');
+var shIndex = require('stureby_index');
 var path = require('path');
 
 var init = function(config, task_queue) {

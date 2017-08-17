@@ -8,7 +8,7 @@ if(process.argv.length < 3) {
 var directory = process.argv[2];
 
 var thumbnailer = require('../modules/thumbnailer');
-var idx = require('../modules/shatabang_index')('./idx_finger');
+var idx = require('stureby_index')('./idx_finger');
 var shFiles = require('../modules/shatabang_files');
 
 shFiles.listMediaFiles(directory, function(err, filesList) {

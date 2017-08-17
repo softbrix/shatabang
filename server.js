@@ -51,6 +51,7 @@ routes.push({path: 'images', route: require('./routes/images')});
 routes.push({path: 'faces', route: require('./routes/faces')});
 routes.push({path: 'duplicates', route: require('./routes/duplicates')});
 routes.push({path: 'dirs', route: require('./routes/dirs')});
+routes.push({path: 'indexes', route: require('./routes/indexes')});
 routes.push({path: 'auth', route: require('./routes/auth'), public: true});
 routes.push({path: 'users', route: require('./routes/users'), public: true});
 
