@@ -39,13 +39,7 @@ router.post('/single',function(req,res) {
         }
         var file = req.file;
         shFiles.moveFile(file.path, importDir + '/' + file.filename.substr(partPrefix.length));
-        // TODO: Call this from a new route
-        /*importer(req.file.path, storageDir).then(function(relativePath) {
-          imported_cache.push({
-            time: current_timestamp(),
-            path: relativePath
-          });
-        });*/
+
         res.end("File is uploaded");
     });
 });

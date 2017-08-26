@@ -36,6 +36,7 @@
     "node"
   ],
   "dependencies": {
+    "ascii85": "^1.0.2",
     "async": "^1.5.2",
     "axios": "0.9.1",
     "babel-preset-react": "^6.5.0",

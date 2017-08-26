@@ -12,7 +12,7 @@ var init = function(config, task_queue) {
 
     thumbnailer
       .generateThumbnail(sourceFileName, outputFileName, width, height, data.keepAspec)
-      .then(done, done);
+      .then(() => done(), done);
   });
 };
 

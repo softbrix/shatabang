@@ -2,7 +2,7 @@
 
 var Q = require('q');
 var fs = require('fs-extra');
-var base85 = require('base85');
+var base85 = require('ascii85');
 var path = require('path');
 var sharp = require('sharp');
 var ffmpeg = require('fluent-ffmpeg');

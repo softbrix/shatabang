@@ -3,13 +3,15 @@
 var task_queue = require('./modules/task_queue');
 
 var processors = [
+    require('./task_processors/clear_index'),
     require('./task_processors/create_image_finger'),
     require('./task_processors/index_media'),
     require('./task_processors/find_faces'),
     require('./task_processors/process_import'),
     require('./task_processors/update_directory_list'),
     require('./task_processors/resize_image'),
-    require('./task_processors/resize_images_in_folder')
+    require('./task_processors/resize_images_in_folder'),
+    require('./task_processors/run_task_in_folder')
   ];
 
 var config = require('./config_server.json');

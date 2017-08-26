@@ -52,6 +52,7 @@ routes.push({path: 'faces', route: require('./routes/faces')});
 routes.push({path: 'duplicates', route: require('./routes/duplicates')});
 routes.push({path: 'dirs', route: require('./routes/dirs')});
 routes.push({path: 'indexes', route: require('./routes/indexes')});
+routes.push({path: 'kue', route: require('./routes/kue'), public: true}); // TODO: Remove public
 routes.push({path: 'auth', route: require('./routes/auth'), public: true});
 routes.push({path: 'users', route: require('./routes/users'), public: true});
 
@@ -157,6 +158,7 @@ function requireAuthentication(req, res, next) {
 // Secure the api and images path
 app.all('/images/*', requireAuthentication);
 app.all('/media/*', requireAuthentication);
+app.all('/kue/*', requireAuthentication);
 
 app.use('/images', express.static(cacheDir));
 app.use('/media', express.static(storageDir));
