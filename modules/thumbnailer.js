@@ -131,7 +131,7 @@ module.exports = {
         raw().
         toBuffer().
         then(function(buffer) {
-          var b85 = base85.encode(buffer);
+          var b85 = "" + base85.encode(buffer);
           callback(undefined, b85);
         });
     };

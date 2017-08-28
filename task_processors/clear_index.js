@@ -19,16 +19,13 @@ data.index_name = relative path of the file from the storageDir
       return;
     }
 
-    //TODO: Clear the index with the module: shIndex
     var idx = path.join(cacheDir, data.index_name);
 
-    console.log('Removing index: ' + idx);
-    fs.removeSync(idx)
-
     // Reinitialize the index
-    var newIndex = shIndex(idx);
+    var index = shIndex(idx);
+    index.clear();
 
-    if(newIndex.keys().length === 0) {
+    if(index.keys().length === 0) {
         done();
     } else {
       done('Failed to remove index');
