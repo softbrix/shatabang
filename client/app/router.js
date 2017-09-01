@@ -10,6 +10,7 @@ Router.map(function() {
   this.route('faces');
   this.route('login');
   this.route('upload');
+  this.route('admin');
 });
 
 export default Router;

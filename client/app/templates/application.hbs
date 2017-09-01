@@ -22,7 +22,10 @@
 
   {{user-info class="float_right"}}
 
-
+  {{#link-to 'admin' class="button float_right" }}
+    <span class=" btn btn-primary btn-sm notMobile" id="upload_btn">Admin</span>
+      <i class="fa fa-cog onlyMobile float_right" aria-hidden="true"></i>
+  {{/link-to}}
 
   {{#link-to 'upload' class="button float_right" }}
     <span class=" btn btn-primary btn-sm notMobile" id="upload_btn">Import</span>
