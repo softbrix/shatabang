@@ -48,7 +48,7 @@ RUN npm install && \
     bower install --allow-root && \
     ember build --environment="production" && \
     ## Cleanup
-    npm cache clean && bower cache clean
+    npm cache clean && bower cache clean --allow-root
 
 EXPOSE 3001
 CMD npm run start && sh
