@@ -36,7 +36,6 @@
     "node"
   ],
   "dependencies": {
-    "ascii85": "^1.0.2",
     "async": "^1.5.2",
     "axios": "0.9.1",
     "babel-preset-react": "^6.5.0",
@@ -53,6 +52,7 @@
     "ffprobe": "^1.1.0",
     "fluent-ffmpeg": "git+https://github.com/mansehr/node-fluent-ffmpeg.git",
     "fs-extra": "*",
+    "jimp": "^0.2.28",
     "jsonfile": "^2.2.3",
     "kue": "^0.10.5",
     "minimist": "^1.2.0",
