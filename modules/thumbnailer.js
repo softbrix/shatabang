@@ -2,9 +2,9 @@
 
 var Q = require('q');
 var fs = require('fs-extra');
+var base85 = require('ascii85');
 var path = require('path');
 var sharp = require('sharp');
-var Jimp = require("jimp");
 var ffmpeg = require('fluent-ffmpeg');
 
 var mp4jsRegexp = /^(?!\.).+(m4a|mp4|mpe?g|mov|avi)$/i;
@@ -22,7 +22,7 @@ var getImageFileName = function(fileName) {
 
 var isVideo = function(sourceFileName) {
   return mp4jsRegexp.test(sourceFileName);
-};
+}
 
 module.exports = {
   isVideo: isVideo,
@@ -123,12 +123,17 @@ module.exports = {
       } catch (e) {
         callback(e);
       }
-      Jimp.read(sourceFile, function (err, image) {
-        if (err) {
-          callback(err);
-        }
-        callback(undefined, image.hash());
-      });
+      var image = sharp(sourceFile);
+      image
+        .rotate()
+        .resize(10, 10).
+        greyscale().
+        raw().
+        toBuffer().
+        then(function(buffer) {
+          var b85 = "" + base85.encode(buffer);
+          callback(undefined, b85);
+        });
     };
 
     // Is this a supported movie file?
