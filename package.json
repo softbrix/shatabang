@@ -36,7 +36,6 @@
     "node"
   ],
   "dependencies": {
-    "ascii85": "^1.0.2",
     "async": "^1.5.2",
     "axios": "0.9.1",
     "babel-preset-react": "^6.5.0",
@@ -60,6 +59,7 @@
     "multer": "1.1.0",
     "node-dir": "*",
     "node-iptc": "git+https://github.com/mansehr/node-iptc.git",
+    "node-sha1": "^1.0.1",
     "passport": "^0.3.2",
     "passport-google": "^0.3.0",
     "passport-google-oauth": "^1.0.0",
@@ -73,6 +73,7 @@
     "redis": "^2.5.3",
     "sha256": "0.2.0",
     "sharp": "^0.18.2",
+    "sharp-phash": "^0.2.0",
     "stringset": "^0.2.1",
     "stureby_index": "^2.1.2",
     "touch": "^1.0.0",

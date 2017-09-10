@@ -2,10 +2,10 @@
 
 var Q = require('q');
 var fs = require('fs-extra');
-var base85 = require('ascii85');
 var path = require('path');
 var sharp = require('sharp');
 var ffmpeg = require('fluent-ffmpeg');
+const phash = require('sharp-phash');
 
 var mp4jsRegexp = /^(?!\.).+(m4a|mp4|mpe?g|mov|avi)$/i;
 
@@ -22,6 +22,18 @@ var getImageFileName = function(fileName) {
 
 var isVideo = function(sourceFileName) {
   return mp4jsRegexp.test(sourceFileName);
+};
+
+function binaryToHex(binary) {
+  return binary.replace(/[01]{4}/g, function(v){
+    return parseInt(v, 2).toString(16);
+  });
+}
+
+function hexToBinary(binary) {
+  return binary.replace(/[0123456789abcdefgh]{2}/g, function(v){
+    return ("00000000" + (parseInt(v, 16)).toString(2)).substr(-8);
+  });
 }
 
 module.exports = {
@@ -123,16 +135,9 @@ module.exports = {
       } catch (e) {
         callback(e);
       }
-      var image = sharp(sourceFile);
-      image
-        .rotate()
-        .resize(10, 10).
-        greyscale().
-        raw().
-        toBuffer().
-        then(function(buffer) {
-          var b85 = "" + base85.encode(buffer);
-          callback(undefined, b85);
+      phash(sourceFile)
+        .then(function(bitString) {
+          callback(undefined, binaryToHex(bitString));
         });
     };
 
