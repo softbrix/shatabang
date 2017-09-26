@@ -1,6 +1,11 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
+  init: function() {
+    Ember.$.get( './api/version').done(function(version) {
+      this.set('server-version', 'v' + version);
+    }.bind(this));
+  },
   actions: {
     clearImageFinger: function() {
       let that = this;

@@ -55,6 +55,7 @@ routes.push({path: 'indexes', route: require('./routes/indexes')});
 routes.push({path: 'kue', route: require('./routes/kue'), public: true}); // TODO: Remove public
 routes.push({path: 'auth', route: require('./routes/auth'), public: true});
 routes.push({path: 'users', route: require('./routes/users'), public: true});
+routes.push({path: 'version', route: require('./routes/version')});
 
 passport.serializeUser(function(user, done) {
   console.log('serializeUser', user.displayName);
