@@ -56,7 +56,9 @@ export default Ember.Service.extend({
             date: date,
             img: fileName,
             bigMedia: bigMediaFileName,
-            isVideo: isVideo
+            downloadUrl: "./media/" + fileName,
+            isVideo: isVideo,
+            isImage: !isVideo
           };
 
           var y = date.getFullYear();
