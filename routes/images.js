@@ -1,4 +1,5 @@
-"use strict"
+"use strict";
+
 var path = require('path');
 var express = require('express');
 var router = express.Router();
@@ -10,10 +11,6 @@ router.initialize = function(config) {
   sourceDir = config.storageDir;
   cacheDir = config.cacheDir;
   deletedDir = config.deletedDir;
-};
-
-var escPath = function(p) {
-  return p.replace(/(\s)/, "\\ ");
 };
 
 router.post('/delete',function(req,res){
@@ -39,27 +36,6 @@ router.post('/delete',function(req,res){
 
       var directory = reference.split(path.sep)[0];
       task_queue.queueTask('update_directory_list', { title: directory, dir: directory});
-
-      //var mediaListFile = path.join(cacheDir, directory, 'media.lst');
-      /* Delete row in file
-      fs.readFile(mediaListFile, 'utf8', function read(err, data) {
-          if (err) {
-              throw err;
-          }
-
-          var lines = data.split(',');
-
-          //console.log(lines);
-
-          for (var i = lines.length - 1; i > -1; i--) {
-            if (lines[i] === reference) {
-                console.log('deleted:' , reference);
-                lines.splice(i, 1);
-            }
-          }
-
-          shFiles.writeFile(mediaListFile, lines);
-      });*/
     });
 
     res.send("OK").status(200);

@@ -1,4 +1,5 @@
-"use strict"
+"use strict";
+
 var express = require('express'),
     shFiles = require('../modules/shatabang_files');
 var router = express.Router(),
@@ -27,10 +28,6 @@ var uploadSingle = multer({ storage : storage}).single('file');
 var uploadMultiple = multer({ storage : storage}).array('files', 999);
 var imported_cache = [];
 
-function current_timestamp() {
-  return Math.round(Date.now() / 1000) * 1000;
-}
-
 router.post('/single',function(req,res) {
     uploadSingle(req,res,function(err) {
         if(err) {
@@ -50,7 +47,6 @@ router.post('/multiple',function(req,res) {
           console.log(err);
             return res.status(500).end("Error uploading files.");
         }
-        //console.log(req.files);
         res.end("Files are uploaded");
     });
 });
