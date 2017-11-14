@@ -2,8 +2,10 @@
 var express = require('express');
 var router  = express.Router();
 
-var version = "0.1.0";
-router.initialize = function(config) {
+// Read version from package.json
+var version = require('../package.json').version;
+
+router.initialize = function() {
 };
 
 router.get('/', function(req, res) {

@@ -14,7 +14,7 @@ var express        = require("express"),
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
     LocalStrategy  = require('passport-local').Strategy;
 
-var config = require('./config_server.json'); //JSON.parse(fs.readFileSync('server_config.json', 'utf8'));
+var config = require('./config_server.json');
 
 // API Access link for creating client ID and secret:
 // https://code.google.com/apis/console/
@@ -31,8 +31,8 @@ config.baseUrl = config.baseUrl || '/';
 config.port = config.port || 3000;
 config.passport = passport;
 
-var storageDir = config.storageDir; //'/Volumes/Mini\ Stick/sorted/';
-var cacheDir = config.cacheDir; // '/Volumes/Mini\ Stick/cache/';
+var storageDir = config.storageDir;
+var cacheDir = config.cacheDir;
 var deleteDir = config.deletedDir = path.join(storageDir, 'deleted');
 var uploadDir = config.uploadDir = path.join(storageDir, 'upload');
 var importDir = config.importDir = path.join(storageDir, 'import');
