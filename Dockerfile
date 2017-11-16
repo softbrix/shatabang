@@ -15,7 +15,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
   # Install npm modules
   npm install -g ember-cli && \
-  npm install -g bower && \
 
   # libav-tools will install avprobe, need to create a symbolic link so it
   # can be use by the node package fluent-ffmpeg.
@@ -45,10 +44,9 @@ RUN npm install && \
 # Build client
     cd /usr/src/shatabang/client && \
     npm install && \
-    bower install --allow-root && \
     ember build --environment="production" && \
     ## Cleanup
-    npm cache clean && bower cache clean --allow-root
+    npm cache clean
 
 EXPOSE 3001
 CMD npm run start && sh
