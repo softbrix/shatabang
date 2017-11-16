@@ -2,3 +2,5 @@
 config_server.json
 cache
 data
+build
+dump.rdb
