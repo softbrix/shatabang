@@ -1,0 +1,59 @@
+<<<<<<< HEAD
+{{#if session.isAuthenticated}}
+
+  <div id="header" class="header">
+
+  {{fullscreen-toggle class="float_left"}}
+
+  <a onclick={{action 'zoomIn'}} class="zoomBtn">
+    <span class=" btn btn-primary btn-sm notMobile"> + </span>
+    <i class="fa fa-plus-square onlyMobile" aria-hidden="true"></i>
+  </a>
+  <a onclick={{action 'zoomOut'}} class="zoomBtn">
+    <span class=" btn btn-primary btn-sm notMobile"> - </span>
+    <i class="fa fa-minus-square onlyMobile" aria-hidden="true"></i>
+  </a>
+  <!--span class="notMobile">Mode: </span>
+  <input type="checkbox" name="viewMode" data-on-text="View" data-off-text="Edit" data-size="small" checked>
+  <a title="Toggle calendar" onclick="toggleCalendar(); return false;" >
+    <i class="fa fa-calendar" aria-hidden="true"></i>
+  </a-->
+  <!-- TODO: Move into tools menu item ->
+  <a title="Find duplicates" id="findDupliBtn" style="display: none"><i class="fa fa-files-o" aria-hidden="true"></i></a-->
+
+  {{user-info class="float_right"}}
+
+  {{#link-to 'admin' class="button float_right" }}
+    <span class=" btn btn-primary btn-sm notMobile" id="upload_btn">Admin</span>
+      <i class="fa fa-cog onlyMobile float_right" aria-hidden="true"></i>
+  {{/link-to}}
+
+  {{#link-to 'upload' class="button float_right" }}
+    <span class=" btn btn-primary btn-sm notMobile" id="upload_btn">Import</span>
+      <i class="fa fa-upload onlyMobile float_right" aria-hidden="true"></i>
+  {{/link-to}}
+
+  {{#link-to 'faces' class="button float_right"}}
+    <span class=" btn btn-primary btn-sm notMobile" id="upload_btn">
+      View Faces
+    </span>
+  {{/link-to}}
+</div>
+
+<div id="filleTop"></div>
+<!-- Wrapper -->
+<div id="wrapper">
+{{outlet}}
+<div id="filleBottom"></div>
+</div>
+
+{{else}}
+  {{outlet}}
+{{/if}}
+=======
+{{!-- The following component displays Ember's default welcome message. --}}
+{{welcome-page}}
+{{!-- Feel free to remove this! --}}
+
+{{outlet}}
+>>>>>>> 8756411... message

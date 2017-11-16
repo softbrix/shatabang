@@ -1,4 +1,6 @@
-import Ember from 'ember';
+import $ from 'jquery';
+import { computed } from '@ember/object';
+import Service from '@ember/service';
 
 
 /*function findElementAtScrollTop(parentElemet) {
@@ -19,11 +21,11 @@ function scrollToElement(elem) {
   window.scrollTo(0, newTop);
 }*/
 
-export default Ember.Service.extend({
+export default Service.extend({
   imageWidth: 300,
   imagesPWidth: 4,
   zoomMultiplicator: 2,
-  ratio: Ember.computed('imagesPWidth', function () {
+  ratio: computed('imagesPWidth', function () {
     var imagesPWidth = Math.ceil(this.get('imagesPWidth'));
     return 100 / imagesPWidth;
   }),
@@ -32,7 +34,7 @@ export default Ember.Service.extend({
     this._super(...arguments);
 
     var imageWidth = this.get('imageWidth');
-    var imagesPWidth = Math.ceil(Ember.$('body').width() / imageWidth);
+    var imagesPWidth = Math.ceil($('body').width() / imageWidth);
     imagesPWidth = Math.max(4, imagesPWidth); // At least 4 images in with
 
     this.set('imagesPWidth', imagesPWidth);

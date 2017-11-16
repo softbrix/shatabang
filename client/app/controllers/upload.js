@@ -1,7 +1,8 @@
-import Ember from 'ember';
+import { computed } from '@ember/object';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend({
-  addedFileEvent: Ember.computed(function() {
+export default Controller.extend({
+  addedFileEvent: computed(function() {
     var that = this;
     return function(file) {
       that.incrementProperty('totalFileSize', file.size);
@@ -10,7 +11,7 @@ export default Ember.Controller.extend({
       }
     };
   }),
-  filesuccessEvent: Ember.computed(function() {
+  filesuccessEvent: computed(function() {
     var that = this;
     return function(file) {
       that.incrementProperty('sentFileSize', file.size);
@@ -22,13 +23,13 @@ export default Ember.Controller.extend({
       }, 4000);
     };
   }),
-  filecompleteEvent: Ember.computed(function() {
+  filecompleteEvent: computed(function() {
     var that = this;
     return function() {
       that.decrementProperty('currentlySending', 1);
     };
   }),
-  sendingEvent: Ember.computed(function() {
+  sendingEvent: computed(function() {
     var that = this;
     return function(file, xhr, formData) {
       that.incrementProperty('currentlySending', 1);
@@ -38,7 +39,7 @@ export default Ember.Controller.extend({
       window.addEventListener('beforeunload', preventNavigation, false);
     };
   }),
-  queuecompleteEvent: Ember.computed(function() {
+  queuecompleteEvent: computed(function() {
     var that = this;
     return function() {
       window.removeEventListener('beforeunload', preventNavigation, false);

@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { computed, observer } from '@ember/object';
+import Component from '@ember/component';
 
 function getImgSize(imgSrc, callback) {
     var newImg = new Image();
@@ -22,7 +23,7 @@ function getScreenSize() {
             document.body.clientHeight;
   return {width: w, height: h};
 }
-export default Ember.Component.extend({
+export default Component.extend({
   tagName: 'img',
   attributeBindings: ['imgSrc:src', 'imgAlt:alt'],
   classNames: ['galleryImage', 'fullsizeMedia'],
@@ -50,20 +51,20 @@ export default Ember.Component.extend({
       this.set('imgSize', {w: size.width, h: size.height});
     }.bind(this));
   },
-  imgSrc: Ember.computed('media', function() {
+  imgSrc: computed('media', function() {
     return  this.get('media.bigMedia');
   }),
-  imgAlt: Ember.computed('media', function() {
+  imgAlt: computed('media', function() {
     return this.get('media.date') + ' - '+ this.get('media.img');
   }),
-  isWider: Ember.computed('imgSize', 'screenSize', function() {
+  isWider: computed('imgSize', 'screenSize', function() {
     var iSize = this.get('imgSize'),
         sSize = this.get('screenSize');
 
     var ratio = ((iSize.w / sSize.w) / (iSize.h / sSize.h));
     return ratio > 1;
   }),
-  mediaChanged: Ember.observer('media', function() {
+  mediaChanged: observer('media', function() {
     // Executes whenever the "media" property changes
     this._imgResize();
   })

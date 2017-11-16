@@ -1,10 +1,11 @@
-import Ember from 'ember';
+import $ from 'jquery';
+import Service from '@ember/service';
 
-export default Ember.Service.extend({
+export default Service.extend({
 
   initialize: function() {
     setInterval(function() {
-      Ember.$.get('./api/upload/imported')
+      $.get('./api/upload/imported')
         .then(function (response) {
           var images = response.data;
           if(images !== undefined && images.length > 0) {

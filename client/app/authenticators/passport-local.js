@@ -1,5 +1,7 @@
 /* global Ember, $ */
 
+import { Promise as EmberPromise, reject } from 'rsvp';
+
 import BaseAuthenticator from 'ember-simple-auth/authenticators/base';
 
 export default BaseAuthenticator.extend({
@@ -29,7 +31,7 @@ export default BaseAuthenticator.extend({
   */
   restore(data) {
     console.log('restore user',data);
-    return new Ember.RSVP.Promise(function(resolve, reject){
+    return new EmberPromise(function(resolve, reject){
       $.get( './api/users/me')
         .done(resolve)
         .fail(function(resp) {
@@ -67,12 +69,12 @@ export default BaseAuthenticator.extend({
   */
   authenticate(username, password) {
     if(username === undefined || username.trim().length === 0) {
-      return Ember.RSVP.reject('Username must not be empty');
+      return reject('Username must not be empty');
     }
     if(password === undefined || password.trim().length === 0) {
-      return Ember.RSVP.reject('Password must not be empty');
+      return reject('Password must not be empty');
     }
-    return new Ember.RSVP.Promise(function(resolve, reject){
+    return new EmberPromise(function(resolve, reject){
       $.post( './api/users/authenticate', { username: username, password: password })
         .done(resolve)
         .fail(function(resp) {
@@ -96,7 +98,7 @@ export default BaseAuthenticator.extend({
   */
   invalidate(data) {
     console.log(data);
-    return new Ember.RSVP.Promise(function(resolve, reject){
+    return new EmberPromise(function(resolve, reject){
       $.post( './api/users/invalidate')
         .done(resolve)
         .fail(function(resp) {

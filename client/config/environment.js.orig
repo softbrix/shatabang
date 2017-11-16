@@ -2,9 +2,15 @@
 'use strict';
 
 module.exports = function(environment) {
-  let ENV = {
+<<<<<<< HEAD
+  var ENV = {
     modulePrefix: 'client',
+    environment: environment,
+=======
+  let ENV = {
+    modulePrefix: 'my-app',
     environment,
+>>>>>>> 8756411... message
     rootURL: '/',
     locationType: 'auto',
     EmberENV: {
@@ -44,8 +50,12 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
+<<<<<<< HEAD
     ENV.rootURL = '/shatabang/';
     ENV.locationType = 'hash';
+=======
+    // here you can enable a production-specific feature
+>>>>>>> 8756411... message
   }
 
   return ENV;

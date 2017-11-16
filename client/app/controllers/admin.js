@@ -1,15 +1,16 @@
-import Ember from 'ember';
+import $ from 'jquery';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend({
+export default Controller.extend({
   init: function() {
-    Ember.$.get( './api/version').done(function(version) {
+    $.get( './api/version').done(function(version) {
       this.set('server-version', 'v' + version);
     }.bind(this));
   },
   actions: {
     clearImageFinger: function() {
       let that = this;
-      Ember.$.post( './api/kue/add/clear_index/high/', {'index_name': 'idx_finger'})
+      $.post( './api/kue/add/clear_index/high/', {'index_name': 'idx_finger'})
         .done(function() {
           that.set('clearStatus', 'Executed');
         })
@@ -25,12 +26,12 @@ export default Ember.Controller.extend({
         that.set('rebuildStatus', 'Error: ' + resp.statusText);
       };
       let update_year = function(year) {
-        Ember.$.post( './api/kue/addFolder/' + year +'/create_image_finger/low/', {'index_name': 'idx_finger'})
+        $.post( './api/kue/addFolder/' + year +'/create_image_finger/low/', {'index_name': 'idx_finger'})
           .then(function() {
             that.set('rebuildStatus', 'Executed');
           }, handleError);
       };
-      Ember.$.get('./api/dirs/list').then(function(folders) {
+      $.get('./api/dirs/list').then(function(folders) {
         if(folders.length === 0) {
           that.set('rebuildStatus', 'No folder found');
           return;

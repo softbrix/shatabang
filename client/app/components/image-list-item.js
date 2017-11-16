@@ -1,10 +1,10 @@
-import Ember from 'ember';
+import Component from '@ember/component';
 
 var canvas = document.createElement("CANVAS");
 canvas.style.display = 'none';
 document.body.appendChild(canvas);
 
-export default Ember.Component.extend({
+export default Component.extend({
   tagName: 'div',
   actions: {
     cropImage() {

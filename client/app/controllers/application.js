@@ -1,8 +1,9 @@
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend({
-  session: Ember.inject.service('session'),
-  imageWidthService: Ember.inject.service('image-width'),
+export default Controller.extend({
+  session: service('session'),
+  imageWidthService: service('image-width'),
 
   init() {
     this._super(...arguments);

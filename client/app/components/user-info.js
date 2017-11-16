@@ -1,8 +1,9 @@
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 
-export default Ember.Component.extend({
-  session: Ember.inject.service('session'),
-  currentUser: Ember.inject.service('current-user'),
+export default Component.extend({
+  session: service('session'),
+  currentUser: service('current-user'),
   init: function() {
     console.log('init user info');
     this._super(...arguments);

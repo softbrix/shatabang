@@ -1,15 +1,16 @@
-/*jshint node:true*/
-/* global require, module */
-var EmberApp = require('ember-cli/lib/broccoli/ember-app');
+/* eslint-env node */
+'use strict';
+
+const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function(defaults) {
-  var app = new EmberApp(defaults, {
+  let app = new EmberApp(defaults, {
     // Add options here
     lessOptions: {
       paths: [
-        'bower_components/bootstrap/less',
-        'bower_components/font-awesome/less',
-        'bower_components/font-awesome/fonts'
+        'node_modules/bootstrap/less',
+        'node_modules/font-awesome/less',
+        'node_modules/font-awesome/fonts'
       ]
     }
   });
@@ -27,7 +28,7 @@ module.exports = function(defaults) {
   // please specify an object with the list of modules as keys
   // along with the exports of each module as its value.
 
-  app.import('bower_components/axios/dist/axios.js');
+  //app.import('bower_components/axios/dist/axios.js');
   // TODO: Add minified files for production or is the resulting assets.js minified
   /*
   'node_modules/font-awesome/css/font-awesome.min.css',
@@ -48,10 +49,10 @@ module.exports = function(defaults) {
   'client/assets/dropzone/dropzone.min.js'
   */
 
-  app.import('bower_components/bootstrap/dist/js/bootstrap.js');
+  app.import('node_modules/bootstrap/dist/js/bootstrap.js');
 
   ['woff', 'woff2', 'ttf', 'svg'].forEach((suffix) => {
-    app.import('bower_components/font-awesome/fonts/fontawesome-webfont.' + suffix, {
+    app.import('node_modules/font-awesome/fonts/fontawesome-webfont.' + suffix, {
       destDir: 'fonts'
     });
   });

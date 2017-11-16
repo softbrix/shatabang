@@ -1,7 +1,9 @@
-import Ember from 'ember';
+import $ from 'jquery';
+import Service from '@ember/service';
+import { Promise as EmberPromise, defer } from 'rsvp';
 import DibbaTree from 'npm:dibba_tree';
 
-const Promise = Ember.RSVP.Promise;
+const Promise = EmberPromise;
 const movieFileRegexp = /(.+)(mp4|avi|mov|mpe?g)$/gi;
 
 
@@ -18,10 +20,10 @@ function fileName2Date(fileName) {
   return date;
 }
 
-export default Ember.Service.extend({
+export default Service.extend({
   tree : new DibbaTree(),
-  loadedDeferred: Ember.RSVP.defer(),
-  fullyLoadedDeferred: Ember.RSVP.defer(),
+  loadedDeferred: defer(),
+  fullyLoadedDeferred: defer(),
   isFullyLoaded: false,
 
   init: function() {
@@ -30,7 +32,7 @@ export default Ember.Service.extend({
     var fullyLoadedDeferred = this.get('fullyLoadedDeferred');
     var that = this;
 
-    Ember.$.get('./api/dirs/list').then(function(folders) {
+    $.get('./api/dirs/list').then(function(folders) {
       if(folders.length === 0) {
         return;
       }
@@ -74,7 +76,7 @@ export default Ember.Service.extend({
       };
 
       var loadImageList = function(folder) {
-        return Ember.$.get('./images/info/'+folder+'/media.lst')
+        return $.get('./images/info/'+folder+'/media.lst')
           .then(function (response) {
             var images = response.split(',');
 
@@ -113,7 +115,7 @@ export default Ember.Service.extend({
   },
   loadedPromise: function() {
     if(this.get('isFullyLoaded')) {
-      return Ember.RSVP.Promise.resolve(this.get('tree'));
+      return EmberPromise.resolve(this.get('tree'));
     } else {
       return this.get('loadedDeferred').promise;
     }

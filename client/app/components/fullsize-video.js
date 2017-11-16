@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 
 function getImgSize(imgSrc, callback) {
     var newImg = new Image();
@@ -23,7 +24,7 @@ function getScreenSize() {
   return {width: w, height: h};
 }
 
-export default Ember.Component.extend({
+export default Component.extend({
   tagName: 'video',
   attributeBindings: ['imgSrc:src', 'imgAlt:alt', 'controls', 'autoplay'],
   classNames: ['galleryImage', 'fullsizeMedia'],
@@ -51,13 +52,13 @@ export default Ember.Component.extend({
     this.set('screenSize', {w: size.width, h: size.height});
   },
 
-  imgSrc: Ember.computed('media', function() {
+  imgSrc: computed('media', function() {
     return this.get('media.bigMedia');
   }),
-  imgAlt: Ember.computed('media', function() {
+  imgAlt: computed('media', function() {
     return this.get('media.date') + ' - '+ this.get('media.img');
   }),
-  isWider: Ember.computed('imgSize', 'screenSize', function() {
+  isWider: computed('imgSize', 'screenSize', function() {
     var iSize = this.get('imgSize'),
         sSize = this.get('screenSize');
 

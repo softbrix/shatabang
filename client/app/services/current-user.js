@@ -1,10 +1,12 @@
 // inspiration from https://github.com/simplabs/ember-simple-auth/blob/master/guides/managing-current-user.md
 
-import Ember from 'ember';
+import { resolve } from 'rsvp';
 
-export default Ember.Service.extend({
-  session: Ember.inject.service('session'),
-  store: Ember.inject.service(),
+import Service, { inject as service } from '@ember/service';
+
+export default Service.extend({
+  session: service('session'),
+  store: service(),
 
   load() {
     if (this.get('session.isAuthenticated')) {
@@ -12,7 +14,7 @@ export default Ember.Service.extend({
         this.set('user', user);
       });
     } else {
-      return Ember.RSVP.resolve();
+      return resolve();
     }
   }
 });

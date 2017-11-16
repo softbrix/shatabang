@@ -1,8 +1,9 @@
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend({
-  session: Ember.inject.service('session'),
-  mediaLoader: Ember.inject.service('media-list-loader'),
+export default Controller.extend({
+  session: service('session'),
+  mediaLoader: service('media-list-loader'),
 
   init() {
     this._super(...arguments);

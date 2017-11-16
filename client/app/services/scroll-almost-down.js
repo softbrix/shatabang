@@ -1,13 +1,15 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import $ from 'jquery';
+import Service from '@ember/service';
 
-export default Ember.Service.extend({
+export default Service.extend({
   registerListener: function(callback) {
     // Creates a listener for the window scoll event
     var scrollChecker = newScrollCheck(callback);
-    Ember.$( window ).on('scroll', scrollChecker);
+    $( window ).on('scroll', scrollChecker);
     // Return a cleanup method
     return function() {
-      Ember.$( window ).off('scroll', scrollChecker);
+      $( window ).off('scroll', scrollChecker);
     };
   },
 
@@ -18,9 +20,9 @@ function internalScrollCheck(lastS) {
   if(lastS === undefined) {
     lastS = 0;
   }
-  var s = Ember.$(window).scrollTop(),
-  d = Ember.$(document).height(),
-  c = Ember.$(window).height();
+  var s = $(window).scrollTop(),
+  d = $(document).height(),
+  c = $(window).height();
 
   var scrollPercent = (s / (d-c)) * 100;
   return d === c || (scrollPercent > 90 && s >= lastS);
@@ -38,8 +40,8 @@ function newScrollCheck(callback) {
     }
     if(internalScrollCheck(lastS)) {
       lastCallback = now;
-      Ember.run(callback);
+      run(callback);
     }
-    lastS = Ember.$(window).scrollTop();
+    lastS = $(window).scrollTop();
   };
 }

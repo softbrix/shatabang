@@ -1,10 +1,13 @@
 /* global window */
-import Ember from 'ember';
+import $ from 'jquery';
 
-export default Ember.Component.extend({
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
+
+export default Component.extend({
   classNames: ['gallery'],
-  scrollAlmostDown: Ember.inject.service('scroll-almost-down'),
-  mediaLoader: Ember.inject.service('media-list-loader'),
+  scrollAlmostDown: service('scroll-almost-down'),
+  mediaLoader: service('media-list-loader'),
   mediaCount: 64,
   activeMedia: undefined,
   mediaList: [],
@@ -64,11 +67,11 @@ export default Ember.Component.extend({
       this.set('activeMediaIterator', it);
       this._preloadImages(it);
 
-      Ember.$(window).on('keydown', this._handleKey.bind(this));
+      $(window).on('keydown', this._handleKey.bind(this));
     },
     resetActiveMedia: function() {
       this.set('activeMedia', undefined);
-      Ember.$(window).off('keydown');
+      $(window).off('keydown');
     },
     moveRight: function() {
       var it = this.get('activeMediaIterator');
