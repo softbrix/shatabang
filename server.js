@@ -11,25 +11,20 @@ var express        = require("express"),
     app            = express(),
     path           = require('path'),
     passport       = require('passport'),
-    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
+    GoogleStrategy = require('passport-google-oauth20').Strategy,
     LocalStrategy  = require('passport-local').Strategy;
 
 var config = require('./config_server.json');
 
 // API Access link for creating client ID and secret:
 // https://code.google.com/apis/console/
-var GOOGLE_CLIENT_ID      = config.google_client_id,
-    GOOGLE_CLIENT_SECRET  = config.google_client_secret,
-    GOOGLE_CALLBACK_URL = config.google_auth_callback_url,
-    GOOGLE_ALLOWED_IDS = config.google_auth_allowed_ids,
-    ADMIN_HASH = config.admin_hash,
+var ADMIN_HASH = config.admin_hash,
     SERVER_SALT = config.server_salt;
 
 var REDIS_HOST = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
 var REDIS_PORT = process.env.REDIS_PORT_6379_TCP_PORT || 6379;
 config.baseUrl = config.baseUrl || '/';
 config.port = config.port || 3000;
-config.passport = passport;
 
 var storageDir = config.storageDir;
 var cacheDir = config.cacheDir;
@@ -52,13 +47,13 @@ routes.push({path: 'faces', route: require('./routes/faces')});
 routes.push({path: 'duplicates', route: require('./routes/duplicates')});
 routes.push({path: 'dirs', route: require('./routes/dirs')});
 routes.push({path: 'indexes', route: require('./routes/indexes')});
-routes.push({path: 'kue', route: require('./routes/kue'), public: true}); // TODO: Remove public
+routes.push({path: 'kue', route: require('./routes/kue')});
 routes.push({path: 'auth', route: require('./routes/auth'), public: true});
 routes.push({path: 'users', route: require('./routes/users'), public: true});
 routes.push({path: 'version', route: require('./routes/version')});
 
 passport.serializeUser(function(user, done) {
-  console.log('serializeUser', user.displayName);
+  // console.log('serializeUser', user.displayName);
   done(null, user);
 });
 
@@ -67,30 +62,36 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-if(GOOGLE_CLIENT_ID) {
+if(config.google_auth) {
   console.log('Loading google authentication.');
-  passport.use(new GoogleStrategy({
-      clientID: GOOGLE_CLIENT_ID,
-      clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: GOOGLE_CALLBACK_URL
-      //passReqToCallback : true
-    },
+  var GOOGLE_ALLOWED_IDS = config.google_auth.allowed_ids;
+  passport.use(new GoogleStrategy(config.google_auth,
     function(accessToken, refreshToken, profile, done) {
-      // asynchronous verification, for effect...
-     process.nextTick(function () {
-       if(GOOGLE_ALLOWED_IDS.indexOf(profile.id) < 0) {
-         profile = null;
-       }
+      if(!profile) {
+        done("Missing profile", null);
+        return;
+      }
+     //console.log(profile);
+     var email = !profile.emails || profile.emails.length === 0 ? undefined : profile.emails[0].value;
+     if(GOOGLE_ALLOWED_IDS.indexOf(profile.id) < 0 &&
+        GOOGLE_ALLOWED_IDS.indexOf(email) < 0) {
+       done(email + " is not allowed to access this application", null);
+       // TODO: Display this error in the application
+       return;
+     }
 
-       // To keep the example simple, the user's Google profile is returned to
-       // represent the logged-in user.  In a typical application, you would want
-       // to associate the Google account with a user record in your database,
-       // and return that user instead.
-       return done(null, profile);
-     });
+     // Decorate the username field with something from the google object
+     profile.username = email;
+
+     // To keep the example simple, the user's Google profile is returned to
+     // represent the logged-in user.  In a typical application, you would want
+     // to associate the Google account with a user record in your database,
+     // and return that user instead.
+     return done(null, profile);
     }
   ));
-} else if(ADMIN_HASH) {
+}
+if(ADMIN_HASH) {
   console.log('Loading local with admin authentication.');
   passport.use(new LocalStrategy(
     function(username, password, done) {
@@ -106,6 +107,7 @@ if(GOOGLE_CLIENT_ID) {
 } else {
   console.log('No authentication mechanism configured.');
 }
+config.passport = passport;
 
 app.use(bodyParser.json());
 app.use(compression());
@@ -123,24 +125,12 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/',function(req,res){
+var sendIndex = function(req,res){
       res.sendFile(__dirname + "/client/dist/index.html");
-});
+};
 
-// Redirect the user to Google for authentication.  When complete, Google
-// will redirect the user back to the application at
-//     /auth/google/return
-app.get('/auth/google', passport.authenticate('google',
-{ scope: ['https://www.googleapis.com/auth/userinfo.email'
-  /*'https://www.googleapis.com/auth/drive.photos.readonly',
-  'https://www.googleapis.com/auth/plus.media.upload'*/] }));
-
-// Google will redirect the user to this URL after authentication.  Finish
-// the process by verifying the assertion.  If valid, the user will be
-// logged in.  Otherwise, authentication has failed.
-app.get('/auth/google/return',
-  passport.authenticate('google', { successRedirect: config.baseUrl,
-                                    failureRedirect: config.baseUrl + '?bad=true' }));
+app.get('/',sendIndex);
+app.get('/login',sendIndex);
 
 // Simple route middleware to ensure user is authenticated.
 //   Use this route middleware on any resource that needs to be protected.  If
