@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "body-parser": "^1.17.0",
+    "bootstrap": "^3.3.7",
     "broccoli-asset-rev": "^2.4.5",
     "ember-ajax": "^3.0.0",
     "ember-browserify": "^1.1.13",
@@ -43,6 +44,7 @@
     "ember-source": "~2.16.0",
     "ember-welcome-page": "^3.0.0",
     "express": "^4.15.0",
+    "font-awesome": "^4.7.0",
     "glob": "^4.5.3",
     "loader.js": "^4.2.3",
     "morgan": "^1.8.1",
