@@ -62,8 +62,23 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-if(config.google_auth) {
+if(config.google_auth || process.env.GOOGLE_AUTH) {
   console.log('Loading google authentication.');
+  if (process.env.GOOGLE_AUTH) {
+    console.log('ENV variable overwriting the google auth configuration');
+    var envConf = process.env.GOOGLE_AUTH.split(':');
+    config.google_auth = {
+      "clientID" :	envConf[0],
+      "clientSecret" : envConf[1],
+      "callbackURL" : process.env.GOOGLE_AUTH_CALLBACK,
+      "allowed_ids" : process.env.GOOGLE_AUTH_ALLOW.split(',')
+    };
+  }
+
+  if(!config.google_auth.callbackURL.endsWith("return")) {
+    config.google_auth.callbackURL += "/api/auth/google/return";
+  }
+
   var GOOGLE_ALLOWED_IDS = config.google_auth.allowed_ids;
   passport.use(new GoogleStrategy(config.google_auth,
     function(accessToken, refreshToken, profile, done) {
@@ -71,23 +86,31 @@ if(config.google_auth) {
         done("Missing profile", null);
         return;
       }
-     //console.log(profile);
-     var email = !profile.emails || profile.emails.length === 0 ? undefined : profile.emails[0].value;
-     if(GOOGLE_ALLOWED_IDS.indexOf(profile.id) < 0 &&
-        GOOGLE_ALLOWED_IDS.indexOf(email) < 0) {
-       done(email + " is not allowed to access this application", null);
-       // TODO: Display this error in the application
+
+      // First test if we have a valid user id
+      var allowed = GOOGLE_ALLOWED_IDS.indexOf(profile.id) >= 0;
+      // Second iterate the client emails list
+      var i = 0, emails = profile.emails;
+      if(!allowed && profile.emails) {
+        for(; i < emails.length && !allowed; ++i) {
+          allowed = GOOGLE_ALLOWED_IDS.indexOf(emails[i].value) >= 0;
+        }
+      }
+      if(!allowed) {
+        // TODO: Display this error in the application
+        var user = emails[i] || profile.id;
+       done(user + " is not allowed to access this application", null);
        return;
-     }
+      }
 
-     // Decorate the username field with something from the google object
-     profile.username = email;
+      // Decorate the username field with something from the google object
+      profile.username = profile.emails[i];
 
-     // To keep the example simple, the user's Google profile is returned to
-     // represent the logged-in user.  In a typical application, you would want
-     // to associate the Google account with a user record in your database,
-     // and return that user instead.
-     return done(null, profile);
+      // To keep the example simple, the user's Google profile is returned to
+      // represent the logged-in user.  In a typical application, you would want
+      // to associate the Google account with a user record in your database,
+      // and return that user instead.
+      return done(null, profile);
     }
   ));
 }

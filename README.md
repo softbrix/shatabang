@@ -98,6 +98,31 @@ To create the configuration file it simplest if you run the shatabang_config.sh 
 
 `` ./install_scripts/shatabang_config.sh ``
 
+## Google authentication
+
+It is possible to configure the application in two ways. Either with the
+config_server.json or with environment variables. The configuration file is
+preferred and the environment variable support is mainly for docker container.
+
+You can configure the google oauth2 credentials at
+https://console.developers.google.com/apis/credentials.
+
+### config_server.json
+
+Add a new key called "google_auth" and add the following variables in an object:
+
+- "clientID", the unique application ID
+- "clientSecret", the unique application client secret
+- "callbackURL", the url a successful sign in should return to. This should be your applications hostname.
+- "allowed_ids", an array with either valid user id's or user emails.
+
+### Environment variables
+
+Add the following environment variables
+- GOOGLE_AUTH with the clientID and clientSecret joined with a ':', ie clientID:clientSecret.
+- GOOGLE_AUTH_CALLBACK with the url a successful authentication should return to.
+- GOOGLT_AUTH_ALLOW with a comma separated list of either user id's or emails.
+
 # Why Shatabang
 Now days it's hard to come up with a unique name both on companies and products.
 One morning during the summer of 2016 I shouted "Shatabang" when I solved one
