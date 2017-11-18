@@ -121,7 +121,7 @@ Add a new key called "google_auth" and add the following variables in an object:
 Add the following environment variables
 - GOOGLE_AUTH with the clientID and clientSecret joined with a ':', ie clientID:clientSecret.
 - GOOGLE_AUTH_CALLBACK with the url a successful authentication should return to.
-- GOOGLT_AUTH_ALLOW with a comma separated list of either user id's or emails.
+- GOOGLE_AUTH_ALLOW with a comma separated list of either user id's or emails.
 
 # Why Shatabang
 Now days it's hard to come up with a unique name both on companies and products.
