@@ -123,6 +123,15 @@ Add the following environment variables
 - GOOGLE_AUTH_CALLBACK with the url a successful authentication should return to.
 - GOOGLE_AUTH_ALLOW with a comma separated list of either user id's or emails.
 
+# Index information
+
+The following properties are indexed for each media file.
+
+- a, aspect ratio
+- b, blur
+- r, rating
+- s, file size
+
 # Why Shatabang
 Now days it's hard to come up with a unique name both on companies and products.
 One morning during the summer of 2016 I shouted "Shatabang" when I solved one

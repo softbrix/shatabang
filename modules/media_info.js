@@ -45,11 +45,7 @@ var processFile = function(item) {
         //console.log('use exif native');
         new ExifImage({ image : item}, function (error, exifData) {
             if (error) {
-                fileSystemFallback(item).then(function(fileInfo) {
-                  deffered.resolve(fileInfo);
-                }, function(err) {
-                  deffered.reject(err);
-                });
+                fileSystemFallback(item).then(deffered.resolve, deffered.reject);
             } else {
               //var date = exifData.exif.CreateDate || exifData.image.ModifyDate;
               //console.log(item, exifData, date);

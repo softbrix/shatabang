@@ -7,6 +7,7 @@ var path = require('path');
 
 
 var init = function(config, task_queue) {
+  var idx_meta = shIndex(path.join(config.cacheDir, 'idx_meta'));
   var idx = shIndex(path.join(config.cacheDir, 'idx_tst'));
   var storageDir = config.storageDir;
 

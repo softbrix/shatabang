@@ -3,7 +3,6 @@ import Service from '@ember/service';
 import { Promise as EmberPromise, defer } from 'rsvp';
 import DibbaTree from 'npm:dibba_tree';
 
-const Promise = EmberPromise;
 const movieFileRegexp = /(.+)(mp4|avi|mov|mpe?g)$/gi;
 
 

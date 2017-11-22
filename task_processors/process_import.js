@@ -47,14 +47,14 @@ var init = function(config, task_queue) {
 
             var items = idx.get(b85Finger);
             if(items.length > 0) {
-              var newPath = path.join(duplicatesDir, path.basename(filePath));
-              shFiles.moveFile(filePath, newPath);
-              console.log("Exists", newPath);
-              resolveFile(newPath);
+              var duplicatesFilePath = path.join(duplicatesDir, path.basename(filePath));
+              shFiles.moveFile(filePath, duplicatesFilePath);
+              console.log("Exists", duplicatesFilePath);
+              resolveFile(duplicatesFilePath);
             } else {
               console.log("new file");
               importer(filePath, storageDir).then(function(relativePath) {
-                // TODO: add to imported list
+                // TODO: add to latest imported list
                 idx.put(b85Finger, relativePath);
                 console.log("Imported: ", relativePath, b85Finger);
                 /*imported_cache.push({
@@ -75,8 +75,6 @@ var init = function(config, task_queue) {
           console.log('files imported:', importedFiles);
           done();
         }, done);
-
-
       });
   });
 };

@@ -2,14 +2,13 @@
 
 var kue = require('kue');
 
-var host = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
-var port = process.env.REDIS_PORT_6379_TCP_PORT || 6379;
+var redisConnectionInfo = {
+  host: process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1',
+  port: process.env.REDIS_PORT_6379_TCP_PORT || 6379
+};
 
 var queue = kue.createQueue({
-  redis: {
-    host: host,
-    port: port
-  }
+  redis: redisConnectionInfo
 });
 
 var disconnected = false;
@@ -48,5 +47,6 @@ module.exports = {
       taskProcessor(job.data, job, done);
     });
   },
-  disconnect : disconnect
+  disconnect : disconnect,
+  redisConnectionInfo: redisConnectionInfo
 };
