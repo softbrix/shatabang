@@ -20,7 +20,7 @@ var init = function(config, task_queue) {
   shFiles.mkdirsSync(duplicatesDir);
 
   task_queue.registerTaskProcessor('update_import_directory', function(data, job, done) {
-    console.log('update_import_directory', data, importDir);
+    //console.log('update_import_directory', data, importDir);
     shFiles.listMediaFiles(importDir, function(err, mediaFiles) {
         if(err) {
           console.error(err);
@@ -52,7 +52,6 @@ var init = function(config, task_queue) {
               console.log("Exists", duplicatesFilePath);
               resolveFile(duplicatesFilePath);
             } else {
-              console.log("new file");
               importer(filePath, storageDir).then(function(relativePath) {
                 // TODO: add to latest imported list
                 idx.put(b85Finger, relativePath);
@@ -72,7 +71,9 @@ var init = function(config, task_queue) {
           });
           return deferred.promise;
         }).then(function(importedFiles) {
-          console.log('files imported:', importedFiles);
+          if(importedFiles > 0) {
+            console.log('files imported:', importedFiles);
+          }
           done();
         }, done);
       });

@@ -30,14 +30,14 @@ module.exports = {
   queueTask : function(name, params, priority) {
     var job = queue.create(name, params);
     if(priority) {
-      console.log('set priority', priority );
+      //console.log('set priority', priority );
       job.priority(priority);
     }
     job.removeOnComplete( true );
     job.save(
       function(err){
-        if( !err ) {
-          console.log( 'job id', job.id );
+        if( err ) {
+          console.log( 'job id', job.id, err );
         }
     });
     return job;

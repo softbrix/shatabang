@@ -40,10 +40,10 @@ COPY install_scripts/docker_config_server.json /usr/src/shatabang/config_server.
 
 
 # Install app dependencies
-RUN npm install && \
+RUN npm install --only=production && \
 # Build client
     cd /usr/src/shatabang/client && \
-    npm install && \
+    npm install --only=production && \
     ember build --environment="production" && \
     ## Cleanup
     npm cache clean

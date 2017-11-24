@@ -14,7 +14,7 @@ let _instance = function(cacheDirectory, fileName) {
   let _readDeferred;
 
   let _flush = function() {
-    fs.writeFile(metaFilePath, JSON.stringify(_objs));
+    fs.writeFile(metaFilePath, JSON.stringify(_objs), (err) => {if(err) {console.log(err);}});
   };
   let _throttledFlush = _.throttle(_flush, 1000);
 

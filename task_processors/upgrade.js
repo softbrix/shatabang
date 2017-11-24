@@ -11,6 +11,7 @@ This task should run every time the task processor is restarted
 **/
 var init = function(config, task_queue) {
   var infoDirectory = path.join(config.cacheDir, 'info');
+  var storageDir = config.storageDir;
   var redis = new Redis(task_queue.redisConnectionInfo);
   var versionKey = 'shatabangVersion2';
 
@@ -19,7 +20,7 @@ var init = function(config, task_queue) {
     redis.get(versionKey).then(function (version) {
       console.log('Index version', version);
       if(!version) {
-        upgrade_v1(infoDirectory, (error) => {
+        upgrade_v1(infoDirectory, storageDir, (error) => {
           if(error) {
             console.error('Failed to upgrade index', error);
             done(error);
@@ -28,6 +29,7 @@ var init = function(config, task_queue) {
           // On succesful upgrade
           // TODO: Enable when feature is done
           //redis.set(versionKey, 1);
+          console.log('Successfully upgraded index to', 'v1');
           done();
         });
       } else {
@@ -37,7 +39,7 @@ var init = function(config, task_queue) {
   });
 };
 
-var upgrade_v1 = function(infoDirectory, cb) {
+var upgrade_v1 = function(infoDirectory, storageDir, cb) {
   shFiles.listSubDirs(infoDirectory, function(error, dirs) {
     if(error) {
       console.log(error);
@@ -45,11 +47,23 @@ var upgrade_v1 = function(infoDirectory, cb) {
     }
     // Add all images to the media index with user rating 0.5
     dirs.forEach((dir) => {
-      var mediaLst = fs.readFileSync(path.join(dir, 'media.lst'), 'UTF-8').split(',');
+      var yearDir = path.join(infoDirectory, dir);
+      var mediaLst = fs.readFileSync(path.join(yearDir, 'media.lst'), 'UTF-8').split(',');
 
-      var mediaMeta = new MediaMeta(dir);
+      var mediaMeta = new MediaMeta(yearDir);
       mediaLst.forEach((itm) => {
-        mediaMeta.set(itm, {ur: 0.5});
+        fs.stat(path.join(storageDir, itm), (err, stats) => {
+          var fileSize = -1;
+          if(err) {
+            console.log(err);
+          } else {
+            fileSize = stats.size;
+          }
+          mediaMeta.set(itm, {
+            ur: 0.5,
+            s: fileSize
+          });
+        });
       });
     });
     cb();
