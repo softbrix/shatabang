@@ -61,6 +61,7 @@
     "node-dir": "*",
     "node-iptc": "git+https://github.com/mansehr/node-iptc.git",
     "node-sha1": "^1.0.1",
+    "npm-run-all": "^4.0.2",
     "passport": "^0.3.2",
     "passport-google-oauth20": "1.0.0",
     "passport-local": "1.0.0",
@@ -83,7 +84,6 @@
   "devDependencies": {
     "electron-rebuild": "^1.6.0",
     "mocha": "~2.3.3",
-    "npm-run-all": "^4.0.2",
     "should": "~7.1.0",
     "supertest": "~1.1.0"
   },
