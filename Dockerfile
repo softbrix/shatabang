@@ -31,6 +31,7 @@ RUN mkdir -p /mnt/sorterat/ && \
 # TODO: git checkout
 COPY *.json /usr/src/shatabang
 COPY client/*.json /usr/src/shatabang/client/
+COPY client /usr/src/shatabang/client
 
 # Install app dependencies
 RUN npm install && \
@@ -41,7 +42,6 @@ RUN npm install && \
     ## Cleanup
     npm cache clean
 
-COPY client /usr/src/shatabang/client
 COPY modules /usr/src/shatabang/modules
 COPY routes /usr/src/shatabang/routes
 COPY task_processors /usr/src/shatabang/task_processors
