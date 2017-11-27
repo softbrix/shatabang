@@ -12,6 +12,12 @@ module.exports = function(defaults) {
         'node_modules/font-awesome/less',
         'node_modules/font-awesome/fonts'
       ]
+    },
+
+    'ember-bootstrap': {
+      'bootstrapVersion': 3,
+      'importBootstrapFont': true,
+      'importBootstrapCSS': false
     }
   });
 

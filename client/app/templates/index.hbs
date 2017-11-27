@@ -1,16 +1,40 @@
 {{outlet}}
 
-<div id="selectedHeader" class="header subHeader" style="display: none">
-  Selection: <span id="selectCnt">0</span>
-  <a id="clrSlct" class="btn btn-xs btn-default">Clear</a>
-  <a id="allSlct" class="btn btn-xs btn-default">Select all</a>
-  <a id="invSlct" class="btn btn-xs btn-default">Invert</a>
-  | Tags:
-  <a id="addTag" class="btn btn-xs btn-default">Add</a>
-  <a id="delTag" class="btn btn-xs btn-default">Delete</a>
-  <a id="edtTag" class="btn btn-xs btn-default">Edit</a>
-  | Image:
-  <a id="delImg" class="btn btn-xs btn-default">Delete</a>
+<div id="selectedHeader" class="header subHeader">
+
+  <a onclick={{action 'zoomIn'}} class="zoomBtn">
+    <span class=" btn btn-primary btn-sm notMobile"> + </span>
+    <i class="fa fa-plus-square onlyMobile" aria-hidden="true"></i>
+  </a>
+  <a onclick={{action 'zoomOut'}} class="zoomBtn">
+    <span class=" btn btn-primary btn-sm notMobile"> - </span>
+    <i class="fa fa-minus-square onlyMobile" aria-hidden="true"></i>
+  </a>
+
+  |
+  <label>Date
+    <input type="date" value="2017-01-04" id="fromDateIpt" class="datePicker">
+    -
+    <input type="date" value="2017-01-04" id="toDateIpt" class="datePicker">
+  </label>
+  |
+  <label>Rating:
+    <input type="number" value="5" min="1" max="10" id="ratingIpt" class="rangePicker">
+  </label>
+
+
+  <div  style="display: none">
+    Selection: <span id="selectCnt">0</span>
+    <a id="clrSlct" class="btn btn-xs btn-default">Clear</a>
+    <a id="allSlct" class="btn btn-xs btn-default">Select all</a>
+    <a id="invSlct" class="btn btn-xs btn-default">Invert</a>
+    | Tags:
+    <a id="addTag" class="btn btn-xs btn-default">Add</a>
+    <a id="delTag" class="btn btn-xs btn-default">Delete</a>
+    <a id="edtTag" class="btn btn-xs btn-default">Edit</a>
+    | Image:
+    <a id="delImg" class="btn btn-xs btn-default">Delete</a>
+  </div>
 </div>
 <div id="calendar-wrapper" style="display: none;">
   <div class="calendar-bootstrap"></div>

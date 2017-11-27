@@ -34,7 +34,7 @@ router.initialize = function(config) {
      passport.authenticate('google', { failureRedirect: baseUrl + '?bad=true' }),
      function(req, res) {
       // Successful authentication, redirect home.
-      res.redirect('/');
+      res.redirect(baseUrl);
     });
 };
 

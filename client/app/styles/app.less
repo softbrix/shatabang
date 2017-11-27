@@ -2,6 +2,8 @@
 @import "theme";
 @import "font-awesome";
 
+/* @import "ember-bootstrap/bootstrap"; */
+
 html, body, .fullSize, .wrapper {
   height: 100%;
   width: 100%;
@@ -152,7 +154,7 @@ body > .ember-view {
     a {
       i {
         font-size: 10em;
-        line-height: 5.5em;
+        line-height: 2.5em;
         vertical-align: middle;
       }
       height: 100%;
@@ -163,9 +165,10 @@ body > .ember-view {
       color: white;
       padding: 10%;
     }
-    height: 100%;
-    position: absolute;
+    height: 60%;
+    position: fixed;
     width: 30%;
+    top: 20%
   }
   .move_left {
     left: 0;
@@ -323,7 +326,7 @@ body > .ember-view {
 			dth: 320px;
 		}
 
-		#header {
+		.header {
 			bottom: 0;
 			padding: 0;
 		}
@@ -342,7 +345,7 @@ body > .ember-view {
 	}
 
 	@media screen and (min-width: 481px) {
-		#header {
+		.header {
 			top: 0;
 			padding: 0
 		}
@@ -1627,13 +1630,13 @@ body > .ember-view {
 
 
 
-		#header {
+		.header {
 			position: fixed;
 			left: 0;
 			width: 100%;
 		}
 
-    .header_part, #header {
+    .header_part, .header {
       background-color: #C2C2D0;
       z-index: 100;
     }
@@ -1646,7 +1649,7 @@ body > .ember-view {
       padding: 0.5em;
     }
 
-    .header_popup hr, #header .header_popup a {
+    .header_popup hr, .header .header_popup a {
       margin: 0
     }
 
@@ -1667,24 +1670,24 @@ body > .ember-view {
 	    right: 0;
 		}
 
-		#header a {
+		.header a {
 			margin-left: 5px;
 			text-align: center;
 			cursor: pointer;
 			/* color: white; */
 		}
 
-		#header a.btn {
+		.header a.btn {
 			display: inline-block;
 			/* background-color: cadetblue; */
 		}
 
-		#header .fa {
+		.header .fa {
 			font-size: 20px;
 			margin: 2px 5px 0 5px;
 		}
 
-		#header h1 {
+		.header h1 {
 			color: #a0a0a1;
 			display: inline-block;
 			font-size: 1em;
@@ -1693,33 +1696,33 @@ body > .ember-view {
 			vertical-align: middle;
 		}
 
-			#header h1 a {
+			.header h1 a {
 				border: 0;
 				color: inherit;
 			}
 
-				#header h1 a:hover {
+				.header h1 a:hover {
 					color: inherit !important;
 				}
 
-		#header nav {
+		.header nav {
 			position: absolute;
 			right: 0;
 			top: 0;
 		}
 
-			#header nav > ul {
+			.header nav > ul {
 				list-style: none;
 				margin: 0;
 				padding: 0;
 			}
 
-				#header nav > ul > li {
+				.header nav > ul > li {
 					display: inline-block;
 					padding: 0;
 				}
 
-					#header nav > ul > li a {
+					.header nav > ul > li a {
 						-moz-transition: background-color 0.5s ease;
 						-webkit-transition: background-color 0.5s ease;
 						-ms-transition: background-color 0.5s ease;
@@ -1732,17 +1735,17 @@ body > .ember-view {
 						text-transform: uppercase;
 					}
 
-						#header nav > ul > li a.icon:before {
+						.header nav > ul > li a.icon:before {
 							color: #505051;
 							float: right;
 							margin-left: 0.75em;
 						}
 
-						#header nav > ul > li a:hover {
+						.header nav > ul > li a:hover {
 							color: #ffffff !important;
 						}
 
-						#header nav > ul > li a.active {
+						.header nav > ul > li a.active {
 							background-color: #242629;
 						}
 
@@ -1752,22 +1755,22 @@ body > .ember-view {
 			/* padding: 4em 0 0 0; */
 		}
 
-		#header, #filleBottom  {
-			height: 30px;
+		.header, #filleBottom  {
+		/*	height: 30px;*/
 		}
 
-			body.loading #header {
+			body.loading .header {
 				-moz-transform: translateY(-3.4em);
 				-webkit-transform: translateY(-3.4em);
 				-ms-transform: translateY(-3.4em);
 				transform: translateY(-3.4em);
 			}
 
-			#header h1 {
+			.header h1 {
 				font-size: 0.9em;
 			}
 
-			#header nav > ul > li a {
+			.header nav > ul > li a {
 				font-size: 0.9em;
 				padding: 0 1.15em;
 			}
@@ -2267,3 +2270,14 @@ body > .ember-view {
 		#footer .copyright a {
 			color: inherit;
 		}
+
+/* Smaller tabs fix */
+.nav > li > a {
+    position: relative;
+    display: block;
+    padding: 5px 10px;
+}
+
+.header input.datePicker {
+  max-width: 140px;
+}

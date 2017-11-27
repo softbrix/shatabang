@@ -76,7 +76,10 @@ if(config.google_auth || process.env.GOOGLE_AUTH) {
   }
 
   if(!config.google_auth.callbackURL.endsWith("return")) {
-    config.google_auth.callbackURL += "/api/auth/google/return";
+    if(!config.google_auth.callbackURL.endsWith("/")) {
+      config.google_auth.callbackURL += "/";
+    }
+    config.google_auth.callbackURL += "api/auth/google/return";
   }
 
   var GOOGLE_ALLOWED_IDS = config.google_auth.allowed_ids;

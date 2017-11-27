@@ -2,6 +2,7 @@
 
 {{#if activeMedia}}
 <div class="fullSize fixedPosition fullscreenMedia {{if activeMedia.isVideo "isVideo"}}">
+
   {{#if activeMedia.isVideo}}
     {{fullsize-video media=activeMedia}}
   {{else}}
@@ -14,13 +15,15 @@
     <a href="{{activeMedia.downloadUrl}}" class="download_link" target="_blank">Download</a>
   {{/if}}
   {{activeMedia.img}}
+  {{fullscreen-toggle class="float_left"}}
 </div>
 {{/if}}
 
 <p style="position: fixed;
     bottom: 0;
     color: white;
-    right: 0;border: 3px solid #73AD21">
+    right: 0;border: 3px solid #73AD21"
+    class="hidden">
 mcount: {{mediaCount}}
 m2count: {{mediaList.length}}
 </p>
