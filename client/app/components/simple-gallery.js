@@ -61,7 +61,7 @@ export default Component.extend({
   actions: {
     mediaClicked: function(a) {
       this.set('activeMedia', a);
-      
+
       var it = this.get('mediaLoader.tree').leafIterator();
       it.gotoPath(a.path);
       this.set('activeMediaIterator', it);
@@ -73,7 +73,8 @@ export default Component.extend({
       this.set('activeMedia', undefined);
       $(window).off('keydown');
     },
-    moveRight: function() {
+    moveRight: function(event) {
+      event.preventDefault();
       var it = this.get('activeMediaIterator');
       if(it.hasPrev()) {
         var prev = it.prev();
@@ -84,7 +85,8 @@ export default Component.extend({
         this.set('activeMedia', prev);
       }
     },
-    moveLeft: function() {
+    moveLeft: function(event) {
+      event.preventDefault();
       var it = this.get('activeMediaIterator');
       if(it.hasNext()) {
         var next = it.next();
@@ -94,6 +96,12 @@ export default Component.extend({
         this._preloadImages(it);
         this.set('activeMedia', next);
       }
+    },
+    toggleInteractive: function(event) {
+      if(!event.defaultPrevented) {
+        $("#interactiveOverlay").toggle();
+      }
+      console.log('Oupsie', event);
     }
   },
   _preloadImages: function(it) {
@@ -119,8 +127,10 @@ export default Component.extend({
       this.actions.moveLeft.apply(this);
     } else if(event.key === "ArrowRight" || event.keyCode === 39) {
       this.actions.moveRight.apply(this);
+    } else if(event.key === "Escape" || event.keyCode === 27) {
+      this.actions.resetActiveMedia.apply(this);
     } else {
-      console.log('unknown key', event.key);
+      console.log('unknown key', event.key,event.keyCode);
     }
   }
 });
