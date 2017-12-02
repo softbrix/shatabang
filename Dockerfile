@@ -29,7 +29,7 @@ RUN mkdir -p /mnt/sorterat/ && \
 
 #Install source
 # TODO: git checkout
-COPY *.json /usr/src/shatabang
+COPY *.json /usr/src/shatabang/
 COPY client/*.json /usr/src/shatabang/client/
 COPY client /usr/src/shatabang/client
 
