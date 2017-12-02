@@ -23,8 +23,21 @@ var ADMIN_HASH = config.admin_hash,
 
 var REDIS_HOST = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
 var REDIS_PORT = process.env.REDIS_PORT_6379_TCP_PORT || 6379;
-config.baseUrl = config.baseUrl || '/';
-config.port = config.port || 3000;
+config.baseUrl = process.env.BASE_URL || config.baseUrl || '/';
+config.port = process.env.PORT || config.port || 3000;
+
+if (process.env.GOOGLE_AUTH) {
+  console.log('ENV variable overwriting the google auth configuration');
+  var envConf = process.env.GOOGLE_AUTH.split(':');
+  config.google_auth = {
+    "clientID" :	envConf[0],
+    "clientSecret" : envConf[1],
+    "callbackURL" : config.baseUrl,
+    "allowed_ids" : process.env.GOOGLE_AUTH_ALLOW.split(',')
+  };
+}
+
+console.log('Starting the server with the following configuration', config);
 
 var storageDir = config.storageDir;
 var cacheDir = config.cacheDir;
@@ -62,18 +75,8 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-if(config.google_auth || process.env.GOOGLE_AUTH) {
+if(config.google_auth) {
   console.log('Loading google authentication.');
-  if (process.env.GOOGLE_AUTH) {
-    console.log('ENV variable overwriting the google auth configuration');
-    var envConf = process.env.GOOGLE_AUTH.split(':');
-    config.google_auth = {
-      "clientID" :	envConf[0],
-      "clientSecret" : envConf[1],
-      "callbackURL" : process.env.GOOGLE_AUTH_CALLBACK,
-      "allowed_ids" : process.env.GOOGLE_AUTH_ALLOW.split(',')
-    };
-  }
 
   if(!config.google_auth.callbackURL.endsWith("return")) {
     if(!config.google_auth.callbackURL.endsWith("/")) {
