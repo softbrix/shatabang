@@ -71,7 +71,7 @@ export default Controller.extend({
 
 function preventNavigation(e) {
   // This message might not even show
-  var confirmationMessage = 'Uploads going on. Are you sure you want to leave this page?';
+  const confirmationMessage = 'Uploads going on. Are you sure you want to leave this page?';
 
   (e || window.event).returnValue = confirmationMessage; //Gecko + IE
   return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.

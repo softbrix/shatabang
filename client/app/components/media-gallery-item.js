@@ -3,6 +3,10 @@ import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import Component from '@ember/component';
 
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 export default Component.extend({
   tagName: 'span',
   classNames: ['galleryImage'],
@@ -19,9 +23,6 @@ export default Component.extend({
   imageWidth: computed('imageWidthService.ratio', function() {
     /* Note: You must implement #escapeCSS. */
     var ratio = this.get('imageWidthService.ratio');
-    function isNumber(n) {
-      return !isNaN(parseFloat(n)) && isFinite(n);
-    }
     if(!isNumber(ratio)) {
       ratio = 25;
     }

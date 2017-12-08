@@ -5,6 +5,11 @@
     {{#bs-nav type="tabs" as |nav|}}
       {{#nav.item}}{{#nav.link-to "index"}}Media{{/nav.link-to}}{{/nav.item}}
 
+      {{#nav.item}}{{#nav.link-to "calendar"}}
+        <span class="notMobile">Calendar</span>
+        <i class="fa fa-calendar onlyMobile" aria-hidden="true"></i>
+      {{/nav.link-to}}{{/nav.item}}
+
       {{#nav.item}}{{#nav.link-to "upload"}}
         <span class="notMobile">Import</span>
         <i class="fa fa-upload onlyMobile" aria-hidden="true"></i>

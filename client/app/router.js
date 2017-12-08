@@ -13,6 +13,7 @@ Router.map(function() {
   this.route('login');
   this.route('upload');
   this.route('admin');
+  this.route('calendar');
 });
 
 export default Router;

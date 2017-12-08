@@ -395,7 +395,7 @@ body > .ember-view {
 		text-align: left;
 	}
 
-	body {
+	body, .background {
 		background: #242629;
 	}
 
@@ -456,12 +456,81 @@ body > .ember-view {
     vertical-align: middle;
     border: 0;
     overflow: hidden;
-    color: lightblue;
     img {
       width: 100%;
       vertical-align: middle;
     }
 	}
+
+  #calendar-gallery {
+    width: 73230px;
+    .calendar-width {
+      width: 65880px
+    }
+
+    #calendar-media-content {
+      position: absolute;
+    }
+  }
+
+  #calendar-date-axis {
+    position: sticky;
+    top: 62px;
+
+    svg {
+      stroke:rgb(255,255,255);
+      stroke-width:1;
+      display: block;
+      margin-left: 36px;
+      height: 30px;
+    }
+  }
+
+  #calendar-year-axis {
+    position: sticky;
+    left: 0;
+    top: 92px;
+    width: 36px;
+
+    .year {
+      writing-mode: vertical-lr;
+      text-orientation: upright;
+      text-align: center;
+      border-bottom: 1px solid white;
+      font-size: 1.5em;
+      height: 120px;
+    }
+  }
+
+  .calendar-year-row {
+    outline: 1px solid white;
+    height: 120px;
+
+    .calendar-media-item {
+      width: 180px;
+      height: 120px;
+      box-sizing: border-box;
+      position: absolute;
+      background: purple;
+      border: 1px solid black;
+      border-top: none;
+      border-left: none;
+
+      .media-not-found {
+        background-color: grey;
+        height: 100%;
+
+        &.future {
+          background: none;
+        }
+      }
+
+    }
+  }
+
+  #calendar-media-content {
+    margin-left: 36px;
+  }
 
 	body.editMode
 	#wrapper a.shImage.selected {

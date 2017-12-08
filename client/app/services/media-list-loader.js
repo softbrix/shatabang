@@ -24,6 +24,7 @@ export default Service.extend({
   loadedDeferred: defer(),
   fullyLoadedDeferred: defer(),
   isFullyLoaded: false,
+  folders: [],
 
   init: function() {
     var tree = this.get('tree');
@@ -35,6 +36,8 @@ export default Service.extend({
       if(folders.length === 0) {
         return;
       }
+
+      that.set('folders', folders);
 
       // Sort folders descending, are delivered ascending DOH!...
       folders = folders.sort(function(a,b){return b-a;});

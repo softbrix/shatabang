@@ -5,12 +5,13 @@ var router  = express.Router();
 var path = require('path');
 var shIndex = require('stureby_index');
 
-var idx_finger_dir, idx_rating_dir;
-
 router.initialize = function(config) {
-  idx_finger_dir = path.join(config.cacheDir, 'idx_finger');
+  var
+  idx_file_sha_dir = path.join(config.cacheDir, 'idx_file_sha'),
+  idx_finger_dir = path.join(config.cacheDir, 'idx_finger'),
   idx_rating_dir = path.join(config.cacheDir, 'idx_rating');
 
+  router.get('/sha/keys', getKeys(shIndex(idx_file_sha_dir)));
   router.get('/fingers/keys', getKeys(shIndex(idx_finger_dir)));
   router.get('/rating/keys', getKeys(shIndex(idx_rating_dir)));
 
