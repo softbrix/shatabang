@@ -1,5 +1,5 @@
 "use strict"
-var mediaInfo = require('../modules/media_info');
+var mediaInfo = require('vega_media_info');
 var shFiles = require('../modules/shatabang_files');
 var path = require('path');
 

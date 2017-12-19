@@ -1,4 +1,4 @@
-var mediaInfo = require('../modules/media_info');
+var mediaInfo = require('vega_media_info');
 var shFiles = require('../modules/shatabang_files');
 var iptc = require('node-iptc');
 var fs = require('fs-extra');

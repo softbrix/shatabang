@@ -2,7 +2,7 @@
 
 var directory_list = require('../modules/directory_list');
 var shFiles = require('../modules/shatabang_files');
-var mediaInfo = require('../modules/media_info');
+var mediaInfo = require('vega_media_info');
 var shIndex = require('stureby_index');
 var thumbnailer = require('../modules/thumbnailer');
 var _ = require('underscore');

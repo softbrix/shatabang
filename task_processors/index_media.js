@@ -1,6 +1,6 @@
 "use strict";
 
-var mediaInfo = require('../modules/media_info');
+var mediaInfo = require('vega_media_info');
 var shIndex = require('stureby_index');
 var _ = require('underscore');
 var path = require('path');
