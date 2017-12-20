@@ -1,4 +1,4 @@
-FROM node:boron
+FROM node:carbon
 MAINTAINER Andreas Sehr
 
 WORKDIR /usr/src/shatabang
