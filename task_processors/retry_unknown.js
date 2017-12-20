@@ -4,8 +4,8 @@ var shFiles = require('../modules/shatabang_files');
 var path = require('path');
 
 /**
-This method will process move all media files in unknown directory back to the
-import direcotry so they can be processed again. This could be run after an upgrade
+This method will move all media files in unknown directory back to the
+import directory so they can be processed again. This could be run after an upgrade
 with new import functionallity or media support.
 **/
 var init = function(config, task_queue) {

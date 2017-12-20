@@ -7,7 +7,7 @@ var importer = require('./importer');
 var path = require('path');
 
 /**
-This method will process te configured import folder and update the index,
+This method will process the configured import folder and update the index,
 thumbnail and finger for each item in the import folder.
 **/
 var init = function(config, task_queue) {
