@@ -32,6 +32,7 @@ var init = function(config, task_queue) {
           console.log('Successfully upgraded index to', 'v1');
           done();
         });
+        task_queue.queueTask('retry_unknown', {}, 'low');
       } else {
         done();
       }

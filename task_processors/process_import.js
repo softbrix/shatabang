@@ -29,7 +29,7 @@ var init = function(config, task_queue) {
         var idx = shIndex(idx_dir);
 
         syncLoop(mediaFiles, function(filePath, i) {
-          console.log("Processing", i, filePath);
+          job.log("Processing", i, filePath);
           var deferred = Q.defer();
 
           var resolveFile = function(path) {
@@ -49,13 +49,13 @@ var init = function(config, task_queue) {
             if(items.length > 0) {
               var duplicatesFilePath = path.join(duplicatesDir, path.basename(filePath));
               shFiles.moveFile(filePath, duplicatesFilePath);
-              console.log("Exists", duplicatesFilePath);
+              job.log("Exists", duplicatesFilePath);
               resolveFile(duplicatesFilePath);
             } else {
               importer(filePath, storageDir).then(function(relativePath) {
                 // TODO: add to latest imported list
                 idx.put(b85Finger, relativePath);
-                console.log("Imported: ", relativePath, b85Finger);
+                job.log("Imported: ", relativePath, b85Finger);
                 /*imported_cache.push({
                   time: current_timestamp(),
                   path: relativePath
@@ -73,6 +73,7 @@ var init = function(config, task_queue) {
         }).then(function(importedFiles) {
           if(importedFiles > 0) {
             console.log('files imported:', importedFiles);
+            job.log('files imported:', importedFiles);
           }
           done();
         }, done);

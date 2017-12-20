@@ -11,6 +11,7 @@ var processors = [
     require('./task_processors/update_directory_list'),
     require('./task_processors/resize_image'),
     require('./task_processors/resize_images_in_folder'),
+    require('./task_processors/retry_unknown'),
     require('./task_processors/run_task_in_folder'),
     require('./task_processors/upgrade'),
   ];

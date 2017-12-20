@@ -12,7 +12,7 @@ var init = function(config, task_queue) {
   var storageDir = config.storageDir;
 
   task_queue.registerTaskProcessor('index_media', function(data, job, done) {
-    console.log(storageDir, data.file);
+    job.log(storageDir, data.file);
     var relativeFilePath = path.relative(storageDir, data.file);
     mediaInfo.getTags(data.file).
         then(function(tags) {
