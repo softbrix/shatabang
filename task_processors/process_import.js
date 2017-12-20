@@ -61,8 +61,8 @@ var init = function(config, task_queue) {
                   path: relativePath
                 });*/
                 resolveFile(relativePath);
-              }, function() {
-                console.log("Failed to import");
+              }, function(err) {
+                console.error("Failed to import", err);
                 // Failed to import move to unknown dir
                 shFiles.moveFile(filePath, path.join(unknownDir, path.basename(filePath)));
                 deferred.reject();

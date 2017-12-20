@@ -65,7 +65,7 @@ module.exports = {
               return;
             }
 
-            var mediaFiles = /^(?!\.).+([mj]pe?g|png|mp4|m4a|mov|bmp|avi)$/i;
+            var mediaFiles = /^(?!\.).+([mj]pe?g|png|mp4|m4a|m4v|mov|bmp|avi)$/i;
             files = files.filter(function(item) {
               return mediaFiles.test(path.basename(item));
             });
