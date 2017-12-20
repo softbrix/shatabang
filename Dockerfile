@@ -40,7 +40,7 @@ RUN npm install && \
     npm install && \
     ember build --environment="production" && \
     ## Cleanup
-    npm cache clean
+    npm cache clean --force
 
 COPY modules /usr/src/shatabang/modules
 COPY routes /usr/src/shatabang/routes
