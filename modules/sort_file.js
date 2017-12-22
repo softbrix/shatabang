@@ -8,7 +8,7 @@ var path = require('path');
 
 var sort_file = function(sourceFile, destDir) {
   var handleError = function(error) {
-    console.log(sourceFile, 'Error: ', (error.message || error));
+    console.error(sourceFile, 'Error: ', (error.message || error));
     var destinationDir = path.join(destDir, 'unknown');
     var fileName = path.basename(sourceFile);
     return moveFile(sourceFile, destinationDir, fileName);
@@ -16,10 +16,12 @@ var sort_file = function(sourceFile, destDir) {
 
   return mediaInfo.readMediaInfo(sourceFile).then(function (exifData) {
     //console.log('exifData', exifData);
-    var date = new Date(exifData.CreateDate || exifData.ModifyDate);
-    if(date === undefined) {
-      return handleError("Failed to parse the date in the exif information, '" + date + "'");
+    var dateStr = exifData.CreateDate || exifData.ModifyDate;
+    if(dateStr === undefined) {
+      console.debug('exifData', exifData);
+      return handleError("Failed to parse the date in the exif information, '" + dateStr + "'");
     }
+    var date = new Date(dateStr);
     var newPath = buildPathFromDate(date, destDir);
     var newFileName = buildFileNameFromDate(date, path.extname(sourceFile));
     return moveFile(sourceFile, newPath, newFileName);
@@ -27,12 +29,12 @@ var sort_file = function(sourceFile, destDir) {
 };
 
 var leftPad = function(d) {
-  return ("" + d).padStart(2,"0");
+  return ("" + d).padStart(2, "0");
 };
 
 var buildPathFromDate = function(date, destDir) {
   var year = "" + date.getFullYear(),
-  month = leftPad(date.getMonth()),
+  month = leftPad(date.getMonth() + 1),
   day = leftPad(date.getDate());
   return  path.join(destDir, year, month, day);
 };
