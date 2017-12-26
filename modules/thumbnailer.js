@@ -128,16 +128,16 @@ module.exports = {
   	//console.log(destFileEdited.getTime(),' < ', srcFileEdited.getTime());
   	return destFileEdited.getTime() < srcFileEdited.getTime();
   },
-  create_image_finger : function create_image_finger(sourceFile, callback) {
-    var generateFinger = function(sourceFile, callback) {
+  create_image_finger : function create_image_finger(sourceFile) {
+    var generateFinger = function(sourceFile) {
       try {
         fs.statSync(sourceFile);
       } catch (e) {
-        callback(e);
+        return Promise.reject(e);
       }
-      phash(sourceFile)
+      return phash(sourceFile)
         .then(function(bitString) {
-          callback(undefined, binaryToHex(bitString));
+          return binaryToHex(bitString);
         });
     };
 
@@ -148,18 +148,16 @@ module.exports = {
       var width = 1920;
       var height = 1080;
       var isMaxSize = true;
-      this.generateThumbnail(sourceFile, tmpOutputImage, width, height, isMaxSize)
+      return this.generateThumbnail(sourceFile, tmpOutputImage, width, height, isMaxSize)
         .then(function(newSource) {
-          generateFinger(newSource, function(error, b85) {
-            if(!error) {
-              // Cleanup before callback
-              fs.unlink(tmpOutputImage, console.log);
-            }
-            callback(error, b85);
+          return generateFinger(newSource).then(function(b85) {
+            // Cleanup before callback
+            fs.unlink(tmpOutputImage, console.log);
+            return b85;
           });
       });
     } else {
-      generateFinger(sourceFile, callback);
+      return generateFinger(sourceFile);
     }
   }
 };

@@ -1,6 +1,7 @@
 "use strict"
 var task_queue = require('../modules/task_queue');
 var sort_file = require('../modules/sort_file');
+var fileMatcher = require('../modules/file_type_regexp');
 var path = require('path');
 
 module.exports = function(src, destDir) {
@@ -24,14 +25,18 @@ module.exports = function(src, destDir) {
       task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 300, height: 200})
         .on('complete', addToImported)
         .on('failed', addToImported);
-
       task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true}, 'low');
 
       task_queue.queueTask('update_directory_list', { title: directory, dir: directory});
 
-      //task_queue.queueTask('prepare_video', { file: newDest});
-      task_queue.queueTask('find_faces', { title: relativeDest, file: relativeDest}, 'low');
+      if(fileMatcher.isVideo(src)) {
+        // TODO: Encode video in multiple formats and sizes, Search for faces etc.
+        task_queue.queueTask('encode_video', { title: relativeDest, file: relativeDest}, 'low');
+        //task_queue.queueTask('prepare_video', { file: newDest});
+      } else {
+        task_queue.queueTask('find_faces', { title: relativeDest, file: relativeDest}, 'low');
+      }
 
       return relativeDest;
-    });
+    }, console.error);
 };

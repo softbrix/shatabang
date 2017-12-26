@@ -22,17 +22,13 @@ var init = function(config, task_queue) {
         idx.put(sha, data.file);
         idx.flush(true);
 
-        thumbnailer.create_image_finger(sourceFile, function(error, b85) {
-          if(error) {
-            done(error);
-            return;
-          }
+        thumbnailer.create_image_finger(sourceFile).then(function(b85) {
           var idx = shIndex(idx_finger_dir);
           idx.put(b85, data.file);
-          console.log('adding: ', data.file, b85);
+          job.log('adding: ', data.file, b85);
           idx.flush(true);
           done();
-        });
+        }, done);
       });
     } else {
       done('File not found: ' + sourceFile);

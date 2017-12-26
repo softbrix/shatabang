@@ -2,6 +2,7 @@
 
 /*jslint node: true, nomen: true*/
 var shIndex = require('stureby_index');
+var shFiles = require('../modules/shatabang_files');
 var Faced = require('faced');
 var faced = new Faced();
 var path = require('path');
@@ -13,11 +14,15 @@ var init = function(config, task_queue) {
 
   task_queue.registerTaskProcessor('find_faces', function(data, job, done) {
     var relativeFilePath = data.file;
-    var sourceFileName = path.join(storageDir, relativeFilePath);
+    var sourceFileName = path.resolve(path.join(storageDir, relativeFilePath));
+
+    if(!shFiles.exists(sourceFileName)) {
+      return done('Missing file');
+    }
 
     console.log('Detecting faces', sourceFileName);
 
-    faced.detect(path.resolve(sourceFileName), function worker(faces, image, file) {
+    faced.detect(sourceFileName, function worker(faces, image, file) {
       if (!faces) {
         var errorMsg = "Could not open " + file;
         console.error(errorMsg);
@@ -34,7 +39,7 @@ var init = function(config, task_queue) {
           n: undefined  // Name
         };
         idx.put(relativeFilePath, JSON.stringify(faceInfo));
-        console.log(faceInfo, JSON.stringify(faceInfo).length);
+        job.log(faceInfo);
       });
       done();
     });

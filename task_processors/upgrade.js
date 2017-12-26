@@ -40,6 +40,10 @@ var init = function(config, task_queue) {
   });
 };
 
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 var upgrade_v1 = function(infoDirectory, storageDir, cb) {
   shFiles.listSubDirs(infoDirectory, function(error, dirs) {
     if(error) {
@@ -48,6 +52,9 @@ var upgrade_v1 = function(infoDirectory, storageDir, cb) {
     }
     // Add all images to the media index with user rating 0.5
     dirs.forEach((dir) => {
+      if(!isNumber(dir)) {
+        return;
+      }
       var yearDir = path.join(infoDirectory, dir);
       var mediaLst = fs.readFileSync(path.join(yearDir, 'media.lst'), 'UTF-8').split(',');
 
@@ -56,7 +63,8 @@ var upgrade_v1 = function(infoDirectory, storageDir, cb) {
         fs.stat(path.join(storageDir, itm), (err, stats) => {
           var fileSize = -1;
           if(err) {
-            console.log(err);
+            console.log('Upgrade check error', err);
+            return;
           } else {
             fileSize = stats.size;
           }

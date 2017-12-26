@@ -30,27 +30,28 @@ var init = function(config, task_queue) {
 
         syncLoop(mediaFiles, function(filePath, i) {
           job.log("Processing", i, filePath);
-          var deferred = Q.defer();
 
-          var resolveFile = function(path) {
+          var updateProgress = function() {
             var len = mediaFiles.length;
             job.progress(i, len, {nextSlide : i === len ? 'itsdone' : i + 1});
-            deferred.resolve(path);
+          };
+
+          var handleError = function(err) {
+            console.error("Failed to import", err);
+            // Failed to import move to unknown dir
+            shFiles.moveFile(filePath, path.join(unknownDir, path.basename(filePath)));
+            return Promise.reject(err);
           };
 
           // This needs to run synchronolusly. Add to cache after each update.
-          thumbnailer.create_image_finger(filePath, function(err, b85Finger) {
-            if(err) {
-              console.error(err);
-              return deferred.reject(err);
-            }
-
+          return thumbnailer.create_image_finger(filePath).then(function(b85Finger) {
             var items = idx.get(b85Finger);
             if(items.length > 0) {
               var duplicatesFilePath = path.join(duplicatesDir, path.basename(filePath));
               shFiles.moveFile(filePath, duplicatesFilePath);
               job.log("Exists", duplicatesFilePath);
-              resolveFile(duplicatesFilePath);
+              updateProgress();
+              return duplicatesFilePath;
             } else {
               importer(filePath, storageDir).then(function(relativePath) {
                 // TODO: add to latest imported list
@@ -60,20 +61,15 @@ var init = function(config, task_queue) {
                   time: current_timestamp(),
                   path: relativePath
                 });*/
-                resolveFile(relativePath);
-              }, function(err) {
-                console.error("Failed to import", err);
-                // Failed to import move to unknown dir
-                shFiles.moveFile(filePath, path.join(unknownDir, path.basename(filePath)));
-                deferred.reject();
-              });
+                updateProgress();
+                return relativePath;
+              }, handleError);
             }
-          });
-          return deferred.promise;
+          }, handleError);
         }).then(function(importedFiles) {
           if(importedFiles > 0) {
-            console.log('files imported:', importedFiles);
-            job.log('files imported:', importedFiles);
+            console.log('Files imported:', importedFiles);
+            job.log('Files imported:', importedFiles);
           }
           done();
         }, done);

@@ -13,9 +13,9 @@ var shFiles = require('../modules/shatabang_files');
 
 shFiles.listMediaFiles(directory, function(err, filesList) {
   filesList.forEach(function(sourceFile) {
-    thumbnailer.create_image_finger(sourceFile, function(error, b85) {
-      //console.log(sourceFile, b85.substr(0,8));
+    thumbnailer.create_image_finger(sourceFile).then(function(b85) {
+      console.log(sourceFile, b85.substr(0,8));
       idx.put(b85, sourceFile);
-    });
+    }, console.error);
   });
 });
