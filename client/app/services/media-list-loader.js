@@ -48,7 +48,8 @@ export default Service.extend({
 
           var isVideo, bigMediaFileName;
           if(movieFileRegexp.test(fileName)) {
-            bigMediaFileName = "./media/" + fileName;
+            //bigMediaFileName = "./media/" + fileName;
+            bigMediaFileName = './images/1920/' + fileName.replace(movieFileRegexp, '$1mp4');
             fileName = fileName.replace(movieFileRegexp, '$1jpg');
             isVideo = true;
           } else {
