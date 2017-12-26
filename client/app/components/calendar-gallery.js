@@ -90,13 +90,7 @@ export default Component.extend({
       window.scrollTo(dayToPixel(MAX_DAYS), 0);
     }
   },
-  years: computed('mediaLoader.folders', function() {
-    let years = this.get('mediaLoader.folders');
-    if(years.length > 0) {
-    //return this.get('mediaLoader.folders').then((years) => {
-      years.push("1111","1112","1113","1114","1115","1116");
-    }
-    return years;
-    //});
+  years: computed('mediaLoader', function() {
+    return this.get('mediaLoader.folders');
   }),
 });
