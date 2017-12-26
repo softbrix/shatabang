@@ -8,11 +8,16 @@ export default Component.extend({
   classNames: ['gallery'],
   scrollAlmostDown: service('scroll-almost-down'),
   mediaLoader: service('media-list-loader'),
+  imageWidthService: service('image-width'),
   mediaCount: 64,
   activeMedia: undefined,
   mediaList: [],
   BIG_PATH: './images/1920/',
 
+  init() {
+    this._super(...arguments);
+    this.get('imageWidthService').reset();
+  },
   didInsertElement() {
     this._super(...arguments);
 
@@ -26,7 +31,7 @@ export default Component.extend({
       loadMedia();
 
       that.get('mediaLoader').fullyLoadedPromise().then(function() {
-        console.log('fullyLoaded');
+
         // Check if we have more to load or if we display to few
         if(that.get('scrollAlmostDown').scrollCheck() ||
            that.get('mediaList').length < that.get('mediaCount')) {
@@ -47,8 +52,6 @@ export default Component.extend({
         that.set('windowscrollCleanup', deregisterer);
       });
     });
-
-    console.log('activate index');
   },
   willDestroyElement() {
     this._super(...arguments);
@@ -74,7 +77,7 @@ export default Component.extend({
       $(window).off('keydown');
     },
     moveRight: function(event) {
-      if ( event) {
+      if(event) {
         event.preventDefault();
       }
       var it = this.get('activeMediaIterator');
@@ -105,7 +108,6 @@ export default Component.extend({
       if(!event.defaultPrevented) {
         $("#interactiveOverlay").toggle();
       }
-      console.log('Oupsie', event);
     }
   },
   _preloadImages: function(it) {

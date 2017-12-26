@@ -33,15 +33,15 @@ export default Service.extend({
   init: function() {
     this._super(...arguments);
 
+    this.reset();
+  },
+  reset() {
     var imageWidth = this.get('imageWidth');
     var imagesPWidth = Math.ceil($('body').width() / imageWidth);
     imagesPWidth = Math.max(4, imagesPWidth); // At least 4 images in with
 
     this.set('imagesPWidth', imagesPWidth);
-
-    console.log('imagesPWidth: ', imagesPWidth);
   },
-
   zoomIn() {
     var imagesPWidth = this.get('imagesPWidth');
     if(imagesPWidth > 0) {

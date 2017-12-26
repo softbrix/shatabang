@@ -45,7 +45,7 @@ export default Component.extend({
   init() {
     this._super(...arguments);
 
-    this.set('imageWidthService.ratio', '100');
+    this.set('imageWidthService.imagesPWidth', 1);
     this.days = [];
 
     // Year 2000 was a leap year
