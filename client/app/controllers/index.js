@@ -9,7 +9,9 @@ export default Controller.extend({
   init() {
     this._super(...arguments);
     // Only init if we are authenticated...
-    this.get('mediaLoader');
+    if (this.get('session.isAuthenticated')) {
+      this.get('mediaLoader');
+    }
     this.get('imageWidthService');
   },
   actions: {

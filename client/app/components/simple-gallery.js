@@ -74,7 +74,9 @@ export default Component.extend({
       $(window).off('keydown');
     },
     moveRight: function(event) {
-      event.preventDefault();
+      if ( event) {
+        event.preventDefault();
+      }
       var it = this.get('activeMediaIterator');
       if(it.hasPrev()) {
         var prev = it.prev();
@@ -86,7 +88,9 @@ export default Component.extend({
       }
     },
     moveLeft: function(event) {
-      event.preventDefault();
+      if(event) {
+        event.preventDefault();
+      }
       var it = this.get('activeMediaIterator');
       if(it.hasNext()) {
         var next = it.next();
