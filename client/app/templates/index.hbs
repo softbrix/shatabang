@@ -11,16 +11,15 @@
     <i class="fa fa-minus-square onlyMobile" aria-hidden="true"></i>
   </a>
 
-<!-- TODO: Implement filter functionallity
-  |
-  <label class="notMobile">Date</label>
-    <input type="date" value="2017-01-04" id="fromDateIpt" class="datePicker">
+  <div style="float: right; display: none">
+    <label class="notMobile">Date</label>
+    <input type="date" value="{{fromDate}}" id="fromDateIpt" class="datePicker" onchange={{action 'fromDateChanged'}} />
     -
-    <input type="date" value="2017-01-04" id="toDateIpt" class="datePicker">
-  |
-  <label class="notMobile">Rating:</label>
-  <input type="number" value="5" min="1" max="10" id="ratingIpt" class="rangePicker">
--->
+    <input type="date" value="{{toDate}}" id="toDateIpt" class="datePicker" onchange={{action 'toDateChanged'}} />
+    |
+    <label class="notMobile">Rating:</label>
+    <input type="number" value="5" min="1" max="10" id="ratingIpt" class="rangePicker" />
+  </div>
 
   <div  style="display: none">
     Selection: <span id="selectCnt">0</span>
