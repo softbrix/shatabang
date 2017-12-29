@@ -63,8 +63,9 @@ A key-value in memory NoSQL database used by the session and task processor.
 
 ## Mac OS X:
 
-sudo brew update  
-sudo brew install exiftool redis  
+brew tap homebrew/science
+sudo brew install exiftool redis opencv@2
+brew link --force opencv@2
 
 ## Ubuntu:
 

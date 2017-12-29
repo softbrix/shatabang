@@ -75,7 +75,7 @@
     "stureby_index": "2.3.0",
     "touch": "^1.0.0",
     "underscore": "*",
-    "vega_media_info": "^1.1.0"
+    "vega_media_info": "^1.2.0"
   },
   "devDependencies": {
     "mocha": "~2.3.3",

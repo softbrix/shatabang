@@ -59,6 +59,7 @@ module.exports = {
         // I think we should generate a single screenshot first
         // and then create a gif/png thumbnail with multiple images
         try {
+          console.log('Creating video thumb: ', sourceFileName);
           ffmpeg(sourceFileName)
             .on('error', function(err) {
               deffered.reject(err);
