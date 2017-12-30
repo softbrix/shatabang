@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libimage-exiftool-perl \
   libvips-dev \
   libav-tools && \
+  libavcodec-extra && \
 
   # Cleaning APT directory
   rm -rf /var/lib/apt/lists/*  && \
@@ -30,11 +31,11 @@ RUN mkdir -p /mnt/sorterat/ && \
 #Install source
 # TODO: git checkout
 COPY *.json /usr/src/shatabang/
-COPY client/*.json /usr/src/shatabang/client/
+# COPY client/*.json /usr/src/shatabang/client/
 COPY client /usr/src/shatabang/client
 
 # Install app dependencies
-RUN npm install && \
+RUN npm install --only=production && \
 # Build client
     cd /usr/src/shatabang/client && \
     npm install && \
@@ -42,11 +43,14 @@ RUN npm install && \
     ## Cleanup
     npm cache clean --force
 
+# COPY . .
 COPY modules /usr/src/shatabang/modules
 COPY routes /usr/src/shatabang/routes
 COPY task_processors /usr/src/shatabang/task_processors
 COPY *.js /usr/src/shatabang/
 COPY install_scripts/docker_config_server.json /usr/src/shatabang/config_server.json
+
+# USER node
 
 EXPOSE 3001
 CMD npm run start && sh
