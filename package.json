@@ -49,7 +49,7 @@
     "express": "4.13.3",
     "express-session": "^1.13.0",
     "faced": "^1.2.0",
-    "fluent-ffmpeg": "2.1.2",
+    "fluent-ffmpeg": "git+https://github.com/mansehr/node-fluent-ffmpeg.git",
     "fs-extra": "*",
     "ioredis": "3.2.1",
     "jsonfile": "^2.2.3",
