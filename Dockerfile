@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libopencv-dev \
   libimage-exiftool-perl \
   libvips-dev \
-  libav-tools && \
+  libav-tools \
   libavcodec-extra && \
 
   # Cleaning APT directory
