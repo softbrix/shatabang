@@ -14,17 +14,10 @@ var express        = require("express"),
     GoogleStrategy = require('passport-google-oauth20').Strategy,
     LocalStrategy  = require('passport-local').Strategy;
 
-var config = require('./config_server.json');
+var config = require('./config.js');
 
 // API Access link for creating client ID and secret:
 // https://code.google.com/apis/console/
-var ADMIN_HASH = config.admin_hash,
-    SERVER_SALT = config.server_salt;
-
-var REDIS_HOST = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
-var REDIS_PORT = process.env.REDIS_PORT_6379_TCP_PORT || 6379;
-config.baseUrl = process.env.BASE_URL || config.baseUrl || '/';
-config.port = process.env.PORT || config.port || 3000;
 
 if (process.env.GOOGLE_AUTH) {
   console.log('ENV variable overwriting the google auth configuration');
@@ -120,15 +113,15 @@ if(config.google_auth) {
     }
   ));
 }
-if(ADMIN_HASH) {
+if(config.adminHash) {
   console.log('Loading local with admin authentication.');
   passport.use(new LocalStrategy(
     function(username, password, done) {
         if ("admin" !== username.toLowerCase()) {
           return done(null, false, { message: 'Incorrect username.' });
         }
-        var hash = sha256(password + SERVER_SALT);
-        if (hash !== ADMIN_HASH) {
+        var hash = sha256(password + config.serverSalt);
+        if (hash !== config.adminHash) {
           return done(null, false, { message: 'Incorrect password.' });
         }
         return done(null, {username: 'admin', displayName: 'admin'});
@@ -141,13 +134,13 @@ config.passport = passport;
 app.use(bodyParser.json());
 app.use(compression());
 app.use(session({
-	secret: SERVER_SALT,
+	secret: config.serverSalt,
 	name:   'cookie67',
   resave: true,
   saveUninitialized: true,
   store: new redisStore({
-    host: REDIS_HOST,
-    port: REDIS_PORT,
+    host: config.redisHost,
+    port: config.redisPort,
     ttl :  900
   })
 }));

@@ -17,7 +17,7 @@ var processors = [
     require('./task_processors/upgrade'),
   ];
 
-var config = require('./config_server.json');
+var config = require('./config.js');
 
 processors.forEach(function(processor) {
   processor.init(config, task_queue);

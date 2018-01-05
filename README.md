@@ -67,12 +67,20 @@ brew tap homebrew/science
 sudo brew install exiftool redis opencv@2
 brew link --force opencv@2
 
-## Ubuntu:
+## Debian ( >= 9):
+
+sudo apt-get update  
+sudo apt-get install git libimage-exiftool-perl libvips-dev build-essential ffmpeg redis-server -y  
+
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -  
+sudo apt-get install -y nodejs
+
+## Debian ( < 9):
 
 sudo apt-get update  
 sudo apt-get install git libimage-exiftool-perl libvips-dev build-essential libav-tools redis-server -y  
 
-curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -  
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -  
 sudo apt-get install -y nodejs
 
 libav-tools will install avprobe, need to create a symbolic link so it can be use by fluent-ffmpeg.  

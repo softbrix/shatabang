@@ -1,15 +1,29 @@
 web:
   image: 'softbrix/shatabang'
   restart: always
-  hostname: 'h.sehr.se/shatabang/'
+  hostname: 'shatabang'
+  restart: always
   environment:
-   - PORT=3001
+   - BASE_URL=http://localhost/
+   - _GOOGLE_AUTH=
+   - _GOOGLE_AUTH_ALLOW=
+   - _ADMIN_HASH=
+   - _SERVER_SALT=
   ports:
-    - '3001:3001'
+    - '3001:3000'
   volumes:
-    - './cache:/mnt/cache'
+    - './data/cache:/mnt/cache'
     - './data/sorted/:/mnt/sorterat'
   links:
     - "redis:redis"
 redis:
   image: redis
+webdav:
+  image: softbrix/webdav
+  ports:
+    - "3012:80"
+  volumes:
+    - ./data/sorted/import:/webdav
+  environment:
+    - READWRITE=true
+    - HTPASSWD=webdav:kK1eUy0t2agv6

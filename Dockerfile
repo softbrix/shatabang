@@ -1,54 +1,54 @@
-FROM node:carbon
+FROM node:carbon-stretch
 MAINTAINER Andreas Sehr
 
-WORKDIR /usr/src/shatabang
+ENV STORAGE_DIR /mnt/sorterat/
+ENV CACHE_DIR /mnt/cache/
+ENV SERVER_SALT 6548ee70d7d258e34eaf4daf9d8c30214bf8163e
+ENV ADMIN_HASH 98962591ddd626a5857a82e4ad876975e71e1a9cf586ff4cc4c57eb453d172cd
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   git \
   libopencv-dev \
   libimage-exiftool-perl \
   libvips-dev \
-  libav-tools \
-  libavcodec-extra && \
-
-  # Cleaning APT directory
+  ffmpeg \
+  yarn && \
+# Cleaning APT directory
   rm -rf /var/lib/apt/lists/*  && \
-
-  # Install npm modules
+# Install npm modules
   npm install -g ember-cli && \
-
-  # libav-tools will install avprobe, need to create a symbolic link so it
-  # can be use by the node package fluent-ffmpeg.
-  ln -s /usr/bin/avprobe /usr/bin/ffprobe && \
-  ln -s /usr/bin/avconv /usr/bin/ffmpeg
-
-
 # Create app directory
-RUN mkdir -p /mnt/sorterat/ && \
-    mkdir -p /mnt/cache && \
-    mkdir -p /usr/src/shatabang/client
+  mkdir -p /mnt/sorterat/ && \
+  mkdir -p /mnt/cache && \
+  mkdir -p /usr/src/shatabang/client
 
 #Install source
 # TODO: git checkout
 COPY *.json /usr/src/shatabang/
-# COPY client/*.json /usr/src/shatabang/client/
-COPY client /usr/src/shatabang/client
+COPY *.lock /usr/src/shatabang/
+COPY client/*.json /usr/src/shatabang/client/
+#COPY client /usr/src/shatabang/client
+
+WORKDIR /usr/src/shatabang
 
 # Install app dependencies
-RUN npm install --only=production && \
-# Build client
-    cd /usr/src/shatabang/client && \
-    npm install && \
-    ember build --environment="production" && \
-    ## Cleanup
-    npm cache clean --force
+RUN yarn install --production --non-interactive --pure-lockfile && \
+    # Build client
+    cd client && \
+    npm install
 
-# COPY . .
-COPY modules /usr/src/shatabang/modules
-COPY routes /usr/src/shatabang/routes
-COPY task_processors /usr/src/shatabang/task_processors
-COPY *.js /usr/src/shatabang/
-COPY install_scripts/docker_config_server.json /usr/src/shatabang/config_server.json
+COPY . .
+#COPY modules /usr/src/shatabang/modules
+#COPY routes /usr/src/shatabang/routes
+#COPY task_processors /usr/src/shatabang/task_processors
+#COPY *.js /usr/src/shatabang/
+#COPY install_scripts/docker_config_server.json /usr/src/shatabang/config_server.json
+
+# Create empty config
+RUN touch config_server.json && \
+# Build client
+    cd client && \
+    ember build --environment="production"
 
 # USER node
 

@@ -44,7 +44,7 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-    ENV.rootURL = '/shatabang/';
+    ENV.rootURL = './';
     ENV.locationType = 'hash';
   }
 
