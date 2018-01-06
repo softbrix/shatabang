@@ -45,7 +45,7 @@ COPY . .
 #COPY install_scripts/docker_config_server.json /usr/src/shatabang/config_server.json
 
 # Create empty config
-RUN touch config_server.json && \
+RUN echo '{}' > config_server.json && \
 # Build client
     cd client && \
     ember build --environment="production"
