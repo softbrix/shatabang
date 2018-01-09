@@ -45,7 +45,7 @@ module.exports = function(environment) {
 
   if (environment === 'production') {
     ENV.rootURL = '/';
-    ENV.locationType = 'histoy';
+    ENV.locationType = 'auto';
   }
 
   if (environment === 'docker') {

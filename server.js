@@ -148,11 +148,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 var sendIndex = function(req,res){
-      res.sendFile(__dirname + "/client/dist/index.html");
+      res.sendFile(__dirname + '/client/dist/index.html');
 };
 
-app.get('/',sendIndex);
-app.get('/login',sendIndex);
+app.get('/', sendIndex);
+app.get('/login', sendIndex);
 
 // Simple route middleware to ensure user is authenticated.
 //   Use this route middleware on any resource that needs to be protected.  If
@@ -173,8 +173,30 @@ app.all('/images/*', requireAuthentication);
 app.all('/media/*', requireAuthentication);
 app.all('/kue/*', requireAuthentication);
 
+// Images is the route to the cached (resized) images
 app.use('/images', express.static(cacheDir));
+// Media will laod the original
 app.use('/media', express.static(storageDir));
+
+// Video route will first serve the cached movie and fallback to the original
+// file if not found. Images should be loaded from the image dir
+const movieFileRegexp = /(.+)(mp4|m4v|avi|mov|mpe?g)$/gi;
+app.use('/video', function(req, res, next) {
+    console.log('cache', req.url);
+    req.shOriginalUrl = req.url;
+    // Look for a transcoded mp4 file in the cache
+    req.url = path.join('/1920', req.url.replace(movieFileRegexp, '$1mp4'));
+    console.log('cache2', req.url);
+    next();
+}, express.static(path.join(cacheDir)));
+app.use('/video', function(req, res, next) {
+  if(req.shOriginalUrl) {
+    // Reset the url if we have modified it
+    req.url = req.shOriginalUrl;
+  }
+  console.log('Storage', req.url, req.shOriginalUrl);
+  next();
+}, express.static(storageDir));
 
 // Map the routes
 routes.forEach(function(route) {
