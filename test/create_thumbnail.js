@@ -1,6 +1,6 @@
 "use strict"
 
-var thumbnailer = require('./modules/thumbnailer');
+var thumbnailer = require('../modules/thumbnailer');
 
 if(process.argv.length < 6) {
     console.log('Must give source, destination, width and height as parameters');

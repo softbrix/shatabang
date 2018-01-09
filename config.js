@@ -2,9 +2,10 @@
 var config = require('./config_server.json');
 
 /*
-Transfer onfig values from the environment to a configuration object
+Transfer config values from the environment to a configuration object used by
+the server and the task_processor.
 
-The config file is used as a fallback
+The config file 'config_server.json' is used as a fallback
 */
 
 if(config.admin_hash || config.server_salt) {

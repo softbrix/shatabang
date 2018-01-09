@@ -101,11 +101,39 @@ start the required redis server which will be used by the task processor.
 `` docker-compose up -d ``
 
 # Config
-The application needs a config_server.json file with information regarding the
-different folders and information about the authentication.
+
+The application can use a configured with a file or with environment variables.
+The environment variables will be used primarily and the config values in the
+file if not configured in the context.
+Configurable settings is regarding the different folders and settings about the
+ authentication.
+
+ | Env       | Config file  | Default value | Description                          |
+ | --------- | -------------| ------------- | ------------------------------------ |
+ | BASE_URL  | baseUrl      | '/'           | The url this application is served at, needs to be configured if using authentication with redirection or if the application is not in the root of the server context |
+ | PORT      | port         | 3000          | The port number the server is exposing |
+ | SERVER_SALT | serverSalt | -             | This should be a unique hash for the server |
+ | ADMIN_HASH  | adminHash  | -             | The unique hash for the admin password |
+ | STORAGE_DIR | storageDir | -             | The path to the root for the media storage |
+ | CACHE_DIR   | cacheDir   | -             | The path to the root for the media cache |
+ | REDIS_PORT_6379_TCP_ADDR | redisHost | '127.0.0.1' | The host to the redis server |
+ | REDIS_PORT_6379_TCP_PORT | redisPort | 6379 | The port to the redis server |
+ | GOOGLE_AUTH       | google_auth object | - | Read more in the [following chapter](#google-authentication) |
+ | GOOGLE_AUTH_ALLOW | google_auth.allowed_ids | - | ^^|
+
+## by Environment variables
+The docker compose file will list all configurable variables with a leading underscore.
+
+Set the environment variable before starting the application.
+
+## by File
+
 To create the configuration file it simplest if you run the shatabang_config.sh script from the root directory.
 
 `` ./install_scripts/shatabang_config.sh ``
+
+This will ask you all the necessary questions and write the answers to a
+**config_server.json** file.
 
 ## Google authentication
 

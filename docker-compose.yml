@@ -4,16 +4,16 @@ web:
   hostname: 'shatabang'
   restart: always
   environment:
-   - BASE_URL=http://localhost/
+   - _BASE_URL=http://localhost:3000/
    - _GOOGLE_AUTH=
    - _GOOGLE_AUTH_ALLOW=
    - _ADMIN_HASH=
    - _SERVER_SALT=
   ports:
-    - '3001:3000'
+    - '3000:3000'
   volumes:
     - './data/cache:/mnt/cache'
-    - './data/sorted/:/mnt/sorterat'
+    - './data/sorted/:/mnt/sorted'
   links:
     - "redis:redis"
 redis:

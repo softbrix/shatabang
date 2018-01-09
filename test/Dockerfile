@@ -11,5 +11,4 @@ RUN npm install node-sha1 sharp ascii85 imghash image-hash canvas-phash sharp-ph
 COPY img_finger.js /usr/src/shatabang
 COPY data /usr/src/shatabang/data
 
-EXPOSE 3001
 CMD node img_finger.js

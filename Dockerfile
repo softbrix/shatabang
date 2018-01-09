@@ -1,10 +1,12 @@
 FROM node:carbon-stretch
 MAINTAINER Andreas Sehr
 
-ENV STORAGE_DIR /mnt/sorterat/
+ENV STORAGE_DIR /mnt/sorted/
 ENV CACHE_DIR /mnt/cache/
 ENV SERVER_SALT 6548ee70d7d258e34eaf4daf9d8c30214bf8163e
 ENV ADMIN_HASH 98962591ddd626a5857a82e4ad876975e71e1a9cf586ff4cc4c57eb453d172cd
+ENV BASE_URL /
+ENV PORT 3000
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   git \
@@ -18,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install npm modules
   npm install -g ember-cli && \
 # Create app directory
-  mkdir -p /mnt/sorterat/ && \
+  mkdir -p /mnt/sorted/ && \
   mkdir -p /mnt/cache && \
   mkdir -p /usr/src/shatabang/client
 
@@ -46,11 +48,11 @@ COPY . .
 
 # Create empty config
 RUN echo '{}' > config_server.json && \
+  chmod +x docker_start.sh && \
 # Build client
-    cd client && \
-    ember build --environment="production"
+    npm run build_client_docker
 
 # USER node
 
-EXPOSE 3001
-CMD npm run start && sh
+EXPOSE 3000
+CMD ./docker_start.sh && sh

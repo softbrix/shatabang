@@ -4,7 +4,7 @@
 module.exports = function(environment) {
   let ENV = {
     modulePrefix: 'client',
-    environment,
+    environment: environment,
     rootURL: '/',
     locationType: 'auto',
     EmberENV: {
@@ -44,7 +44,12 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-    ENV.rootURL = './';
+    ENV.rootURL = '/';
+    ENV.locationType = 'histoy';
+  }
+
+  if (environment === 'docker') {
+    ENV.rootURL = '/replacemeurl/';
     ENV.locationType = 'hash';
   }
 

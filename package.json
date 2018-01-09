@@ -9,12 +9,13 @@
   },
   "scripts": {
     "dev": "npm-run-all --parallel start_redis run_server run_taskprocessor",
-    "test": "vows --spec --isolate",
+    "test": "mocha",
     "start": "npm-run-all --parallel run_server run_taskprocessor",
     "start_redis": "redis-server",
     "run_server": "node server.js",
     "run_taskprocessor": "node task_processor.js",
     "build_client": "cd client && ember build --environment='production'",
+    "build_client_docker": "cd client && ember build --environment='docker'",
     "postinstall": "cd client && npm install;"
   },
   "main": "server.js",
