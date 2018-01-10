@@ -6,6 +6,7 @@ ENV CACHE_DIR /mnt/cache/
 ENV SERVER_SALT 6548ee70d7d258e34eaf4daf9d8c30214bf8163e
 ENV ADMIN_HASH 98962591ddd626a5857a82e4ad876975e71e1a9cf586ff4cc4c57eb453d172cd
 ENV BASE_URL /
+ENV BUILD_BASE_URL /replaceme/
 ENV PORT 3000
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -50,7 +51,7 @@ COPY . .
 RUN echo '{}' > config_server.json && \
   chmod +x docker_start.sh && \
 # Build client
-    npm run build_client_docker
+    npm run build_client
 
 # USER node
 

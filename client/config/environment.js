@@ -44,12 +44,7 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-    ENV.rootURL = '/';
-    ENV.locationType = 'auto';
-  }
-
-  if (environment === 'docker') {
-    ENV.rootURL = '/replacemeurl/';
+    ENV.rootURL = process.env.BUILD_BASE_URL || '/';
     ENV.locationType = 'hash';
   }
 

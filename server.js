@@ -1,20 +1,19 @@
 "use strict";
 
-var express        = require("express"),
+var config         = require('./config.js'),
+    express        = require("express"),
     bodyParser     = require('body-parser'),
     compression    = require('compression'),
     shFiles        = require('./modules/shatabang_files'),
     session        = require('express-session'),
     sha256         = require('sha256'),
     kue            = require('kue'),
-    redisStore     = require( 'connect-redis' )( session ),
+    RedisStore     = require('connect-redis')( session ),
     app            = express(),
     path           = require('path'),
     passport       = require('passport'),
     GoogleStrategy = require('passport-google-oauth20').Strategy,
     LocalStrategy  = require('passport-local').Strategy;
-
-var config = require('./config.js');
 
 // API Access link for creating client ID and secret:
 // https://code.google.com/apis/console/
@@ -136,9 +135,9 @@ app.use(compression());
 app.use(session({
 	secret: config.serverSalt,
 	name:   'cookie67',
-  resave: true,
+  resave: false,
   saveUninitialized: true,
-  store: new redisStore({
+  store: new RedisStore({
     host: config.redisHost,
     port: config.redisPort,
     ttl :  900
@@ -171,6 +170,7 @@ function requireAuthentication(req, res, next) {
 // Secure the api and images path
 app.all('/images/*', requireAuthentication);
 app.all('/media/*', requireAuthentication);
+app.all('/video/*', requireAuthentication);
 app.all('/kue/*', requireAuthentication);
 
 // Images is the route to the cached (resized) images

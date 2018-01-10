@@ -15,7 +15,6 @@
     "run_server": "node server.js",
     "run_taskprocessor": "node task_processor.js",
     "build_client": "cd client && ember build --environment='production'",
-    "build_client_docker": "cd client && ember build --environment='docker'",
     "postinstall": "cd client && npm install;"
   },
   "main": "server.js",
@@ -41,7 +40,7 @@
     "babel-preset-react": "^6.5.0",
     "body-parser": "^1.15.0",
     "compression": "^1.6.1",
-    "connect-redis": "^3.0.2",
+    "connect-redis": "3.3.3",
     "express": "4.13.3",
     "express-session": "^1.13.0",
     "faced": "^1.2.0",
