@@ -51,7 +51,6 @@
     "glob": "^4.5.3",
     "loader.js": "^4.2.3",
     "morgan": "^1.8.1",
-    "safe-memory-cache": "^1.5.1",
     "sjotorp_image": "1.1.0"
   },
   "engines": {

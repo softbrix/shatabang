@@ -36,12 +36,14 @@ export default Component.extend({
     this._super(...arguments);
     this._imgResize();
     this._screenResize();
-    window.addEventListener("resize", this._screenResize.bind(this));
+    this._resizeEventMthd = this._screenResize.bind(this);
+    window.addEventListener("resize", this._resizeEventMthd);
   },
   willDestroyElement() {
     this._super(...arguments);
-    window.removeEventListener("resize", this._screenResize);
+    window.removeEventListener("resize", this._resizeEventMthd);
   },
+  _resizeEventMthd: undefined,  // Used for binding this and as event listener
   _screenResize: function() {
     var size = getScreenSize();
     this.set('screenSize', {w: size.width, h: size.height});

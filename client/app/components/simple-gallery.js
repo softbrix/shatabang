@@ -3,11 +3,15 @@ import $ from 'jquery';
 
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
+import Ember from 'ember';
+
+const Logger = Ember.Logger;
 
 export default Component.extend({
   classNames: ['gallery'],
   scrollAlmostDown: service('scroll-almost-down'),
   mediaLoader: service('media-list-loader'),
+  fullscreenService: service('fullscreen'),
   imageWidthService: service('image-width'),
   mediaCount: 64,
   activeMedia: undefined,
@@ -55,7 +59,7 @@ export default Component.extend({
   },
   willDestroyElement() {
     this._super(...arguments);
-    console.log('deactivate index');
+    Logger.debug('deactivate index');
     var cleanup = this.get('windowscrollCleanup');
     if(cleanup !== undefined) {
       cleanup();
@@ -63,6 +67,7 @@ export default Component.extend({
   },
   actions: {
     mediaClicked: function(a) {
+      // Show a single media in overlay
       this.set('activeMedia', a);
 
       var it = this.get('mediaLoader.tree').leafIterator();
@@ -73,8 +78,12 @@ export default Component.extend({
       $(window).on('keydown', this._handleKey.bind(this));
     },
     resetActiveMedia: function() {
+      // Go back to gallery
       this.set('activeMedia', undefined);
       $(window).off('keydown');
+      if(this.get('fullscreenService.isFullscreen')) {
+        this.get('fullscreenService').closeFullscreen();
+      }
     },
     moveRight: function(event) {
       if(event) {
@@ -136,7 +145,7 @@ export default Component.extend({
     } else if(event.key === "Escape" || event.keyCode === 27) {
       this.actions.resetActiveMedia.apply(this);
     } else {
-      console.log('unknown key', event.key,event.keyCode);
+      Logger.debug('unknown key', event.key,event.keyCode);
     }
   }
 });

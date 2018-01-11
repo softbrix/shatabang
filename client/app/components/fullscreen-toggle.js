@@ -1,49 +1,15 @@
 import Component from '@ember/component';
+import { computed } from '@ember/object';
+import { inject } from '@ember/service';
 
 export default Component.extend({
+  fullscreenService: inject('fullscreen'),
   actions: {
     toggleFullscreen: function() {
-      if(this.get('isFullscreen')) {
-        if(cancelFullScreen()) {
-          this.set('isFullscreen', false);
-        }
-      } else {
-        if(requestFullscreen()) {
-          this.set('isFullscreen', true);
-        }
-      }
+      this.get('fullscreenService').toggleFullscreen();
     }
   },
-  isFullscreen: false
+  isFullscreen: computed('fullscreenService.isFullscreen', function() {
+    return this.get('fullscreenService.isFullscreen');
+  })
 });
-
-function cancelFullScreen() {
-  if (document.cancelFullScreen) {
-    document.cancelFullScreen();
-  } else if (document.msCancelFullscreen) {
-    document.msCancelFullScreen();
-  } if (document.mozCancelFullScreen) {
-    document.mozCancelFullScreen();
-  } else if (document.webkitCancelFullScreen) {
-    document.webkitCancelFullScreen();
-  } else {
-    return false;
-  }
-  return true;
-}
-
-function requestFullscreen() {
-  let elem = document.body;
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.msRequestFullscreen) {
-    elem.msRequestFullscreen();
-  } else if (elem.mozRequestFullScreen) {
-    elem.mozRequestFullScreen();
-  } else if (elem.webkitRequestFullscreen) {
-    elem.webkitRequestFullscreen();
-  } else {
-    return false;
-  }
-  return true;
-}

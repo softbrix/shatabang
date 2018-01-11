@@ -13,12 +13,18 @@
   <div class="move_left"><a onclick={{action 'moveLeft'}}><i class="fa fa-angle-left" aria-hidden="true"></i></a></div>
   <div class="move_right"><a onclick={{action 'moveRight'}}><i class="fa fa-angle-right" aria-hidden="true"></i></a></div>
   <div id="interactiveOverlay" >
-    <button class="float_right close_button" {{action 'resetActiveMedia'}}>Close</button>
+    <div class="top_right_btns">
+      {{fullscreen-toggle class="float_left"}}
+      <a onclick={{action 'resetActiveMedia'}} style="margin-left: 1em;">
+        <span class=" btn btn-primary btn-sm notMobile"> {{yield}}
+          Close </span>
+        <i class="fa fa-window-close onlyMobile" aria-hidden="true"></i>
+      </a>
+    </div>
     {{#if activeMedia.isImage}}
       <a href="{{activeMedia.downloadUrl}}" class="download_link" target="_blank">Download</a>
     {{/if}}
     {{activeMedia.img}}
-    {{fullscreen-toggle class="float_left"}}
   </div>
 </div>
 {{/if}}

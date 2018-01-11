@@ -1,7 +1,6 @@
 
 /*jshint node:true*/
 var imageGenerator = require('sjotorp_image');
-var cache = require('safe-memory-cache')({limit: 1024, maxTTL: 1*60*1000});
 
 module.exports = function(app) {
   var express = require('express');
@@ -14,35 +13,53 @@ module.exports = function(app) {
     res.send(images.replace(new RegExp("2017", 'g'), req.params.year)).end();
   });
 
-  function renderImage(req, res, width, height, addStripes) {
+  function renderImage(f,width, height, addStripes, cb) {
+    var color = imageGenerator.generateColor(f);
+    imageGenerator.generateImage(width, height, color, function(err, image) {
+      if(addStripes) {
+        var whiteColor = {r: 255, g: 255, b: 255, a: 255};
+        imageGenerator.addStripes(image.data, whiteColor, function(err, image) {
+          cb(image.data);
+        });
+      } else {
+        cb(image.data);
+      }
+    });
+  }
+
+  function sendImage(res, img) {
     res.contentType('image/jpeg');
-    var cachedData = cache.get(req.url);
-    if(cachedData) {
-      res.end(cachedData);
-    } else {
-      var fileName = JSON.stringify(req.params);
-      var color = imageGenerator.generateColor(fileName);
-      imageGenerator.generateImage(width, height, color, function(err, image) {
-        if(addStripes) {
-          var whiteColor = {r: 255, g: 255, b: 255, a: 255};
-          imageGenerator.addStripes(image.data, whiteColor, function(err, image) {
-            cache.set(req.url, image.data);
-            res.end(image.data);
-          });
-        } else {
-          cache.set(req.url, image.data);
-          res.end(image.data);
-        }
-      });
-    }
+    res.end(img);
+  }
+
+  var MAX = 16;
+  var bigImages = [], smallImages = [], count = 0;
+  function addBig(img) {
+    bigImages.push(img);
+  }
+  function addSmall(img) {
+    smallImages.push(img)
+  }
+  for(var i = 0; i < MAX; ++i) {
+    var w = Math.round(100 + Math.random()*1820), h = Math.round(100 + Math.random()*980);
+    renderImage(i,w, h, true, addBig);
+    renderImage(i, 300, 200, false, addSmall);
+  }
+
+  function next() {
+      ++count;
+      if(count >= MAX) {
+        count = 0;
+      }
+      return count;
   }
 
   imageRouter.get('/1920/:year/:month/:day/:file', function(req, res) {
-    renderImage(req, res, Math.round(100 + Math.random()*1820), Math.round(100 + Math.random()*980), true);
+    sendImage(res, bigImages[next()]);
   });
 
   imageRouter.get('/300/:year/:month/:day/:file', function(req, res) {
-    renderImage(req, res, 300, 200);
+    sendImage(res, smallImages[next()]);
   });
 
   app.use('/images/', imageRouter);

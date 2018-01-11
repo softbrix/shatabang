@@ -1,10 +1,13 @@
+/* global Promise */
+
 import $ from 'jquery';
+import Ember from 'ember';
 import Service from '@ember/service';
 import { Promise as EmberPromise, defer } from 'rsvp';
 import DibbaTree from 'npm:dibba_tree';
 
+const Logger = Ember.Logger;
 const movieFileRegexp = /(.+)(mp4|m4v|avi|mov|mpe?g)$/gi;
-
 
 // "2016/03/14/222624.jpg"
 const fileNameRegexp = /^([\d]{4}).?(\d{2}).?(\d{2}).?(\d{2})(\d{2})(\d{2})/;
@@ -14,7 +17,7 @@ function fileName2Date(fileName) {
   if(result !== undefined && result !== null) {
     date = new Date(result[1], result[2]-1, result[3], result[4], result[5], result[6]);
   } else {
-      console.log('Unknown date or file type' ,fileName);
+      Logger.error('Unknown date or file type' ,fileName);
   }
   return date;
 }
@@ -82,35 +85,29 @@ export default Service.extend({
           .then(function (response) {
             var images = response.split(',');
 
-            console.log(images);
+            Logger.info(images);
 
             if(folder !== 'import') {
               importImages(images);
             }
             return images.length;
-          }, function(error) {
-            console.log(error);
-            if(error.status === 401) {
-
-            }
           });
       };
 
       // This loads the first years image list
       loadImageList(folders[0])
         .then(function() {
-          console.log('resolving');
+          Logger.debug('resolving');
           loadedDeferred.resolve(tree);
           // Load the rest of the images
           var promises = folders.slice(1).map(loadImageList);
           Promise.all(promises).then(values => {
-            console.log(values, tree.getSize());
+            Logger.info(tree.getSize(), values);
             that.set('isFullyLoaded', true);
             fullyLoadedDeferred.resolve(values);
           }).catch(fullyLoadedDeferred.reject);
         })
         .catch(function (response) {
-          console.log(response);
           loadedDeferred.reject('Failed to resolve image tree' + response);
         });
     });
