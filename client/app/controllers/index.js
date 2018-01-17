@@ -21,11 +21,9 @@ export default Controller.extend({
 
       this.get('mediaLoader').fullyLoadedPromise().then(() => {
         var it = tree.leafIterator();
-        var d = now;
-        if(it.hasNext()) {
-          d = it.next().date;
-        }
-        this.set('fromDate', d.toLocaleDateString());
+        this.set('fromDate', (it.hasPrev() ? it.next().date : now).toLocaleDateString());
+        var itl = tree.leafIteratorReverse();
+        this.set('toDate', (itl.hasPrev() ? itl.prev().date : now).toLocaleDateString());
       });
     }
     this.get('imageWidthService');
@@ -33,7 +31,7 @@ export default Controller.extend({
   actions: {
     zoomIn: function() { this.get('imageWidthService').zoomIn(); },
     zoomOut: function() { this.get('imageWidthService').zoomOut(); },
-    fromDateChanged: function(e) { console.log(e.target.value); },
-    toDateChanged: function(e) { console.log(e.target.value); }
+    fromDateChanged: function(e) { this.set('fromDate', e.target.value); },
+    toDateChanged: function(e) { this.set('toDate', e.target.value); }
   }
 });

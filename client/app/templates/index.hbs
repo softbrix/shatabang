@@ -11,14 +11,16 @@
     <i class="fa fa-minus-square onlyMobile" aria-hidden="true"></i>
   </a>
 
-  <div style="float: right; display: none">
+  <div style="float: right">
     <label class="notMobile">Date</label>
-    <input type="date" value="{{fromDate}}" id="fromDateIpt" class="datePicker" onchange={{action 'fromDateChanged'}} />
-    -
+    <!--<input type="date" value="{{fromDate}}" id="fromDateIpt" class="datePicker" onchange={{action 'fromDateChanged'}} /> -->
+    <!-- - -->
     <input type="date" value="{{toDate}}" id="toDateIpt" class="datePicker" onchange={{action 'toDateChanged'}} />
-    |
-    <label class="notMobile">Rating:</label>
-    <input type="number" value="5" min="1" max="10" id="ratingIpt" class="rangePicker" />
+    <div  style="display: none">
+      |
+      <label class="notMobile">Rating:</label>
+      <input type="number" value="5" min="1" max="10" id="ratingIpt" class="rangePicker" />
+    </div>
   </div>
 
   <div  style="display: none">
@@ -40,5 +42,5 @@
 
 <!-- Main -->
 <div id="gallery">
-  {{simple-gallery}}
+  {{simple-gallery fromDate=toDate}}
 </div>

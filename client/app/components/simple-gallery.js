@@ -15,7 +15,9 @@ export default Component.extend({
   imageWidthService: service('image-width'),
   mediaCount: 64,
   activeMedia: undefined,
+  mediaIterator: undefined,
   mediaList: [],
+  fromDate: undefined,
   BIG_PATH: './images/1920/',
 
   init() {
@@ -27,23 +29,20 @@ export default Component.extend({
 
     var that = this;
     this.get('mediaLoader').loadedPromise().then(function(tree) {
-      var it = moveIteratorLast(tree.leafIterator());
-      var loadMedia = function() {
-        return buildModel(that, that.get('mediaCount'), it);
-      };
+      that.set('mediaIterator', tree.leafIteratorReverse());
       // Initial load
-      loadMedia();
+      that._loadMedia();
 
       that.get('mediaLoader').fullyLoadedPromise().then(function() {
 
         // Check if we have more to load or if we display to few
         if(that.get('scrollAlmostDown').scrollCheck() ||
            that.get('mediaList').length < that.get('mediaCount')) {
-          loadMedia();
+           that._buildModel(it);
         }
         var deregisterer = that.get('scrollAlmostDown').registerListener(function() {
           var loadAndCheckSize = function() {
-            loadMedia();
+            that._loadMedia();
             setTimeout(function() {
               if(that.get('scrollAlmostDown').scrollCheck()) {
                 loadAndCheckSize();
@@ -57,6 +56,14 @@ export default Component.extend({
       });
     });
   },
+  didUpdateAttrs() {
+    this._super(...arguments);
+
+    var d = new Date(this.get('fromDate'));
+    this.get('mediaIterator').gotoPath([d.getFullYear(), d.getMonth() + 1, d.getDate()]);
+    this.get('mediaList').clear();
+    this._loadMedia();
+  },
   willDestroyElement() {
     this._super(...arguments);
     Logger.debug('deactivate index');
@@ -64,6 +71,19 @@ export default Component.extend({
     if(cleanup !== undefined) {
       cleanup();
     }
+  },
+  _loadMedia() {
+    const it = this.get('mediaIterator');
+    // TODO: This should probably be a computation like:
+    // images per row  * rows per screen height   ...
+    const count = this.get('mediaCount');
+    for(var i = 0; i < count && it.hasPrev(); ++i) {
+      var obj = it.prev();
+      obj.path = it.getPath();
+      this.get('mediaList').pushObject(obj);
+    }
+
+    return i === count;
   },
   actions: {
     mediaClicked: function(a) {
@@ -149,20 +169,3 @@ export default Component.extend({
     }
   }
 });
-
-function moveIteratorLast(it) {
-  while(it.hasNext()) {
-    it.next();
-  }
-  return it;
-}
-
-function buildModel(that, count, it) {
-  for(var i = 0; i < count && it.hasPrev(); ++i) {
-    var obj = it.prev();
-    obj.path = it.getPath();
-    that.get('mediaList').pushObject(obj);
-  }
-
-  return i === count;
-}

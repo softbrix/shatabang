@@ -1,11 +1,14 @@
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
+import Ember from 'ember';
+
+const Logger = Ember.Logger;
 
 export default Component.extend({
   session: service('session'),
   currentUser: service('current-user'),
   init: function() {
-    console.log('init user info');
+    Logger.debug('init user info');
     this._super(...arguments);
     let that = this;
     this._loadCurrentUser().then(function() {
@@ -20,13 +23,13 @@ export default Component.extend({
       this.set('showUserInfo', !this.get('showUserInfo'));
     },
     invalidateSession() {
-      console.log('invalidate session action');
+      Logger.info('invalidate session action');
       this.get('session').invalidate();
     }
   },
 
   _loadCurrentUser() {
-    return this.get('currentUser').load().catch(() => this.get('session').invalidate());
+    return this.get('currentUser').load().catch((err) => { Logger.error(err); this.get('session').invalidate()});
 
   },
   userName : '',
