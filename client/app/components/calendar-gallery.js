@@ -1,11 +1,12 @@
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
+import Ember from 'ember';
 
-// Including leap year
-const MAX_DAYS = 366;
+const MAX_DAYS = 366; // Including leap day
 const BLOCK_WIDTH = 180;
 const LEFT_MARGIN = 36;
+const DAY_MINUTES = 24 * 60;
 
 let isLeapYear = function(date) {
   let year = date.getFullYear();
@@ -24,7 +25,7 @@ function dateToDay(date) {
   var oneDay = 1000 * 60 * 60 * 24;
   var day = Math.floor(diff / oneDay);
 
-  if (!isLeapYear(date) && date.getMonth() > 1) {
+  if (!isLeapYear(date) && date.getMonth() > 2) {
     // Skip 29:th feb if no leap year
     day += 1;
   }
@@ -41,7 +42,6 @@ function dayToPixel(day) {
 export default Component.extend({
   mediaLoader: service('media-list-loader'),
   imageWidthService: service('image-width'),
-  firstLoad: true,
   init() {
     this._super(...arguments);
 
@@ -55,40 +55,45 @@ export default Component.extend({
       d.setDate(d.getDate() + 1);
     }
 
-    // Get todays day number
-    this.today = dateToDay(new Date());
-    //console.log('Day of year: ' + this.today);
-    this.todayX = this.today * BLOCK_WIDTH;
+    var updateTime = function() {
+      var now = new Date();
+      var currentDayNumber = dateToDay(now);
+      // Calculate the fraction of the day with minute precission
+      var timeFraction =  ((now.getHours() * 60) + now.getMinutes()) / DAY_MINUTES;
+      this.set('nowX', (currentDayNumber-1 + timeFraction) * BLOCK_WIDTH);
+      this.set('today', currentDayNumber);
 
-    this.firstLoad = true;
+      // Run once every minute
+      var t = Ember.run.later(updateTime.bind(this), 60 * 1000);
+      this.set('_updateTimer', t);
+    };
+    updateTime.bind(this)();
   },
 
-  didRender() {
+  didInsertElement() {
     this._super(...arguments);
-    if(this.firstLoad) {
-      this.firstLoad = false;
-      this.actions.scrollToToday.bind(this)();
-    }
+    this.actions.scrollToToday.bind(this)();
   },
   willDestroyElement() {
     this._super(...arguments);
+    Ember.run.cancel(this._updateTimer);
   },
 
   actions: {
     scrollToToday() {
-      var offsetRight = window.innerWidth - BLOCK_WIDTH - LEFT_MARGIN;
-      if(this.todayX > offsetRight) {
-        var scrollX = this.todayX - offsetRight;
-        window.scrollTo(scrollX, 0);
-      }
-      console.log('Scroll today');
+      this._scrollTo(this.nowX);
     },
     scrollToStart() {
-      window.scrollTo(0, 0);
+      this._scrollTo(0, window.scrollY);
     },
     scrollToEnd() {
-      window.scrollTo(dayToPixel(MAX_DAYS), 0);
+      this._scrollTo(dayToPixel(MAX_DAYS - 1));
     }
+  },
+  _scrollTo(newX) {
+    var offsetRight = window.innerWidth - BLOCK_WIDTH - LEFT_MARGIN;
+    var scrollX = newX > offsetRight ? newX - offsetRight : newX;
+    window.scrollTo(scrollX, window.scrollY);
   },
   years: computed('mediaLoader', function() {
     return this.get('mediaLoader.folders');

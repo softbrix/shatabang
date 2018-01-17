@@ -22,6 +22,10 @@ function fileName2Date(fileName) {
   return date;
 }
 
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 export default Service.extend({
   tree : new DibbaTree(),
   loadedDeferred: defer(),
@@ -40,10 +44,10 @@ export default Service.extend({
         return;
       }
 
-      that.set('folders', folders);
-
       // Sort folders descending, are delivered ascending DOH!...
-      folders = folders.sort(function(a,b){return b-a;});
+      folders = folders.filter(isNumber).sort(function(a,b){return b-a;});
+
+      that.set('folders', folders);
 
       var importImages = function(images) {
         images.forEach(function(fileName) {

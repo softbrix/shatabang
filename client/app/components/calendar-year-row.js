@@ -2,6 +2,7 @@ import Component from '@ember/component';
 import EmberObject from '@ember/object';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
+import Ember from 'ember';
 
 const BLOCK_WIDTH = 180;
 const MAX_DAYS = 366;
@@ -28,12 +29,12 @@ let scrollListener = function(ctx, callback) {
     }
   };
 
-  $(document).bind('touchmove', onScroll);
-  $(window).bind('scroll', onScroll);
+  document.addEventListener('touchmove', onScroll);
+  window.addEventListener('scroll', onScroll);
 
   return function() {
-    $(window).unbind('scroll', onScroll);
-    $(document).unbind('touchmove', onScroll);
+    window.addEventListener('scroll', onScroll);
+    document.addEventListener('touchmove', onScroll);
   };
 };
 
@@ -62,8 +63,8 @@ export default Component.extend({
     return d;
   },
   actions : {
-    mediaClicked() {
-      console.log(arguments);
+    mediaClicked(activeMedia) {
+      this.set('activeMedia', activeMedia);
     },
     updateMediaContent(scrollX) {
       const LOAD_BUFFER = 2;
@@ -105,10 +106,6 @@ export default Component.extend({
         }
         this.get('mediaList').pushObject(obj);
       }
-
-      //console.log(obj);
-      //console.log(this.get('mediaList').length);
-      //console.log('scrollX', scrollX , from, to);
     }
   },
 });

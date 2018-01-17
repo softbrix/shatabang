@@ -1,33 +1,6 @@
 {{yield}}
 
-{{#if activeMedia}}
-<div class="fullSize fixedPosition fullscreenMedia {{if activeMedia.isVideo "isVideo"}}" onclick={{action 'toggleInteractive'}}>
-
-  {{#if activeMedia.isVideo}}
-    {{fullsize-video media=activeMedia}}
-  {{else}}
-    {{fullsize-image media=activeMedia}}
-  {{/if}}
-
-
-  <div class="move_left"><a onclick={{action 'moveLeft'}}><i class="fa fa-angle-left" aria-hidden="true"></i></a></div>
-  <div class="move_right"><a onclick={{action 'moveRight'}}><i class="fa fa-angle-right" aria-hidden="true"></i></a></div>
-  <div id="interactiveOverlay" >
-    <div class="top_right_btns">
-      {{fullscreen-toggle class="float_left"}}
-      <a onclick={{action 'resetActiveMedia'}} style="margin-left: 1em;">
-        <span class=" btn btn-primary btn-sm notMobile"> {{yield}}
-          Close </span>
-        <i class="fa fa-window-close onlyMobile" aria-hidden="true"></i>
-      </a>
-    </div>
-    {{#if activeMedia.isImage}}
-      <a href="{{activeMedia.downloadUrl}}" class="download_link" target="_blank">Download</a>
-    {{/if}}
-    {{activeMedia.img}}
-  </div>
-</div>
-{{/if}}
+{{fullsize-media activeMedia=activeMedia}}
 
 <p style="position: fixed;
     bottom: 0;
@@ -39,5 +12,4 @@ m2count: {{mediaList.length}}
 </p>
 
 {{#each mediaList as |media|}}{{media-gallery-item media=media click=(action 'mediaClicked' media)}}{{/each}}
-
-This is the simple gallery
+Shatabang Simple Gallery
