@@ -8,6 +8,7 @@ const Logger = Ember.Logger;
 
 export default Component.extend({
   activeMedia: undefined,
+  reverseMove: false,
   mediaLoader: service('media-list-loader'),
   fullscreenService: service('fullscreen'),
   didUpdateAttrs() {
@@ -39,30 +40,23 @@ export default Component.extend({
       if(event) {
         event.preventDefault();
       }
-      var it = this.get('iterator');
-      if(it.hasPrev()) {
-        var prev = it.prev();
-        if(prev === this.get('activeMedia')) {
-          prev = it.prev();
-        }
-        this._preloadImages(it.getPath());
-        this.set('activeMedia', prev);
+      if(this.get('reverseMove')) {
+        this._iterateNext()
+      } else {
+        this._iteratePrev();
       }
     },
     moveLeft: function(event) {
       if(event) {
         event.preventDefault();
       }
-      var it = this.get('iterator');
-      if(it.hasNext()) {
-        var next = it.next();
-        if(next === this.get('activeMedia')) {
-          next = it.next();
-        }
-        this._preloadImages(it.getPath());
-        this.set('activeMedia', next);
+      if(this.get('reverseMove')) {
+        this._iteratePrev()
+      } else {
+        this._iterateNext();
       }
     },
+
     toggleInteractive: function(event) {
       if(!event.defaultPrevented) {
         $("#interactiveOverlay").toggle();
@@ -97,6 +91,28 @@ export default Component.extend({
       this.actions.resetActiveMedia.apply(this);
     } else {
       Logger.debug('unknown key', event.key,event.keyCode);
+    }
+  },
+  _iterateNext() {
+    var it = this.get('iterator');
+    if(it.hasNext()) {
+      var next = it.next();
+      if(next === this.get('activeMedia')) {
+        next = it.next();
+      }
+      this._preloadImages(it.getPath());
+      this.set('activeMedia', next);
+    }
+  },
+  _iteratePrev() {
+    var it = this.get('iterator');
+    if(it.hasPrev()) {
+      var prev = it.prev();
+      if(prev === this.get('activeMedia')) {
+        prev = it.prev();
+      }
+      this._preloadImages(it.getPath());
+      this.set('activeMedia', prev);
     }
   }
 });

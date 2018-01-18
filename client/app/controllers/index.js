@@ -17,9 +17,9 @@ export default Controller.extend({
 
       this.set('toDate', now.toLocaleDateString());
       this.set('fromDate', now.toLocaleDateString());
-      var tree = this.get('mediaLoader.tree');
 
       this.get('mediaLoader').fullyLoadedPromise().then(() => {
+        var tree = this.get('mediaLoader.tree');
         var it = tree.leafIterator();
         this.set('fromDate', (it.hasPrev() ? it.next().date : now).toLocaleDateString());
         var itl = tree.leafIteratorReverse();

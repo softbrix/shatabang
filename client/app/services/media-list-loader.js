@@ -47,7 +47,7 @@ export default Service.extend({
       // Sort folders descending, are delivered ascending DOH!...
       folders = folders.filter(isNumber).sort(function(a,b){return b-a;});
 
-      that.set('folders', folders);
+      //that.set('folders', folders);
 
       var importImages = function(images) {
         images.forEach(function(fileName) {
@@ -85,6 +85,7 @@ export default Service.extend({
       };
 
       var loadImageList = function(folder) {
+        that.get('folders').pushObject(folder);
         return $.get('./images/info/'+folder+'/media.lst')
           .then(function (response) {
             var images = response.split(',');
