@@ -53,7 +53,7 @@ var init = function(config, task_queue) {
               updateProgress();
               return duplicatesFilePath;
             } else {
-              importer(filePath, storageDir).then(function(relativePath) {
+              importer(filePath, storageDir, task_queue).then(function(relativePath) {
                 // TODO: add to latest imported list
                 idx.put(b85Finger, relativePath);
                 job.log("Imported: ", relativePath, b85Finger);

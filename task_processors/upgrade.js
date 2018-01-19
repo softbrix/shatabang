@@ -1,5 +1,6 @@
 "use strict";
 
+var shIndex = require('stureby_index');
 var path = require('path');
 var fs = require('fs');
 var Redis = require('ioredis');
@@ -27,11 +28,11 @@ var init = function(config, task_queue) {
             return;
           }
           // On succesful upgrade
-          // TODO: Enable when feature is done
-          //redis.set(versionKey, 1);
+          redis.set(versionKey, 1);
           console.log('Successfully upgraded index to', 'v1');
           done();
         });
+        upgrade_faces_index(path.join(config.cacheDir, 'idx_faces'), task_queue);
         task_queue.queueTask('retry_unknown', {}, 'low');
       } else {
         done();
@@ -65,9 +66,8 @@ var upgrade_v1 = function(infoDirectory, storageDir, cb) {
           if(err) {
             console.log('Upgrade check error', err);
             return;
-          } else {
-            fileSize = stats.size;
           }
+          fileSize = stats.size;
           mediaMeta.set(itm, {
             ur: 0.5,
             s: fileSize
@@ -78,6 +78,15 @@ var upgrade_v1 = function(infoDirectory, storageDir, cb) {
     cb();
   });
 };
+
+/** Re run all face recognitions so we add the cropped information to the index **/
+function upgrade_faces_index(index_path, task_queue) {
+  var idx = shIndex(index_path);
+  idx.keys().forEach((relativeDest) => {
+    task_queue.queueTask('find_faces', { title: relativeDest, file: relativeDest}, 'low');
+  });
+  idx.clear();
+}
 
 module.exports = {
   init : init

@@ -3,8 +3,7 @@
 /*jslint node: true, nomen: true*/
 var shIndex = require('stureby_index');
 var shFiles = require('../modules/shatabang_files');
-var Faced = require('faced');
-var faced = new Faced();
+var shFra = require('../modules/shatabang_fra');
 var path = require('path');
 
 
@@ -20,29 +19,11 @@ var init = function(config, task_queue) {
       return done('Missing file');
     }
 
-    console.log('Detecting faces', sourceFileName);
-
-    faced.detect(sourceFileName, function worker(faces, image, file) {
-      if (!faces) {
-        var errorMsg = "Could not open " + file;
-        console.error(errorMsg);
-        done(errorMsg);
-        return;
-      }
-      faces.forEach(function (face) {
-        // TODO: Clip face part from image. Max size 200x320px
-        var faceInfo = {
-          x: face.getX(),
-          y: face.getY(),
-          w: face.getWidth(), // Width
-          h: face.getHeight(), // Height
-          n: undefined  // Name
-        };
-        idx.put(relativeFilePath, JSON.stringify(faceInfo));
-        job.log(faceInfo);
-      });
+    shFra.findFaces(sourceFileName).then(function(data) {
+      idx.put(relativeFilePath, JSON.stringify(data));
+      job.log(data);
       done();
-    });
+    }, done);
   });
 };
 

@@ -22,28 +22,32 @@ module.exports = {
         return;
       }
 
+      let [img_height, img_width] = image_opencv.size();
       var image = sharp(sourceFileName);
       var newFacesPromises = faces.map(function (face) {
+        // Info will contain position and sizes as fractions
         var info = {
-          x: face.getX(),
-          y: face.getY(),
-          w: face.getWidth(), // Width
-          h: face.getHeight(), // Height
+          x: face.getX() / img_width,
+          y: face.getY() / img_height,
+          w: face.getWidth() / img_width, // Width
+          h: face.getHeight() / img_height, // Height
           n: undefined  // Name
         };
 
         // Expand the face area
-        var dw = Math.ceil(info.w / face_expand_ratio),
-            dh = Math.ceil(info.h / face_expand_ratio);
+        var dw = Math.ceil(face.getWidth() / face_expand_ratio),
+            dh = Math.ceil(face.getHeight() / face_expand_ratio);
         var ext = {
-            left: info.x - dw,
-            top: info.y - dh,
-            width: info.w + 2 * dw,
-            height: info.h + 2 * dh
+            left: face.getX() - dw,
+            top: face.getY() - dh,
+            width: face.getWidth() + 2 * dw,
+            height: face.getHeight() + 2 * dh
           };
 
         ext.left = ext.left > 0 ? ext.left : 0;
         ext.top = ext.top > 0 ? ext.top : 0;
+        ext.width = ext.left + ext.width > img_width ? img_width - ext.left - 1: ext.width;
+        ext.height = ext.top + ext.height > img_height ? img_height - ext.top - 1: ext.height;
 
         // Clip face part from image. Max size 200x320px
         return image
@@ -58,7 +62,7 @@ module.exports = {
             return info;
           });
       });
-      Promise.all(newFacesPromises).then(newFaces => deferred.resolve(newFaces));
+      Promise.all(newFacesPromises).then(deferred.resolve, deferred.reject);
     });
     return deferred.promise;
   }

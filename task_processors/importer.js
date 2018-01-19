@@ -1,10 +1,9 @@
 "use strict"
-var task_queue = require('../modules/task_queue');
 var sort_file = require('../modules/sort_file');
 var fileMatcher = require('../modules/file_type_regexp');
 var path = require('path');
 
-module.exports = function(src, destDir) {
+module.exports = function(src, destDir, task_queue) {
    console.log(src, destDir);
     return sort_file(src, destDir).then(function(newDest) {
       console.log('NewDest', newDest);
