@@ -36,7 +36,7 @@ var init = function(config, task_queue) {
 
       if(json !== undefined && json.length > 0) {
         job.log('Loaded json', json);
-        compressed = JSON.parse(json);
+        compressed = JSON.parse(json[0]);
         faces = compressed.map(faceInfo.expand);
       }
     }

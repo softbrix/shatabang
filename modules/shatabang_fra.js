@@ -64,7 +64,7 @@ module.exports = {
   /* Reverses the compress function, will return NaN if given info is not an correct string */
   expandFaceInfo: function(info) {
     if(info.length !== 16 /* todo: regexp match input*/) {
-      return NaN;
+      return { x: NaN, y: NaN, w: NaN, h: NaN };
     }
     var t = function t(val) {
       return fromHex(val) / MAX_SHORT;
@@ -94,7 +94,7 @@ module.exports = {
     ext.width = ext.left + ext.width > 1 ? 1 - ext.left: ext.width;
     ext.height = ext.top + ext.height > 1 ? 1 - ext.top: ext.height;
 
-    // Clip face part from image. Max size 200x320px
+    // Clip face part from image. Max size 100x150px
     var image = sharp(sourceFileName);
     return image
         .metadata()

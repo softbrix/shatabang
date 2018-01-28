@@ -10,10 +10,9 @@ module.exports = {
     };
   },
   expand : function(d) {
-    console.log('expand d',d);
     var obj = shFra.expandFaceInfo(d.i);
-    console.log('obj',obj);
     obj.bid = d.b;
+    return obj;
   },
   // From https://gist.github.com/jed/982883
   uuid : function(a) {
