@@ -12,9 +12,8 @@ var init = function(config, task_queue) {
       //path.join(cacheDir, "300");
 
   task_queue.registerTaskProcessor('update_directory_list', function(data, job, done) {
-    console.log('update_directory_list', data);
     directory_list.processDirectory(data.dir, searchDir, cacheDir)
-      .then(function(fileName) { console.log('update_directory_list result', fileName); done(); }, done);
+      .then(function(fileName) { job.log('update_directory_list result', fileName); done(); }, done);
   });
 };
 

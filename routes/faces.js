@@ -15,7 +15,7 @@ router.get('/list',function(req,res){
     res.write("[");
     idx.keys().forEach(function(key) {
       var items = idx.get(key);
-      if(items.length > 1) {
+      if(items.length > 0) {
         if(written) {
           res.write(',');
         }
