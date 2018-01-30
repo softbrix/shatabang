@@ -5,6 +5,7 @@ var fs = require('fs');
 var shFra = require('../modules/shatabang_fra');
 
 var relativeTestFile = "./test/test_data/1920/faces.JPG";
+//var relativeTestFile = "./test/test_data/many_faces_1920.JPG";
 var expectedFileInfo = "./test/test_data/face_out.png.bs64";
 
 
@@ -15,16 +16,17 @@ describe('Shatabang Face recognition algorithm', function() {
       function(data) {
         assert.equal(1, data.length);
         var info = data[0];
-        assert.equal(0.3857421875, info.x);
-        assert.equal(0.17423133235724744, info.y);
-        assert.equal(0.2119140625, info.w);
-        assert.equal(0.31771595900439237, info.h);
+        assert.equal(0.3876953125, info.x);
+        assert.equal(0.17715959004392387, info.y);
+        assert.equal(0.2080078125, info.w);
+        assert.equal(0.3118594436310395, info.h);
 
         return shFra.cropFace(relativeTestFile, data[0])
           .then( function(buffer) {
           if(expectedFileInfo !== undefined) {
             var expected_buffer = fs.readFileSync(expectedFileInfo);
-            // Assert equals
+
+            //console.log(buffer.toString('base64'));
             assert.equal(expected_buffer.toString().trim().length,
               buffer.toString('base64').length);
           }

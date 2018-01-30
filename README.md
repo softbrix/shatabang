@@ -51,7 +51,7 @@ One of the fastest libraries to resize and transform images.
 
 To resize videos and extract images from different time frames.
 
-#### Open CV
+#### Open CV 3
 
 To identify objects in the images.
 
@@ -64,16 +64,18 @@ A key-value in memory NoSQL database used by the session and task processor.
 ## Mac OS X:
 
 brew tap homebrew/science
-sudo brew install exiftool redis opencv@2
-brew link --force opencv@2
+sudo brew install exiftool redis opencv
+brew link --force opencv
 
 ## Debian ( >= 9):
 
 sudo apt-get update  
-sudo apt-get install git libimage-exiftool-perl libvips-dev build-essential ffmpeg redis-server -y  
+sudo apt-get install git libimage-exiftool-perl libvips-dev build-essential ffmpeg redis-server libopencv-dev -y  
 
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -  
 sudo apt-get install -y nodejs
+
+Compile the source code for opencv version 3 
 
 ## Debian ( < 9):
 

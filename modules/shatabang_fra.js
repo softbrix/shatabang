@@ -2,15 +2,17 @@
 
 /* Shatabang Face recognition algorithm */
 var Q = require('q');
-var Faced = require('faced');
+//var Faced = require('faced');
+const cv = require('opencv4nodejs');
 var sharp = require('sharp');
 
-const faced = new Faced();
+//const faced = new Faced();
 
 const face_max_width = 100,
       face_max_height = 150,
       face_expand_ratio = 6,
-      MAX_SHORT = 65535;
+      MAX_SHORT = 65535,
+      classifier = new cv.CascadeClassifier(cv.HAAR_FRONTALFACE_ALT2);
 
 function toHex(v) {
   return v.toString(16).toUpperCase();
@@ -24,21 +26,23 @@ module.exports = {
 
   findFaces: function(sourceFileName) {
     return new Promise(function(resolve, reject) {
-      faced.detect(sourceFileName, function worker(faces, image_opencv, file) {
-        if (!faces) {
+      var img = cv.imread(sourceFileName);
+      img.bgrToGray();
+      const faces = classifier.detectMultiScale(img).objects;
+        if (!faces.length) {
           var errorMsg = "Could not open file: " + file;
           reject(errorMsg);
           return;
         }
 
-        let [img_height, img_width] = image_opencv.size();
+        let [img_height, img_width] = img.sizes;
         var newFaces = faces.map(function (face) {
           // Info will contain position and sizes as fractions
           var info = {
-            x: face.getX() / img_width,
-            y: face.getY() / img_height,
-            w: face.getWidth() / img_width, // Width
-            h: face.getHeight() / img_height, // Height
+            x: face.x / img_width,
+            y: face.y / img_height,
+            w: face.width / img_width, // Width
+            h: face.height / img_height, // Height
             /*
             Aditional but ignored data
             mouth: [],
@@ -51,7 +55,6 @@ module.exports = {
           return info;
         });
         resolve(newFaces);
-      });
     });
   },
   /** Compresses the x, y, w and h fractions to an array of hex to represent the face information */
