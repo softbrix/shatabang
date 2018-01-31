@@ -1,12 +1,9 @@
 "use strict";
 
 /* Shatabang Face recognition algorithm */
-var Q = require('q');
-//var Faced = require('faced');
 const cv = require('opencv4nodejs');
-var sharp = require('sharp');
-
-//const faced = new Faced();
+const sharp = require('sharp');
+const variance = require('variance');
 
 const face_max_width = 100,
       face_max_height = 150,
@@ -66,7 +63,7 @@ module.exports = {
   },
   /* Reverses the compress function, will return NaN if given info is not an correct string */
   expandFaceInfo: function(info) {
-    if(info.length !== 16 /* todo: regexp match input*/) {
+    if(info.length < 16 /* todo: regexp match input*/) {
       return { x: NaN, y: NaN, w: NaN, h: NaN };
     }
     var t = function t(val) {
@@ -115,5 +112,36 @@ module.exports = {
             .png()
             .toBuffer();
         });
+  },
+  imageBlurValue: function(source) {
+    // Inspired from https://www.pyimagesearch.com/2015/09/07/blur-detection-with-opencv/
+    var imgPromise;
+    const sType = typeof source;
+    if(sType === "string") {
+      imgPromise = cv.imreadAsync(source);
+    } else if(Buffer.isBuffer(source)) {
+      imgPromise = cv.imdecodeAsync(source);
+    } else {
+      return Promise.reject("Unknown source: " + sType);
+    }
+
+    return imgPromise.then(function(img) {
+      if(img.sizes[0] < 1 || img.sizes[1] < 1) {
+        return Promise.reject("Unknown image size: " + img.sizes[0] + ':' + img.sizes[1]);
+      }
+
+      return img.bgrToGrayAsync()
+        .then(grayImg => grayImg.laplacian(cv.CV_64F))
+        .then(lapImg => lapImg.getDataAsArray())
+        .then(dataMatrix => flattenMatrix(dataMatrix))
+        .then(dataArray => variance(dataArray));
+    });
   }
 };
+
+/**
+This function will concat all array elements in the matrix into a singel array
+*/
+function flattenMatrix(matrix) {
+  return [].concat.apply([], matrix);
+}

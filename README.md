@@ -75,8 +75,6 @@ sudo apt-get install git libimage-exiftool-perl libvips-dev build-essential ffmp
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -  
 sudo apt-get install -y nodejs
 
-Compile the source code for opencv version 3 
-
 ## Debian ( < 9):
 
 sudo apt-get update  
@@ -88,6 +86,12 @@ sudo apt-get install -y nodejs
 libav-tools will install avprobe, need to create a symbolic link so it can be use by fluent-ffmpeg.  
 ln -s /usr/bin/avprobe /usr/bin/ffprobe  
 ln -s /usr/bin/avconv /usr/bin/ffmpeg  
+
+### Opencv 3 on linux
+
+Compile the source code for opencv version 3
+
+https://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
 
 
 # Docker image

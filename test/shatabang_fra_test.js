@@ -54,6 +54,19 @@ describe('Shatabang Face recognition algorithm', function() {
     assert.deepEqual(info, shFra.expandFaceInfo('62C02C9A36405156'));
   });
 
+  it('should be able to calculate a blur value of buffer', function() {
+    var expected_buffer = fs.readFileSync(expectedFileInfo)
+    shFra.imageBlurValue(Buffer.from(expected_buffer.toString(),'base64')).then(value => {
+      assert.equal(408.28431100001916, value);
+    });
+  });
+
+  it('should be able to calculate a blur value of image', function() {
+    return shFra.imageBlurValue(relativeTestFile).then(value => {
+      assert.equal(129.30752376661172, value);
+    });
+  });
+
   // This can be used as a debug example to extract the faces in an image
   xit('crop found faces', function() {
     this.timeout(60000);

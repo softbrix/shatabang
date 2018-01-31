@@ -62,10 +62,10 @@
     "sha256": "0.2.0",
     "sharp": "^0.18.4",
     "sharp-phash": "^0.2.0",
-    "stats-lite": "^2.1.0",
     "stureby_index": "3.0.0",
     "underscore": "*",
     "uuid": "^3.2.1",
+    "variance": "^0.0.1",
     "vega_media_info": "^1.2.0"
   },
   "devDependencies": {

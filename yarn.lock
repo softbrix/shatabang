@@ -92,6 +92,10 @@ async@^1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
 
+average@~0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/average/-/average-0.0.1.tgz#093073310c521f32bac996b9604ec5d3ff645e42"
+
 babel-helper-builder-react-jsx@^6.24.1:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-helper-builder-react-jsx/-/babel-helper-builder-react-jsx-6.26.0.tgz#39ff8313b75c8b65dceff1f31d383e0ff2a408a0"
@@ -2063,6 +2067,12 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "~1.0.0"
     spdx-expression-parse "~1.0.0"
+
+variance@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/variance/-/variance-0.0.1.tgz#8589b3534f6b2384349b0c7244a62cec52449ac2"
+  dependencies:
+    average "~0.0.1"
 
 vary@~1.0.1:
   version "1.0.1"
