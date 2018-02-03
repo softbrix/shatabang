@@ -1,10 +1,12 @@
 FROM node:carbon-stretch
 
-ENV OPENCV_VERSION 3.4.0
+ENV OPENCV_VERSION 3.3.1
 ENV STORAGE_DIR /mnt/sorted/
 ENV CACHE_DIR /mnt/cache/
 ENV CLIENT_DIR /usr/src/shatabang/client
 ENV OPENCV4NODEJS_DISABLE_AUTOBUILD 1
+ENV OPENCV_LIB_DIR /usr/local/lib/
+ENV OPENCV_DIR /usr/local/
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   git \
@@ -24,13 +26,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN  rm -rf /var/lib/apt/lists/*
 
 WORKDIR ~/
-RUN wget -q -O ~/opencv.zip https://github.com/opencv/opencv/archive/$OPENCV_VERSION.zip
+RUN wget -q -O opencv.zip https://github.com/opencv/opencv/archive/$OPENCV_VERSION.zip
 RUN unzip opencv.zip
-RUN opencv-$OPENCV_VERSION && mkdir build && cd build && \
+RUN cd opencv-$OPENCV_VERSION && mkdir build && cd build && \
    cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local .. && \
    make -j4 && make install
 
-RUN yarn global add ember-cli opencv4nodejs
+RUN ldconfig -v && yarn global add ember-cli
 
 # Create app directory
 RUN mkdir -p $STORAGE_DIR $CACHE_DIR $CLIENT_DIR

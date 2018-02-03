@@ -1,5 +1,5 @@
 web:
-  image: 'softbrix/shatabang3'
+  image: 'softbrix/shatabang'
   restart: always
   hostname: 'shatabang'
   restart: always
