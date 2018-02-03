@@ -31,8 +31,11 @@ var init = function(config, task_queue) {
           console.log('Successfully upgraded index to', 'v1');
           done();
         });
-        upgrade_faces_index(config.cacheDir, task_queue);
+        upgrade_faces_index(storageDir, task_queue);
         task_queue.queueTask('retry_unknown', {}, 'low');
+      } else if(version < 2) {
+        upgrade_faces_index(storageDir, task_queue);
+        redis.set(versionKey, 2);
       } else {
         done();
       }
@@ -78,16 +81,18 @@ var upgrade_v1 = function(infoDirectory, storageDir, cb) {
 };
 
 /** Re run all face recognitions so we add the cropped information to the index **/
-function upgrade_faces_index(cache_dir, task_queue) {
+function upgrade_faces_index(storageDir, task_queue) {
   var idx = shIndex(path.join(cache_dir, 'idx_faces'));
 
-  idx.keys().forEach((relativeDest) => {
-    task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest}, 'low');
+  allMedia(storageDir, function(items) {
+    items.forEach((relativeDest) => {
+      task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest}, 'low');
+    });
+    idx.clear();
   });
-  idx.clear();
 }
 
-/** Function which returns all media files ordered in arrays with years and then items. */
+/** Function which returns all media files ordered in a single array with all items. */
 function allMedia(infoDirectory, cb) {
   shFiles.listSubDirs(infoDirectory, function(error, dirs) {
     if(error) {

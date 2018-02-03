@@ -51,9 +51,13 @@ var init = function(config, task_queue) {
       return shFra.cropFace(sourceFileName, face).then(function(buffer) {
         // Save the buffer and store the new index to the face info
         const newId = uuidv4();
-        idx_crop.update(newId, buffer.toString('base64'));
+        const bs64 = buffer.toString('base64');
+        idx_crop.update(newId, bs64);
         face.bid = newId;
-        return face;
+        return shFra.imageBlurValue(bs64).then(function(val) {
+          face.sharp = val;
+          return face;
+        });
       }, done);
     });
     Promise.all(promises).then(function(faces) {
