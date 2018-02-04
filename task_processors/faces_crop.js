@@ -45,7 +45,7 @@ var init = function(config, task_queue) {
       done('No face found to crop');
       return;
     }
-
+    var jobError;
     var promises = faces.map(function(face) {
       job.log('Face' , face);
       return shFra.cropFace(sourceFileName, face).then(function(buffer) {
@@ -54,18 +54,19 @@ var init = function(config, task_queue) {
         const bs64 = buffer.toString('base64');
         idx_crop.update(newId, bs64);
         face.bid = newId;
-        return shFra.imageBlurValue(bs64).then(function(val) {
+        return shFra.imageBlurValue(buffer).then(function(val) {
           face.sharp = val;
           return face;
         });
-      }, done);
+      });
     });
     Promise.all(promises).then(function(faces) {
       job.log('Faces' , faces);
       var compressed = faces.map(faceInfo.compress);
       idx.update(relativeFilePath, JSON.stringify(compressed));
-      done();
-    });
+      done(jobError);
+    })
+    .catch(done);
   });
 };
 

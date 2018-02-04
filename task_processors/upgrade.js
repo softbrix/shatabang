@@ -31,10 +31,10 @@ var init = function(config, task_queue) {
           console.log('Successfully upgraded index to', 'v1');
           done();
         });
-        upgrade_faces_index(storageDir, task_queue);
+        upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
         task_queue.queueTask('retry_unknown', {}, 'low');
       } else if(version < 2) {
-        upgrade_faces_index(storageDir, task_queue);
+        upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
         redis.set(versionKey, 2);
       } else {
         done();
@@ -81,14 +81,14 @@ var upgrade_v1 = function(infoDirectory, storageDir, cb) {
 };
 
 /** Re run all face recognitions so we add the cropped information to the index **/
-function upgrade_faces_index(storageDir, task_queue) {
+function upgrade_faces_index(infoDirectory, cache_dir, task_queue) {
   var idx = shIndex(path.join(cache_dir, 'idx_faces'));
+  idx.clear();
 
-  allMedia(storageDir, function(items) {
+  allMedia(infoDirectory, function(items) {
     items.forEach((relativeDest) => {
       task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest}, 'low');
     });
-    idx.clear();
   });
 }
 
