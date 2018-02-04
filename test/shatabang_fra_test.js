@@ -40,6 +40,9 @@ describe('Shatabang Face recognition algorithm', function() {
       assert.deepEqual([], data);
     }, assert.fail);
   });
+  it('should reject if the file is not found', function() {
+    return shFra.findFaces('./noFile').then(assert.fail, assert.ok);
+  });
   it('should be able to compress face info', function() {
     var info = {
       x: 0.3857421875,
