@@ -5,6 +5,7 @@ var fs = require('fs');
 var shFra = require('../modules/shatabang_fra');
 
 var relativeTestFile = "./test/test_data/1920/faces.JPG";
+var noFaceFile = "./test/test_data/1920/no_face.JPG";
 //var relativeTestFile = "./test/test_data/many_faces_1920.JPG";
 var expectedFileInfo = "./test/test_data/face_out.png.bs64";
 
@@ -32,6 +33,12 @@ describe('Shatabang Face recognition algorithm', function() {
           }
         });
       }, assert.fail);
+  });
+  it('should handle face lookup on an image with no face', function() {
+    this.timeout(60000);
+    return shFra.findFaces(noFaceFile).then(function(data) {
+      assert.deepEqual([], data);
+    }, assert.fail);
   });
   it('should be able to compress face info', function() {
     var info = {

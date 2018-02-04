@@ -22,36 +22,34 @@ function fromHex(v) {
 module.exports = {
 
   findFaces: function(sourceFileName) {
-    return new Promise(function(resolve, reject) {
-      var img = cv.imread(sourceFileName);
-      img.bgrToGray();
+    return cv.imreadAsync(sourceFileName)
+          .then(img => img.bgrToGrayAsync())
+          .then(function(img) {
       const faces = classifier.detectMultiScale(img).objects;
-        if (!faces.length) {
-          var errorMsg = "Could not open file: " + file;
-          reject(errorMsg);
-          return;
-        }
+      if (!faces.length) {
+        return [];
+      }
 
-        let [img_height, img_width] = img.sizes;
-        var newFaces = faces.map(function (face) {
-          // Info will contain position and sizes as fractions
-          var info = {
-            x: face.x / img_width,
-            y: face.y / img_height,
-            w: face.width / img_width, // Width
-            h: face.height / img_height, // Height
-            /*
-            Aditional but ignored data
-            mouth: [],
-            nose: [],
-            eyeLeft: [],
-            eyeRight: []
-            */
-          };
+      let [img_height, img_width] = img.sizes;
+      var newFaces = faces.map(function (face) {
+        // Info will contain position and sizes as fractions
+        var info = {
+          x: face.x / img_width,
+          y: face.y / img_height,
+          w: face.width / img_width, // Width
+          h: face.height / img_height, // Height
+          /*
+          Aditional but ignored data
+          mouth: [],
+          nose: [],
+          eyeLeft: [],
+          eyeRight: []
+          */
+        };
 
-          return info;
-        });
-        resolve(newFaces);
+        return info;
+      });
+      return newFaces;
     });
   },
   /** Compresses the x, y, w and h fractions to an array of hex to represent the face information */
