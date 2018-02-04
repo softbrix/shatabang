@@ -24,6 +24,11 @@ processors.forEach(function(processor) {
   processor.init(config, task_queue);
 });
 
+process.on('uncaughtException', function (err) {
+  log.error('uncaught exception', err.stack);
+  clearTimeout(timeOut);
+  task_queue.disconnect(10000);
+});
 process.on('SIGINT', function () {
   console.error('Got SIGINT. Shuting down the queue.');
   clearTimeout(timeOut);
@@ -35,6 +40,8 @@ task_queue.queueTask('upgrade_check', {}, 'high')
     console.log("Running task processor...");
     queImport();
   });
+  // TODO: This should be called from the admin gui or rest enpoint to prevent restart loop
+task_queue.retryFailed();
 
 var timeOut = 0;
 var queImport = function() {

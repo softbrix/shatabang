@@ -13,17 +13,17 @@ var queue = kue.createQueue({
 
 var disconnected = false;
 process.once( 'SIGTERM', function () {
-  if(!disconnected) {
-      disconnect(0);
-  }
+  disconnect(0);
 });
 
+var dying = false;
 var disconnect = function disconnect(timeout) {
-  queue.shutdown(timeout || 0, function(err) {
-    console.log( 'Kue shutdown: ', err||'' );
-    process.exit( 0 );
-  });
-  disconnected = true;
+  if (!dying) {
+    dying = true;
+    queue.shutdown(timeout || 0, function(err) {
+      console.log( 'Kue shutdown: ', err||'' );
+    });
+  }
 };
 
 module.exports = {
@@ -37,7 +37,7 @@ module.exports = {
     job.save(
       function(err){
         if( err ) {
-          console.log( 'job id', job.id, err );
+          console.log('Error job id', job.id, err );
         }
     });
     return job;
@@ -48,5 +48,16 @@ module.exports = {
     });
   },
   disconnect : disconnect,
-  redisConnectionInfo: redisConnectionInfo
+  redisConnectionInfo: redisConnectionInfo,
+  retryFailed: function() {
+    queue.failed(function( err, ids ) { // others are active, complete, failed, delayed
+      ids.forEach( function( id ) {
+        kue.Job.get( id, function( err, job ) {
+          // Your application should check if job is a stuck one
+          console.log('Retry job: ', id);
+          job.inactive();
+        });
+      });
+    });
+  }
 };
