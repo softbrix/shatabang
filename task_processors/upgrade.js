@@ -36,6 +36,7 @@ var init = function(config, task_queue) {
       } else if(version < 2) {
         upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
         redis.set(versionKey, 2);
+        task_queue.retryFailed();
       } else {
         done();
       }

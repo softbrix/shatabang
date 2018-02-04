@@ -40,8 +40,6 @@ task_queue.queueTask('upgrade_check', {}, 'high')
     console.log("Running task processor...");
     queImport();
   });
-  // TODO: This should be called from the admin gui or rest enpoint to prevent restart loop
-task_queue.retryFailed();
 
 var timeOut = 0;
 var queImport = function() {
