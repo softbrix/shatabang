@@ -4,8 +4,6 @@
 
 <ul class="face_list">
   {{#each model as |face|}}
-    {{#each face.items as |itm|}}
-      {{image-list-item item=itm}}
-    {{/each}}
+    {{image-list-item item=face}}
   {{/each}}
 </ul>
