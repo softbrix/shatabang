@@ -3,7 +3,7 @@
 var shIndex = require('stureby_index');
 var path = require('path');
 var fs = require('fs');
-var Redis = require('ioredis');
+var Redis = require('redis');
 var MediaMeta = require('../modules/media_meta.js');
 var shFiles = require('../modules/shatabang_files');
 
@@ -13,12 +13,16 @@ This task should run every time the task processor is restarted
 var init = function(config, task_queue) {
   var infoDirectory = path.join(config.cacheDir, 'info');
   var storageDir = config.storageDir;
-  var redis = new Redis(task_queue.redisConnectionInfo);
   var versionKey = 'shatabangVersion';
 
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
+    var redis = Redis.createClient(task_queue.redisConnectionInfo);
     // Check version in redisStore
-    redis.get(versionKey).then(function (version) {
+    redis.get(versionKey, function (err, version) {
+      if(err) {
+        console.log('Error while retrieving versionKey', err);
+        return;
+      }
       console.log('Index version', version);
       if(!version) {
         upgrade_v1(infoDirectory, storageDir, (error) => {
@@ -41,6 +45,7 @@ var init = function(config, task_queue) {
         done();
       }
     });
+    redis.quit();
   });
 };
 

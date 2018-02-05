@@ -25,21 +25,29 @@ processors.forEach(function(processor) {
 });
 
 process.on('uncaughtException', function (err) {
-  log.error('uncaught exception', err.stack);
-  clearTimeout(timeOut);
-  task_queue.disconnect(10000);
+  console.error('uncaught exception', err.stack);
 });
+function disconnectCallback(err) {
+  console.log( 'Kue shutdown: ', err||'OK' );
+  process.exit(0);
+};
 process.on('SIGINT', function () {
   console.error('Got SIGINT. Shuting down the queue.');
   clearTimeout(timeOut);
-  task_queue.disconnect(10000);
+  task_queue.disconnect(10000, disconnectCallback);
+});
+process.once( 'SIGTERM', function () {
+  console.error('Got SIGTERM. Shuting down the queue.');
+  task_queue.disconnect(0, disconnectCallback);
 });
 
-task_queue.queueTask('upgrade_check', {}, 'high')
-  .on('complete', () => {
-    console.log("Running task processor...");
-    queImport();
-  });
+task_queue.restartActive().then(function() {
+  task_queue.queueTask('upgrade_check', {}, 'high')
+    .on('complete', () => {
+      console.log("Running task processor...");
+      queImport();
+    });
+});
 
 var timeOut = 0;
 var queImport = function() {

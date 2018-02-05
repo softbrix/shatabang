@@ -11,26 +11,38 @@ var queue = kue.createQueue({
   redis: redisConnectionInfo
 });
 
-var disconnected = false;
-process.once( 'SIGTERM', function () {
-  disconnect(0);
-});
-
 var dying = false;
-var disconnect = function disconnect(timeout) {
+var disconnect = function disconnect(timeout, cb) {
   if (!dying) {
     dying = true;
-    queue.shutdown(timeout || 0, function(err) {
-      console.log( 'Kue shutdown: ', err||'' );
-    });
+    queue.shutdown(timeout || 0, cb);
   }
 };
+
+function restartJobs(ids) {
+  ids.forEach( function( id ) {
+    kue.Job.get( id, function( err, job ) {
+      console.log('Retry job: ', id);
+      job.inactive();
+    });
+  });
+}
+
+function restartJobsHandler(resolve, reject) {
+  return function( err, ids ) {
+    if(err) {
+      reject(err);
+      return;
+    }
+    restartJobs(ids);
+    resolve();
+  };
+}
 
 module.exports = {
   queueTask : function(name, params, priority) {
     var job = queue.create(name, params);
     if(priority) {
-      //console.log('set priority', priority );
       job.priority(priority);
     }
     job.removeOnComplete( true );
@@ -50,14 +62,13 @@ module.exports = {
   disconnect : disconnect,
   redisConnectionInfo: redisConnectionInfo,
   retryFailed: function() {
-    queue.failed(function( err, ids ) { // others are active, complete, failed, delayed
-      ids.forEach( function( id ) {
-        kue.Job.get( id, function( err, job ) {
-          // Your application should check if job is a stuck one
-          console.log('Retry job: ', id);
-          job.inactive();
-        });
-      });
+    return new Promise(function(resolve, reject) {
+      queue.failed(restartJobsHandler(resolve, reject));
+    });
+  },
+  restartActive: function() {
+    return new Promise(function(resolve, reject) {
+      queue.active(restartJobsHandler(resolve, reject));
     });
   }
 };

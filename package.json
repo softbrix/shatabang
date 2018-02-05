@@ -45,7 +45,6 @@
     "express-session": "^1.13.0",
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "*",
-    "ioredis": "3.2.1",
     "kue": "^0.10.5",
     "minimist": "^1.2.0",
     "multer": "1.1.0",
