@@ -24,13 +24,14 @@ processors.forEach(function(processor) {
   processor.init(config, task_queue);
 });
 
-process.on('uncaughtException', function (err) {
-  console.error('uncaught exception', err.stack);
-});
 function disconnectCallback(err) {
   console.log( 'Kue shutdown: ', err||'OK' );
   process.exit(0);
 };
+process.on('uncaughtException', function (err) {
+  console.error('uncaught exception', err.stack);
+  task_queue.disconnect(0, disconnectCallback);
+});
 process.on('SIGINT', function () {
   console.error('Got SIGINT. Shuting down the queue.');
   clearTimeout(timeOut);
@@ -41,13 +42,12 @@ process.once( 'SIGTERM', function () {
   task_queue.disconnect(0, disconnectCallback);
 });
 
-task_queue.restartActive().then(function() {
-  task_queue.queueTask('upgrade_check', {}, 'high')
-    .on('complete', () => {
-      console.log("Running task processor...");
-      queImport();
-    });
-});
+task_queue.enableWatchDog();
+task_queue.queueTask('upgrade_check', {}, 'high')
+  .on('complete', () => {
+    console.log("Running task processor...");
+    queImport();
+  });
 
 var timeOut = 0;
 var queImport = function() {

@@ -70,5 +70,8 @@ module.exports = {
     return new Promise(function(resolve, reject) {
       queue.active(restartJobsHandler(resolve, reject));
     });
+  },
+  enableWatchDog : function() {
+    queue.watchStuckJobs(4000);
   }
 };

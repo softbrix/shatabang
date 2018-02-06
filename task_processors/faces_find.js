@@ -14,6 +14,12 @@ var init = function(config, task_queue) {
   //var storageDir = config.storageDir;
   var cacheDir = config.cacheDir;
 
+  // To redirect the old task find_faces to the new one.
+  task_queue.registerTaskProcessor('find_faces', function(data, job, done) {
+    task_queue.queueTask('faces_find', data, 'low');
+    done();
+  });
+
   task_queue.registerTaskProcessor('faces_find', function(data, job, done) {
     var relativeFilePath = data.file;
     var sourceFileName = path.resolve(path.join(cacheDir, "1920", relativeFilePath));

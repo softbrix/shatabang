@@ -5,6 +5,7 @@ var path = require('path');
 var fs = require('fs');
 var Redis = require('redis');
 var MediaMeta = require('../modules/media_meta.js');
+var FileType = require('../modules/file_type_regexp.js');
 var shFiles = require('../modules/shatabang_files');
 
 /**
@@ -14,38 +15,41 @@ var init = function(config, task_queue) {
   var infoDirectory = path.join(config.cacheDir, 'info');
   var storageDir = config.storageDir;
   var versionKey = 'shatabangVersion';
+  var latestVersion = 3;
 
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
     var redis = Redis.createClient(task_queue.redisConnectionInfo);
     // Check version in redisStore
     redis.get(versionKey, function (err, version) {
       if(err) {
-        console.log('Error while retrieving versionKey', err);
+        job.log('Error while retrieving versionKey', err);
         return;
       }
-      console.log('Index version', version);
+      job.log('Index version', version);
       if(!version) {
+        version = 0;
         upgrade_v1(infoDirectory, storageDir, (error) => {
           if(error) {
-            done(error);
-            return;
+            job.log(error);
           }
-          // On succesful upgrade
-          redis.set(versionKey, 1);
-          console.log('Successfully upgraded index to', 'v1');
+        });
+        task_queue.queueTask('retry_unknown', {}, 'low');
+      }
+      if(version < latestVersion) {
+        upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
+        task_queue.retryFailed();
+        job.log('Successfully upgraded index to', 'v'+latestVersion);
+        redis.set(versionKey, latestVersion, function() {
+          redis.quit();
           done();
         });
-        upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
-        task_queue.queueTask('retry_unknown', {}, 'low');
-      } else if(version < 2) {
-        upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
-        redis.set(versionKey, 2);
-        task_queue.retryFailed();
       } else {
+        redis.quit();
+        job.log('All done');
         done();
+        return;
       }
     });
-    redis.quit();
   });
 };
 
@@ -92,7 +96,7 @@ function upgrade_faces_index(infoDirectory, cache_dir, task_queue) {
   idx.clear();
 
   allMedia(infoDirectory, function(items) {
-    items.forEach((relativeDest) => {
+    items.filter(FileType.isImage).forEach((relativeDest) => {
       task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest}, 'low');
     });
   });
