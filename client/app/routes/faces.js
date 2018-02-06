@@ -1,6 +1,8 @@
 import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import Ember from 'ember';
 
+const Logger = Ember.Logger;
 
 // TODO: Remove code dupplication
 // This could be handled on the server
@@ -30,7 +32,7 @@ function expandFaceInfo(info) {
 export default Route.extend(AuthenticatedRouteMixin).extend({
   model() {
     return Ember.$.getJSON('./api/faces/list')
-    .then(function(facesJson) {
+    /*.then(function(facesJson) {
       var faceItems = [];
       facesJson.forEach(function(itm) {
         itm.items.forEach(function(face) {
@@ -39,11 +41,11 @@ export default Route.extend(AuthenticatedRouteMixin).extend({
         })
       });
       return faceItems;
-    })
+    })*/
     .then(list =>  {
       list.forEach((a) => {
         if(a.s * 1 !== a.s) {
-          Ember.log('No stat', a.k);
+          Logger.log('No stat', a.k);
           a.s = 0;
         }
       });

@@ -3,6 +3,7 @@ var express = require('express');
 var router  = express.Router();
 var path = require('path');
 var shIndex = require('stureby_index');
+var faceInfo = require('../modules/face_info');
 
 var idx_dir, faces_idx_dir;
 router.initialize = function(config) {
@@ -10,23 +11,38 @@ router.initialize = function(config) {
   faces_idx_dir = path.join(config.cacheDir, 'idx_faces_crop');
 };
 
+function loadFaceItems() {
+  var idx = shIndex(idx_dir)
+  var faceItems = [];
+  idx.keys().forEach(function(key) {
+    var items = idx.get(key);
+    if(items.length > 0) {
+      JSON.parse(items[0]).forEach(function(itm) {
+        itm.k = key;
+        faceItems.push(itm);
+      });
+    }
+  });
+  return faceItems;
+}
+
+function sendJsonList(res, list) {
+  res.setHeader('content-type', 'application/json');
+  res.write(JSON.stringify(list));
+  res.end();
+}
+
 router.get('/list',function(req,res){
-    var idx = shIndex(idx_dir), written = false;
-    res.setHeader('content-type', 'application/json');
-    res.write("[");
-    idx.keys().forEach(function(key) {
-      var items = idx.get(key);
-      if(items.length > 0) {
-        if(written) {
-          res.write(',');
-        }
-        written = true;
-        res.write(JSON.stringify({
-          key: key,
-          items : JSON.parse(items[0])}));
-      }
-    });
-    res.end("]");
+    sendJsonList(res, loadFaceItems());
+});
+
+router.get('/list/unknown',function(req,res) {
+    var list = loadFaceItems().filter(face => face.u === undefined);
+    list = list
+      .map(faceInfo.expand)
+      .map(faceInfo.calcSize)
+      .sort(faceInfo.sizeCompare);
+    sendJsonList(res, list);
 });
 
 router.get('/face/:id', function(req,res){
