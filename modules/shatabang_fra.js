@@ -9,6 +9,7 @@ const face_max_width = 100,
       face_max_height = 150,
       face_expand_ratio = 6,
       MAX_SHORT = 65535,
+      BLK_WIDTH = 4,
       classifier = new cv.CascadeClassifier(cv.HAAR_FRONTALFACE_ALT2);
 
 function toHex(v) {
@@ -18,6 +19,10 @@ function toHex(v) {
 function fromHex(v) {
   return parseInt(v, 16);
 }
+
+var leftPad = function(d, w) {
+  return ("" + d).padStart(w, "0");
+};
 
 module.exports = {
 
@@ -55,19 +60,18 @@ module.exports = {
   /** Compresses the x, y, w and h fractions to an array of hex to represent the face information */
   compressFaceInfo: function(info) {
     var t = function t(val) {
-      return toHex(Math.round(val * MAX_SHORT));
+      return leftPad(toHex(Math.round(val * MAX_SHORT)), BLK_WIDTH);
     };
     return t(info.x)+t(info.y)+t(info.w)+t(info.h);
   },
   /* Reverses the compress function, will return NaN if given info is not an correct string */
   expandFaceInfo: function(info) {
-    if(info.length < 16 /* todo: regexp match input*/) {
+    if(info.length < BLK_WIDTH * 4 /* todo: regexp match input*/) {
       return { x: NaN, y: NaN, w: NaN, h: NaN };
     }
     var t = function t(val) {
       return fromHex(val) / MAX_SHORT;
     };
-    const BLK_WIDTH = 4;
     return {
       x: t(info.substr(0, BLK_WIDTH)),
       y: t(info.substr(4, BLK_WIDTH)),
