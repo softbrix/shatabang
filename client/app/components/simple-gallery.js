@@ -32,12 +32,11 @@ export default Component.extend({
       that._loadMedia();
 
       that.get('mediaLoader').fullyLoadedPromise().then(function() {
+        // Reset loaded images and load more if possible
+        that.set('mediaIterator', tree.leafIteratorReverse());
+        that.get('mediaList').clear();
+        that._loadMedia();
 
-        // Check if we have more to load or if we display to few
-        if(that.get('scrollAlmostDown').scrollCheck() ||
-           that.get('mediaList').length < that.get('mediaCount')) {
-           that._loadMedia();
-        }
         var deregisterer = that.get('scrollAlmostDown').registerListener(function() {
           var loadAndCheckSize = function() {
             that._loadMedia();
@@ -58,7 +57,7 @@ export default Component.extend({
     this._super(...arguments);
 
     var d = new Date(this.get('fromDate'));
-    this.get('mediaIterator').gotoPath([d.getFullYear(), d.getMonth() + 1, d.getDate()]);
+    this.get('mediaIterator').gotoPath([d.getFullYear(), d.getMonth() + 1, d.getDate()], true);
     this.get('mediaList').clear();
     this._loadMedia();
   },

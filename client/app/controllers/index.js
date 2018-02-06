@@ -22,8 +22,8 @@ export default Controller.extend({
         var tree = this.get('mediaLoader.tree');
         var it = tree.leafIterator();
         this.set('fromDate', (it.hasPrev() ? it.next().date : now).toLocaleDateString());
-        var itl = tree.leafIteratorReverse();
-        this.set('toDate', (itl.hasPrev() ? itl.prev().date : now).toLocaleDateString());
+        //var itl = tree.leafIteratorReverse();
+        //this.set('toDate', (itl.hasPrev() ? itl.prev().date : now).toLocaleDateString());
       });
     }
     this.get('imageWidthService');
