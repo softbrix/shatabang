@@ -15,7 +15,7 @@ var init = function(config, task_queue) {
   var infoDirectory = path.join(config.cacheDir, 'info');
   var storageDir = config.storageDir;
   var versionKey = 'shatabangVersion';
-  var latestVersion = 3;
+  var latestVersion = 4;
 
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
     var redis = Redis.createClient(task_queue.redisConnectionInfo);
@@ -35,7 +35,7 @@ var init = function(config, task_queue) {
         });
         task_queue.queueTask('retry_unknown', {}, 'low');
       }
-      if(version < latestVersion) {
+      if(version < 3) {
         upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
         task_queue.retryFailed();
         job.log('Successfully upgraded index to', 'v'+latestVersion);
@@ -43,6 +43,9 @@ var init = function(config, task_queue) {
           redis.quit();
           done();
         });
+      }
+      if(version < latestVersion) {
+        import_meta_to_index(infoDirectory, config.cacheDir, task_queue);
       } else {
         redis.quit();
         job.log('All done');
@@ -98,6 +101,15 @@ function upgrade_faces_index(infoDirectory, cache_dir, task_queue) {
   allMedia(infoDirectory, function(items) {
     items.filter(FileType.isImage).forEach((relativeDest) => {
       task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest}, 'low');
+    });
+  });
+}
+
+/** Re run all face recognitions so we add the cropped information to the index **/
+function import_meta_to_index(infoDirectory, cache_dir, task_queue) {
+  allMedia(infoDirectory, function(items) {
+    items.forEach((relativeDest) => {
+      task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest}, 'low');
     });
   });
 }

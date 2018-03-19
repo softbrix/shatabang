@@ -76,6 +76,12 @@ body > .ember-view {
     width: 100px;
 }
 
+.person_list {
+  border: 1px solid white;
+  margin-bottom: 1em;
+  padding: 1em;
+  position: relative;
+}
 
 
 /** Upload route */
@@ -92,6 +98,14 @@ body > .ember-view {
 
 .float_left {
   float: left;
+}
+
+.clear {
+  clear: both;
+}
+
+.highlight_text {
+  color: red;
 }
 
 .back_to_index_btn {
@@ -128,10 +142,10 @@ body > .ember-view {
 
   .isVideo {
     .fullsizeMedia {
-      .fullWidth {
+      &.fullWidth {
         width: 80%;
       }
-      .fullHeight {
+      &.fullHeight {
         max-width: 80%;
       }
     }

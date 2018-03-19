@@ -11,6 +11,6 @@ export default Component.extend({
     return './api/faces/face/' + this.get('item.b');
   }),
   imgAlt: computed('item', function() {
-    return this.get('item.b') + ' - ' + this.get('item.s') + ' - ' + this.get('item.a');
-  }),
+    return this.get('item.selected') + this.get('item.b') + ' - ' + this.get('item.s') + ' - ' + this.get('item.a');
+  })
 });

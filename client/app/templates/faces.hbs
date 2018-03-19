@@ -2,10 +2,42 @@
 
 <h1> List of faces </h1>
 
-{{face-filter all=model filtered=filtered}}
+<div class="person_list">
+  {{#if addingPerson}}
+    <p class="highlight_text">{{addPersonError}}</p>
+    <div class="float_right" style="min-height: 110px">
+      {{#if selectedFace}}
+        {{image-list-item item=selectedFace}}
+      {{else}}
+        <p class="{{if highlightSelectFace 'highlight_text'}} ">Select and image below.</p>
+      {{/if}}
+    </div>
+    Enter a name:<br/>
+    {{input type="text" placeholder="Name" value=newPersonName}}
+    <br/>
+    <div style="position: absolute; bottom: 1em">
+      <a {{action 'addPerson'}} class="btn btn-primary btn-md" id="addBtn">Add</a>
+      <a {{action 'cancelAddPerson'}} class="btn btn-default btn-md" id="cancelBtn">Cancel</a>
+    </div>
+  {{else}}
+    <a {{action 'addPerson'}} class="btn btn-primary btn-md float_left" id="addBtn">Add new</a>
+    {{#each model.people as |person|}}
+      <div class="float_left" style="margin-left: 1em">
+        {{face-img faceId=person.thumbnail click=(action 'personClicked' person)}}<br/>
+        {{person.name}}
+      </div>
+    {{/each}}
+  {{/if}}
+  <div class="clear"></div>
+</div>
 
+{{fullsize-media activeMedia=activeMedia}}
+
+{{face-filter all=model.faces filtered=filteredFaces}}
+
+<h3> Unknown faces </h3>
 <ul class="face_list">
-  {{#each model as |face|}}
-    {{image-list-item item=face}}
+  {{#each model.faces as |face|}}
+    {{image-list-item item=face click=(action 'imageClicked' face)}}
   {{/each}}
 </ul>

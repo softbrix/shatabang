@@ -599,10 +599,6 @@ exif@^0.6.0:
   dependencies:
     debug "^2.2"
 
-exiftool@0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/exiftool/-/exiftool-0.0.3.tgz#f58a92bd77270adc54f3151ced61a4a3ab69d707"
-
 express-session@^1.13.0:
   version "1.15.6"
   resolved "https://registry.yarnpkg.com/express-session/-/express-session-1.15.6.tgz#47b4160c88f42ab70fe8a508e31cbff76757ab0a"
@@ -686,6 +682,12 @@ extend@^1.2.1:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/extend/-/extend-1.3.0.tgz#d1516fb0ff5624d2ebf9123ea1dac5a1994004f8"
 
+fakeredis@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/fakeredis/-/fakeredis-2.0.0.tgz#752fb832819ace31be88668cf1358d6f1438afc0"
+  dependencies:
+    redis "2.6.0-0"
+
 finalhandler@0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/finalhandler/-/finalhandler-0.4.0.tgz#965a52d9e8d05d2b857548541fb89b53a2497d9b"
@@ -764,6 +766,12 @@ fs.realpath@^1.0.0:
 function-bind@^1.0.2, function-bind@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
+
+function.name@^1.0.3:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/function.name/-/function.name-1.0.10.tgz#ed00c828d98ff9a80186926fd439bdd7c16d4f0d"
+  dependencies:
+    noop6 "^1.0.1"
 
 get-caller-file@^1.0.1:
   version "1.0.2"
@@ -968,6 +976,10 @@ isurl@^1.0.0-alpha5:
     has-to-string-tag-x "^1.2.0"
     is-object "^1.0.1"
 
+iterate-object@^1.3.1:
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/iterate-object/-/iterate-object-1.3.2.tgz#24ec15affa5d0039e8839695a21c2cae1f45b66b"
+
 jade@0.26.3:
   version "0.26.3"
   resolved "https://registry.yarnpkg.com/jade/-/jade-0.26.3.tgz#8f10d7977d8d79f2f6ff862a81b0513ccb25686c"
@@ -1005,6 +1017,12 @@ kind-of@^3.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-3.2.2.tgz#31ea21a734bab9bbb0f32466d893aea51e4a3c64"
   dependencies:
     is-buffer "^1.1.5"
+
+kopparmora-xmp-reader@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/kopparmora-xmp-reader/-/kopparmora-xmp-reader-1.0.1.tgz#c2df06562fdb1fe379a671088ca9edc615dfaaf4"
+  dependencies:
+    sax "^1.2.1"
 
 kue@^0.11.6:
   version "0.11.6"
@@ -1272,6 +1290,10 @@ node-sha1@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/node-sha1/-/node-sha1-1.0.1.tgz#32ed847d8513157b96dec6b79e8c47bcaeb78e1c"
 
+noop6@^1.0.1:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/noop6/-/noop6-1.0.7.tgz#96767bf2058ba59ca8cb91559347ddc80239fa8e"
+
 nopt@~1.0.10:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/nopt/-/nopt-1.0.10.tgz#6ddd21bd2a31417b92727dd585f8a6f37608ebee"
@@ -1315,6 +1337,13 @@ number-is-nan@^1.0.0:
 oauth@0.9.x:
   version "0.9.15"
   resolved "https://registry.yarnpkg.com/oauth/-/oauth-0.9.15.tgz#bd1fefaf686c96b75475aed5196412ff60cfb9c1"
+
+obj-flatten@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/obj-flatten/-/obj-flatten-2.0.3.tgz#efcaf4c89461638c6d9d6828a4f4b268d84dd917"
+  dependencies:
+    iterate-object "^1.3.1"
+    typpy "^2.3.1"
 
 object-assign@^3.0.0:
   version "3.0.0"
@@ -1601,7 +1630,7 @@ pug@^2.0.0-beta3:
     pug-runtime "^2.0.3"
     pug-strip-comments "^1.0.2"
 
-q@^1.4.1, q@^1.5.1:
+q@^1.4.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
 
@@ -1678,25 +1707,41 @@ readable-stream@^2.2.2:
     string_decoder "~1.0.3"
     util-deprecate "~1.0.1"
 
+redis-commands@^1.1.0:
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/redis-commands/-/redis-commands-1.3.5.tgz#4495889414f1e886261180b1442e7295602d83a2"
+
 redis-commands@^1.2.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/redis-commands/-/redis-commands-1.3.1.tgz#81d826f45fa9c8b2011f4cd7a0fe597d241d442b"
+
+redis-parser@^1.2.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/redis-parser/-/redis-parser-1.3.0.tgz#806ebe7bbfb7d34e4d7c1e9ef282efcfad04126a"
 
 redis-parser@^2.0.0, redis-parser@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/redis-parser/-/redis-parser-2.6.0.tgz#52ed09dacac108f1a631c07e9b69941e7a19504b"
 
-redis@^0.12.1:
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/redis/-/redis-0.12.1.tgz#64df76ad0fc8acebaebd2a0645e8a48fac49185e"
+redis@2.6.0-0:
+  version "2.6.0-0"
+  resolved "https://registry.yarnpkg.com/redis/-/redis-2.6.0-0.tgz#73f674dd3e54a3a76703d1ed2606b4e600be076d"
+  dependencies:
+    double-ended-queue "^2.1.0-0"
+    redis-commands "^1.1.0"
+    redis-parser "^1.2.0"
 
-redis@^2.1.0:
+redis@2.8.0, redis@^2.1.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/redis/-/redis-2.8.0.tgz#202288e3f58c49f6079d97af7a10e1303ae14b02"
   dependencies:
     double-ended-queue "^2.1.0-0"
     redis-commands "^1.2.0"
     redis-parser "^2.6.0"
+
+redis@^0.12.1:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/redis/-/redis-0.12.1.tgz#64df76ad0fc8acebaebd2a0645e8a48fac49185e"
 
 redis@~2.6.0-2:
   version "2.6.5"
@@ -1748,6 +1793,10 @@ safe-buffer@5.1.1, safe-buffer@^5.0.1, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
 sax@0.5.x:
   version "0.5.8"
   resolved "https://registry.yarnpkg.com/sax/-/sax-0.5.8.tgz#d472db228eb331c2506b0e8c15524adb939d12c1"
+
+sax@^1.2.1:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
 
 "semver@2 || 3 || 4 || 5", semver@^5.3.0:
   version "5.4.1"
@@ -2093,6 +2142,12 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
+typpy@^2.3.1:
+  version "2.3.10"
+  resolved "https://registry.yarnpkg.com/typpy/-/typpy-2.3.10.tgz#63a39e4171cbbb4cdefb590009228a3de9a22b2f"
+  dependencies:
+    function.name "^1.0.3"
+
 uglify-js@^2.6.1:
   version "2.8.29"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.29.tgz#29c5733148057bb4e1f75df35b7a9cb72e6a59dd"
@@ -2173,14 +2228,19 @@ vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
 
-vega_media_info@^1.2.0:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/vega_media_info/-/vega_media_info-1.2.1.tgz#5d8a5d0db1bb7662992df65fc46768c42453c6ea"
+vega_media_info@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/vega_media_info/-/vega_media_info-1.4.0.tgz#c8e0e8fdec63c1972d76eface9eb3139e0b2cea8"
   dependencies:
     exif "^0.6.0"
-    exiftool "0.0.3"
+    kopparmora-xmp-reader "^1.0.1"
     node-iptc "^1.0.5"
-    q "^1.5.1"
+
+vemdalen_index@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/vemdalen_index/-/vemdalen_index-1.3.0.tgz#65fd5584a34259a15acf30f4a0d559515df09db4"
+  dependencies:
+    redis "2.8.0"
 
 void-elements@^2.0.1:
   version "2.0.1"

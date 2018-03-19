@@ -53,6 +53,7 @@ routes.push({path: 'duplicates', route: require('./routes/duplicates')});
 routes.push({path: 'dirs', route: require('./routes/dirs')});
 routes.push({path: 'indexes', route: require('./routes/indexes')});
 routes.push({path: 'kue', route: require('./routes/kue')});
+routes.push({path: 'people', route: require('./routes/people')});
 routes.push({path: 'auth', route: require('./routes/auth'), public: true});
 routes.push({path: 'users', route: require('./routes/users'), public: true});
 routes.push({path: 'version', route: require('./routes/version')});

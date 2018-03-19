@@ -1,6 +1,7 @@
 import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 import Ember from 'ember';
+import RSVP from 'rsvp';
 
 const Logger = Ember.Logger;
 
@@ -31,29 +32,22 @@ function expandFaceInfo(info) {
 
 export default Route.extend(AuthenticatedRouteMixin).extend({
   model() {
-    return Ember.$.getJSON('./api/faces/list')
-    /*.then(function(facesJson) {
-      var faceItems = [];
-      facesJson.forEach(function(itm) {
-        itm.items.forEach(function(face) {
-          face.k = itm.key;
-          faceItems.push(face);
+    return RSVP.hash({
+      faces: Ember.$.getJSON('./api/faces/list')
+        .then(list =>  {
+          list.forEach((a) => {
+            if(a.s * 1 !== a.s) {
+              Logger.log('No stat', a.k);
+              a.s = 0;
+            }
+          });
+          return list;
         })
-      });
-      return faceItems;
-    })*/
-    .then(list =>  {
-      list.forEach((a) => {
-        if(a.s * 1 !== a.s) {
-          Logger.log('No stat', a.k);
-          a.s = 0;
-        }
-      });
-      return list;
-    })
-    .then(list => list.map(itm => { var o = expandFaceInfo(itm.i); o.s = itm.s; o.k = itm.k; o.b = itm.b; return o}))
-    .then(list => list.map(itm => { itm.a = itm.h * itm.w; return itm; }))
-    .then(list => list.sort((a,b) => b.a - a.a))  // Sort desc based on focus
-    .then(l => l.slice(0, 1024));
+        .then(list => list.map(itm => { var o = expandFaceInfo(itm.i); o.s = itm.s; o.k = itm.k; o.b = itm.b; return o}))
+        .then(list => list.map(itm => { itm.a = itm.h * itm.w; return itm; }))
+        .then(list => list.sort((a,b) => b.a - a.a))  // Sort desc based on focus
+        .then(l => l.slice(0, 1024)),
+      people: this.get('store').findAll('person')
+    });
   }
 });

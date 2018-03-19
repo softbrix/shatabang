@@ -1,14 +1,15 @@
 "use strict";
 
-var task_queue = require('./modules/task_queue');
+let task_queue = require('./modules/task_queue');
 
-var processors = [
+let processors = [
     require('./task_processors/clear_index'),
     require('./task_processors/create_image_finger'),
     require('./task_processors/encode_video'),
     require('./task_processors/index_media'),
     require('./task_processors/faces_find'),
     require('./task_processors/faces_crop'),
+    require('./task_processors/import_meta'),
     require('./task_processors/process_import'),
     require('./task_processors/update_directory_list'),
     require('./task_processors/resize_image'),
@@ -18,7 +19,11 @@ var processors = [
     require('./task_processors/upgrade'),
   ];
 
-var config = require('./config.js');
+let config = require('./config.js');
+let redis = require('redis');
+
+// Initialize the default redis client
+config.redisClient = redis.createClient(config);
 
 processors.forEach(function(processor) {
   processor.init(config, task_queue);
@@ -36,6 +41,7 @@ process.on('SIGINT', function () {
   console.error('Got SIGINT. Shuting down the queue.');
   clearTimeout(timeOut);
   task_queue.disconnect(10000, disconnectCallback);
+  config.redisClient.quit();
 });
 process.once( 'SIGTERM', function () {
   console.error('Got SIGTERM. Shuting down the queue.');
