@@ -7,6 +7,7 @@ const config         = require('./config.js'),
     shFiles        = require('./modules/shatabang_files'),
     session        = require('express-session'),
     sha256         = require('sha256'),
+    task_queue     = require('./modules/task_queue'),
     kue            = require('kue'),
     RedisStore     = require('connect-redis')( session ),
     redis          = require('redis'),
@@ -37,11 +38,13 @@ var cacheDir = config.cacheDir;
 var deleteDir = config.deletedDir = path.join(storageDir, 'deleted');
 var uploadDir = config.uploadDir = path.join(storageDir, 'upload');
 var importDir = config.importDir = path.join(storageDir, 'import');
+
 // Initialize the default redis client
 config.redisClient = redis.createClient({
   host: config.redisHost,
   port: config.redisPort
 });
+task_queue.connect(config);
 
 // Check that directories exists
 [uploadDir, importDir, deleteDir, path.join(cacheDir, 'info')].forEach(function(directory) {
