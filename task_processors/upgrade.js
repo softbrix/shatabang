@@ -3,7 +3,6 @@
 var shIndex = require('stureby_index');
 var path = require('path');
 var fs = require('fs');
-var Redis = require('redis');
 var MediaMeta = require('../modules/media_meta.js');
 var FileType = require('../modules/file_type_regexp.js');
 var shFiles = require('../modules/shatabang_files');
@@ -18,7 +17,7 @@ var init = function(config, task_queue) {
   var latestVersion = 4;
 
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
-    var redis = Redis.createClient(task_queue.redisConnectionInfo);
+    var redis = config.redisClient;
     // Check version in redisStore
     redis.get(versionKey, function (err, version) {
       if(err) {
@@ -40,14 +39,12 @@ var init = function(config, task_queue) {
         task_queue.retryFailed();
         job.log('Successfully upgraded index to', 'v'+latestVersion);
         redis.set(versionKey, latestVersion, function() {
-          redis.quit();
           done();
         });
       }
       if(version < latestVersion) {
         import_meta_to_index(infoDirectory, config.cacheDir, task_queue);
       } else {
-        redis.quit();
         job.log('All done');
         done();
         return;

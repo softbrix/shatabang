@@ -5,7 +5,6 @@ var shIndex = require('stureby_index');
 var shFiles = require('../modules/shatabang_files');
 var shFra = require('../modules/shatabang_fra');
 var faceInfo = require('../modules/face_info');
-var uuidv4 = require('uuid/v4');
 var path = require('path');
 
 
@@ -50,7 +49,7 @@ var init = function(config, task_queue) {
       job.log('Face' , face);
       return shFra.cropFace(sourceFileName, face).then(function(buffer) {
         // Save the buffer and store the new index to the face info
-        const newId = uuidv4();
+        const newId = faceInfo.toId(relativeFilePath, face);
         const bs64 = buffer.toString('base64');
         idx_crop.update(newId, bs64);
         face.bid = newId;

@@ -2,6 +2,7 @@
 const path = require('path');
 const flatten = require('obj-flatten');
 const faceInfo = require('../modules/face_info');
+const PersonInfo = require('../modules/person_info');
 const shFra = require('../modules/shatabang_fra');
 const mediaInfo = require('vega_media_info');
 const vemdalenIndex = require("vemdalen_index");
@@ -55,7 +56,7 @@ function extractCachableMeta(meta) {
 var init = function(config, task_queue) {
   const storageDir = config.storageDir
   let keywordsIndex = vemdalenIndex('keywords:', {
-    indexType: 'strings',
+    indexType: 'strings_unique',
     client: config.redisClient
   });
   let metaCache = vemdalenIndex('meta:', {
@@ -75,17 +76,19 @@ var init = function(config, task_queue) {
       // Store keywords
       let filteredMeta = filterKeyWords(info);
       var keywordPromises  = filteredMeta.map(val => {
-        // Only add new items
-        return keywordsIndex.get(val).then(list => {
-          if(list.indexOf(data.file) < 0) {
-            return keywordsIndex.put(val, data.file);
-          }
-        });
+        keywordsIndex.put(val, data.file)
       });
 
+      let personInfo = PersonInfo(config.redisClient);
       // Store regions
       let regionPromises = extractRegions(info, data.file)
-        .map(([key, compressed]) => regionsCache.put(key, compressed));
+        .map(([key, compressed]) => {
+          return personInfo.getOrCreate(compressed.n, key).then(personInfo => {
+            compressed.p = personInfo.id;
+            return regionsCache.put(key, compressed);
+          });
+        });
+
 
       // Store meta cache
       let cachableMeta = extractCachableMeta(info);

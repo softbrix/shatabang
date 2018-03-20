@@ -12,6 +12,10 @@ describe('Face Info', function() {
   };
   let path = '2010/02/24/053532.jpg'
   it('should generate from path and info', function() {
+    assert.equal('2010022405353280003333', faceInfo.toId(path, info));
+  });
+
+  it('should generate from path and compressed info', function() {
     let compressed = faceInfo.compress(info);
     assert.equal('2010022405353280003333', faceInfo.toId(path, compressed));
   });

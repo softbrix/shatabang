@@ -2236,9 +2236,9 @@ vega_media_info@^1.4.0:
     kopparmora-xmp-reader "^1.0.1"
     node-iptc "^1.0.5"
 
-vemdalen_index@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/vemdalen_index/-/vemdalen_index-1.3.0.tgz#65fd5584a34259a15acf30f4a0d559515df09db4"
+vemdalen_index@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/vemdalen_index/-/vemdalen_index-1.4.1.tgz#f500e6315953d4b22a7dc946f25299a5e2d6ceb5"
   dependencies:
     redis "2.8.0"
 

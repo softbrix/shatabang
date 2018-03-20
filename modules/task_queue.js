@@ -2,17 +2,9 @@
 
 var kue = require('kue');
 
-var redisConnectionInfo = {
-  host: process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1',
-  port: process.env.REDIS_PORT_6379_TCP_PORT || 6379
-};
-
-var queue = kue.createQueue({
-  redis: redisConnectionInfo
-});
-
 var dying = false;
 var disconnect = function disconnect(timeout, cb) {
+  console.log('Disconnect kue called');
   if (!dying) {
     dying = true;
     queue.shutdown(timeout || 0, cb);
@@ -22,6 +14,10 @@ var disconnect = function disconnect(timeout, cb) {
 function restartJobs(ids) {
   ids.forEach( function( id ) {
     kue.Job.get( id, function( err, job ) {
+      if(err || job === undefined) {
+        console.error('Failed to restart job: ', err);
+        return;
+      }
       console.log('Retry job: ', id);
       job.inactive();
     });
@@ -39,7 +35,17 @@ function restartJobsHandler(resolve, reject) {
   };
 }
 
+var queue;
+
 module.exports = {
+  connect: function(config) {
+    queue = kue.createQueue({
+      redis: {
+        host: config.redisHost,
+        port: config.redisPort
+      }
+    });
+  },
   queueTask : function(name, params, priority) {
     var job = queue.create(name, params);
     if(priority) {
@@ -60,7 +66,6 @@ module.exports = {
     });
   },
   disconnect : disconnect,
-  redisConnectionInfo: redisConnectionInfo,
   retryFailed: function() {
     return new Promise(function(resolve, reject) {
       queue.failed(restartJobsHandler(resolve, reject));

@@ -10,7 +10,7 @@ module.exports = function(src, destDir, task_queue) {
       var relativeDest = path.relative(destDir, newDest);
       console.log('Relative', relativeDest);
       //task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
-      task_queue.queueTask('index_media', { title: relativeDest, file: newDest});
+      task_queue.queueTask('import_meta', { title: relativeDest, file: newDest});
       var directory = relativeDest.split(path.sep)[0];
       console.log('dir', directory);
 

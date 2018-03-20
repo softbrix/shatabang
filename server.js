@@ -1,6 +1,6 @@
 "use strict";
 
-var config         = require('./config.js'),
+const config         = require('./config.js'),
     express        = require("express"),
     bodyParser     = require('body-parser'),
     compression    = require('compression'),
@@ -9,6 +9,7 @@ var config         = require('./config.js'),
     sha256         = require('sha256'),
     kue            = require('kue'),
     RedisStore     = require('connect-redis')( session ),
+    redis          = require('redis'),
     app            = express(),
     path           = require('path'),
     passport       = require('passport'),
@@ -36,6 +37,11 @@ var cacheDir = config.cacheDir;
 var deleteDir = config.deletedDir = path.join(storageDir, 'deleted');
 var uploadDir = config.uploadDir = path.join(storageDir, 'upload');
 var importDir = config.importDir = path.join(storageDir, 'import');
+// Initialize the default redis client
+config.redisClient = redis.createClient({
+  host: config.redisHost,
+  port: config.redisPort
+});
 
 // Check that directories exists
 [uploadDir, importDir, deleteDir, path.join(cacheDir, 'info')].forEach(function(directory) {
@@ -53,6 +59,7 @@ routes.push({path: 'duplicates', route: require('./routes/duplicates')});
 routes.push({path: 'dirs', route: require('./routes/dirs')});
 routes.push({path: 'indexes', route: require('./routes/indexes')});
 routes.push({path: 'kue', route: require('./routes/kue')});
+routes.push({path: 'keywords', route: require('./routes/keywords')});
 routes.push({path: 'people', route: require('./routes/people')});
 routes.push({path: 'auth', route: require('./routes/auth'), public: true});
 routes.push({path: 'users', route: require('./routes/users'), public: true});
