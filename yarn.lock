@@ -2228,17 +2228,17 @@ vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
 
-vega_media_info@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/vega_media_info/-/vega_media_info-1.4.0.tgz#c8e0e8fdec63c1972d76eface9eb3139e0b2cea8"
+vega_media_info@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/vega_media_info/-/vega_media_info-1.4.1.tgz#f511235b361bf4664c11d11b9c94a9b830b75cf6"
   dependencies:
     exif "^0.6.0"
     kopparmora-xmp-reader "^1.0.1"
     node-iptc "^1.0.5"
 
-vemdalen_index@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/vemdalen_index/-/vemdalen_index-1.4.1.tgz#f500e6315953d4b22a7dc946f25299a5e2d6ceb5"
+vemdalen_index@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/vemdalen_index/-/vemdalen_index-1.4.2.tgz#476c4c8888cef05e5c146ee57c75f4371e457b1e"
   dependencies:
     redis "2.8.0"
 
