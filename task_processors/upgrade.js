@@ -37,13 +37,14 @@ var init = function(config, task_queue) {
       if(version < 3) {
         upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
         task_queue.retryFailed();
+      }
+      if(version < latestVersion) {
+        import_meta_to_index(infoDirectory, config.cacheDir, task_queue);
+
         job.log('Successfully upgraded index to', 'v'+latestVersion);
         redis.set(versionKey, latestVersion, function() {
           done();
         });
-      }
-      if(version < latestVersion) {
-        import_meta_to_index(infoDirectory, config.cacheDir, task_queue);
       } else {
         job.log('All done');
         done();
