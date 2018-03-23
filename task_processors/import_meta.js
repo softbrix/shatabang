@@ -29,7 +29,7 @@ function extractRegions(meta, filePath) {
 
       var compressed = faceInfo.compress(region);
       let key = faceInfo.toId(filePath, compressed);
-      return [key, compressed];
+      return [key, region.name, compressed];
     });
 }
 
@@ -85,8 +85,8 @@ var init = function(config, task_queue) {
       let personInfo = PersonInfo(config.redisClient);
       // Store regions
       let regionPromises = extractRegions(info, data.file)
-        .map(([key, compressed]) => {
-          return personInfo.getOrCreate(compressed.n, key).then(personInfo => {
+        .map(([key, name, compressed]) => {
+          return personInfo.getOrCreate(name, key).then(personInfo => {
             compressed.p = personInfo.id;
             return regionsCache.put(key, compressed);
           });
@@ -97,9 +97,9 @@ var init = function(config, task_queue) {
       let cachableMeta = extractCachableMeta(info);
       let metaPromises = metaCache.put(data.file, cachableMeta);
 
-      return Promise.all(keywordPromises, regionPromises, metaPromises);
+      return Promise.all([keywordPromises, metaPromises].concat(regionPromises));
     })
-    .then(() => done(), done);
+    .then(() => done(), done)
   });
 };
 

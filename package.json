@@ -66,7 +66,7 @@
     "underscore": "*",
     "uuid": "^3.2.1",
     "variance": "^0.0.1",
-    "vega_media_info": "^1.4.1",
+    "vega_media_info": "^1.4.2",
     "vemdalen_index": "^1.4.2"
   },
   "devDependencies": {
