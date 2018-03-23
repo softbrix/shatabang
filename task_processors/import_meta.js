@@ -69,6 +69,9 @@ var init = function(config, task_queue) {
   });
 
   task_queue.registerTaskProcessor('import_meta', function(data, job, done) {
+    // Hack: Due to a temporary bug in importer, should be ok to remove
+    data.file = data.file.replace(new RegExp(storageDir, 'g'), '');
+
     var sourceFilePath = path.join(storageDir, data.file);
 
     mediaInfo.readMediaInfo(sourceFilePath).then((info) => {
