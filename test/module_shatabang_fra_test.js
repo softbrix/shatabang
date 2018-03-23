@@ -8,7 +8,6 @@ var relativeTestFile = "./test/test_data/1920/faces.JPG";
 var noFaceFile = "./test/test_data/1920/no_face.JPG";
 var expectedFileInfo = "./test/test_data/face_out.png.bs64";
 
-
 describe('Shatabang Face recognition algorithm', function() {
   it('should handle face lookup', function() {
     this.timeout(60000);

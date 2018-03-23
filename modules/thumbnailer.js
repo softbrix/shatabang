@@ -1,28 +1,13 @@
 "use strict";
 
+var FileTypeRegexp = require('./file_type_regexp');
+
 var Q = require('q');
 var fs = require('fs-extra');
 var path = require('path');
 var sharp = require('sharp');
 var ffmpeg = require('fluent-ffmpeg');
 const phash = require('sharp-phash');
-
-var mp4jsRegexp = /^(?!\.).+(m4a|m4v|mp4|mpe?g|mov|avi)$/i;
-
-var replaceExt = function(filePath, newExt) {
-  var fileInfo = path.parse(filePath);
-  fileInfo.ext = newExt;
-  fileInfo.base = fileInfo.name + '.' + fileInfo.ext;
-  return path.format(fileInfo);
-};
-
-var getImageFileName = function(fileName) {
-  return mp4jsRegexp.test(path.basename(fileName)) ? replaceExt(fileName, 'jpg') : fileName;
-};
-
-var isVideo = function(sourceFileName) {
-  return mp4jsRegexp.test(sourceFileName);
-};
 
 function binaryToHex(binary) {
   return binary.replace(/[01]{4}/g, function(v){
@@ -37,7 +22,6 @@ function hexToBinary(binary) {
 }
 
 module.exports = {
-  isVideo: isVideo,
   generateThumbnail : function(sourceFileName, outputFileName, width, height, isMaxSize) {
     var deffered = Q.defer();
     fs.mkdirs(path.dirname(outputFileName), function(error) {
@@ -46,8 +30,8 @@ module.exports = {
           return;
         }
 
-      if(mp4jsRegexp.test(path.basename(sourceFileName))) {
-        outputFileName = getImageFileName(outputFileName);
+      if(FileTypeRegexp.isVideo(path.basename(sourceFileName))) {
+        outputFileName = FileTypeRegexp.toImageFileName(outputFileName);
 
         // TODO: This should be handled by the image resize, the ffmpeg lib
         // should only extract the frames from the video
@@ -115,7 +99,7 @@ module.exports = {
   thumbnailNeedsUpdate : function thumbnailNeedsUpdate(sourceFileName, destFileName) {
   	var destSync;
     try {
-  	   destSync = fs.statSync(getImageFileName(destFileName));
+  	   destSync = fs.statSync(FileTypeRegexp.toImageFileName(destFileName));
   	} catch(error) {
   		// ignore
   //		console.log('statSync',error);
@@ -144,7 +128,7 @@ module.exports = {
 
     // Is this a supported movie file?
     let sourceFileName = path.basename(sourceFile);
-    if(isVideo(sourceFileName)) {
+    if(FileTypeRegexp.isVideo(sourceFileName)) {
       var tmpOutputImage = sourceFile + '.png';
       var width = 1920;
       var height = 1080;

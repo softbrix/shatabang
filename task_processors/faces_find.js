@@ -5,6 +5,7 @@ var shIndex = require('stureby_index');
 var shFiles = require('../modules/shatabang_files');
 var shFra = require('../modules/shatabang_fra');
 var faceInfo = require('../modules/face_info');
+var fileType = require('../modules/file_type_regexp');
 var path = require('path');
 
 
@@ -15,7 +16,7 @@ var init = function(config, task_queue) {
   var cacheDir = config.cacheDir;
 
   task_queue.registerTaskProcessor('faces_find', function(data, job, done) {
-    var relativeFilePath = data.file;
+    var relativeFilePath = fileType.toImageFileName(data.file);
     var sourceFileName = path.resolve(path.join(cacheDir, "1920", relativeFilePath));
     job.log('Faces find', sourceFileName);
 
