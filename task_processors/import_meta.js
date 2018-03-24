@@ -86,10 +86,14 @@ var init = function(config, task_queue) {
       // Store regions
       let regionPromises = extractRegions(info, data.file)
         .map(([key, name, compressed]) => {
-          return personInfo.getOrCreate(name, key).then(personInfo => {
-            compressed.p = personInfo.id;
+          if(name !== undefined && name.length > 0) {
+            return personInfo.getOrCreate(name, key).then(personInfo => {
+              compressed.p = personInfo.id;
+              return regionsCache.put(key, compressed);
+            });
+          } else {
             return regionsCache.put(key, compressed);
-          });
+          }
         });
 
 
