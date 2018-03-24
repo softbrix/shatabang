@@ -5,8 +5,6 @@ var router  = express.Router();
 var PersonInfo = require("../modules/person_info");
 var personInfo;
 
-const namespace = 'persons:';
-
 router.initialize = function(config) {
   personInfo = PersonInfo(config.redisClient);
 };

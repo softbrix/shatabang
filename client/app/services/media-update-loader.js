@@ -1,5 +1,8 @@
 import $ from 'jquery';
 import Service from '@ember/service';
+import Ember from 'ember';
+
+const Logger = Ember.Logger;
 
 export default Service.extend({
 
@@ -9,7 +12,7 @@ export default Service.extend({
         .then(function (response) {
           var images = response.data;
           if(images !== undefined && images.length > 0) {
-            console.log('imported', images);
+            Logger.debug('imported', images);
             /*importImages(images);
             imageList = undefined;
             clearImageList();

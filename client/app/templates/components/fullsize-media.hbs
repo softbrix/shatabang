@@ -25,6 +25,11 @@
       <a href="{{activeMedia.downloadUrl}}" class="download_link" target="_blank" download>Download</a>
     {{/if}}
     {{activeMedia.img}}
+    <a onclick={{action 'confirmDelete'}} style="margin-left: 1em">
+      <span class=" btn btn-danger btn-sm">
+      <i class="fa fa-trash" aria-hidden="true"></i>
+    </span>
+    </a>
   </div>
 </div>
 {{/if}}

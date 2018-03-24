@@ -10,6 +10,7 @@ export default Component.extend({
   activeMedia: undefined,
   reverseMove: false,
   mediaLoader: service('media-list-loader'),
+  mediaModel: service('media-model'),
   fullscreenService: service('fullscreen'),
   didUpdateAttrs() {
     var a = this.get('activeMedia');
@@ -56,10 +57,21 @@ export default Component.extend({
         this._iterateNext();
       }
     },
-
     toggleInteractive: function(event) {
       if(!event.defaultPrevented) {
         $("#interactiveOverlay").toggle();
+      }
+    },
+    confirmDelete: function(event) {
+      if(event) {
+        event.preventDefault();
+      }
+      let confirmed = window.confirm('Do you really want to delete this media file?');
+      if(confirmed) {
+        let moveNext = this._iteratePrev.bind(this);
+        this.get('mediaModel').deleteMedia(this.get('activeMedia')).then(function() {
+          moveNext();
+        });
       }
     }
   },

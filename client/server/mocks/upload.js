@@ -10,6 +10,10 @@ module.exports = function(app) {
     }, Math.ceil(Math.random()*6000) + 1000);
   });
 
+  uploadRouter.get('/imported', function(req, res) {
+    res.end(['/2018/03/24/153332.jpg']);
+  });
+
 
   // The POST and PUT call will not contain a request body
   // because the body-parser is not included by default.
