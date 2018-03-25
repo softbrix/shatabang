@@ -69,9 +69,9 @@ export default Component.extend({
       let confirmed = window.confirm('Do you really want to delete this media file?');
       if(confirmed) {
         let moveNext = this._iteratePrev.bind(this);
-        this.get('mediaModel').deleteMedia(this.get('activeMedia')).then(function() {
+        this.get('mediaModel').deleteMedia(this.get('activeMedia.img')).then(function() {
           moveNext();
-        });
+        }, Logger.error);
       }
     }
   },

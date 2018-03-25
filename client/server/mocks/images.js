@@ -66,10 +66,10 @@ module.exports = function(app) {
   imageApiRouter.post('/delete',function(req,res){
       console.log(req.body);
       if(!req.body.length) {
-        res.send("Missing post data").status(400);
+        res.status(400).end("Missing post data");
         return;
       }
-      res.send("OK").status(200);
+      res.end("OK");
   });
 
   app.use('/images/', imageRouter);
