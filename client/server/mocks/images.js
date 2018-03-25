@@ -64,7 +64,6 @@ module.exports = function(app) {
   });
 
   imageApiRouter.post('/delete',function(req,res){
-      console.log(req.body);
       if(!req.body.length) {
         res.status(400).end("Missing post data");
         return;
