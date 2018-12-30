@@ -96,7 +96,11 @@ https://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
 
 # Docker image
 I've added a docker image to package the application with all the necessary
-dependencies in one single container.
+dependencies in one single container. This docker image is based on a base image 
+including opencv and all the other necessary tools listed above. The base image is called
+shatabang-base and can be found here https://cloud.docker.com/repository/docker/softbrix/shatabang-base/
+
+
 The docker image is built with the following command:
 
 `` docker build . -t softbrix/shatabang ``

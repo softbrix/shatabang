@@ -148,7 +148,7 @@ export default Component.extend({
     }
   },
   _onpopstate(event) {
-    if (event.state && event.state.path === '/') {
+    if (event.state && event.state.img === undefined) {
       this._resetActiveMedia.bind(this)();
     }
   }
