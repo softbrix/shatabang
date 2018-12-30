@@ -12,30 +12,41 @@ export default Component.extend({
   mediaLoader: service('media-list-loader'),
   mediaModel: service('media-model'),
   fullscreenService: service('fullscreen'),
+  init() {
+    this._super(...arguments);
+    var popStateMethd = this._onpopstate.bind(this); 
+    window.addEventListener('popstate', popStateMethd);
+    this._resetPopStateEvent = function() {
+      window.removeEventListener("keydown", popStateMethd);
+    };
+  },
+  didDestroyElement() {
+    this._super(...arguments);
+    this._resetPopStateEvent();
+  },
   didUpdateAttrs() {
     var a = this.get('activeMedia');
-    if(a && this.get('iterator') === undefined) {
-      var it = this.get('mediaLoader.tree').leafIterator();
-      it.gotoPath(a.path);
-      this.set('iterator', it);
-      this._preloadImages(it);
+    if(a) {
+      if(this.get('iterator') === undefined) {
+        var it = this.get('mediaLoader.tree').leafIterator();
+        it.gotoPath(a.path);
+        this.set('iterator', it);
+        this._preloadImages(it);
 
-      var handleKeyMethd = this._handleKey.bind(this);
-      window.addEventListener("keydown", handleKeyMethd);
-      this._resetHandleKeyEventMthd = function() {
-        window.removeEventListener("keydown", handleKeyMethd);
-      };
+        var handleKeyMethd = this._handleKey.bind(this);
+        window.addEventListener("keydown", handleKeyMethd);
+        this._resetHandleKeyEventMthd = function() {
+          window.removeEventListener("keydown", handleKeyMethd);
+        };
+        history.pushState(a, "new title", '#view='+a.bigMedia);
+      } else {
+        history.replaceState(a, "new title", '#view='+a.bigMedia);
+      }
     }
   },
   actions: {
-    resetActiveMedia: function() {
-      // Go back to gallery
-      this.set('activeMedia', undefined);
-      this.set('iterator', undefined);
-      this._resetHandleKeyEventMthd();
-      if(this.get('fullscreenService.isFullscreen')) {
-        this.get('fullscreenService').closeFullscreen();
-      }
+    close() {
+      window.history.back();
     },
     moveRight: function(event) {
       if(event) {
@@ -100,7 +111,7 @@ export default Component.extend({
     } else if(event.key === "ArrowRight" || event.keyCode === 39) {
       this.actions.moveRight.apply(this);
     } else if(event.key === "Escape" || event.keyCode === 27) {
-      this.actions.resetActiveMedia.apply(this);
+      this.actions.close.apply(this);
     } else {
       Logger.debug('unknown key', event.key,event.keyCode);
     }
@@ -125,6 +136,20 @@ export default Component.extend({
       }
       this._preloadImages(it.getPath());
       this.set('activeMedia', prev);
+    }
+  },
+  _resetActiveMedia: function() {
+    // Go back to gallery
+    this.set('activeMedia', undefined);
+    this.set('iterator', undefined);
+    this._resetHandleKeyEventMthd();
+    if(this.get('fullscreenService.isFullscreen')) {
+      this.get('fullscreenService').closeFullscreen();
+    }
+  },
+  _onpopstate(event) {
+    if (event.state && event.state.path === '/') {
+      this._resetActiveMedia.bind(this)();
     }
   }
 });

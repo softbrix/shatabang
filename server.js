@@ -1,6 +1,6 @@
 "use strict";
 
-const config         = require('./config.js'),
+const config       = require('./config.js'),
     express        = require("express"),
     bodyParser     = require('body-parser'),
     compression    = require('compression'),

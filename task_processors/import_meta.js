@@ -2,6 +2,7 @@
 const path = require('path');
 const flatten = require('obj-flatten');
 const faceInfo = require('../modules/face_info');
+const shFiles = require('../modules/shatabang_files');
 const PersonInfo = require('../modules/person_info');
 const shFra = require('../modules/shatabang_fra');
 const mediaInfo = require('vega_media_info');
@@ -54,7 +55,8 @@ function extractCachableMeta(meta) {
 }
 
 var init = function(config, task_queue) {
-  const storageDir = config.storageDir
+  const storageDir = config.storageDir,
+        cacheDir = config.cacheDir;
   let keywordsIndex = vemdalenIndex('keywords:', {
     indexType: 'strings_unique',
     client: config.redisClient
@@ -74,7 +76,7 @@ var init = function(config, task_queue) {
 
     var sourceFilePath = path.join(storageDir, data.file);
 
-    mediaInfo.readMediaInfo(sourceFilePath).then((info) => {
+    mediaInfo.readMediaInfo(sourceFilePath, true).then((info) => {
 
       // Store keywords
       let filteredMeta = filterKeyWords(info);
@@ -100,6 +102,20 @@ var init = function(config, task_queue) {
       // Store meta cache
       let cachableMeta = extractCachableMeta(info);
       let metaPromises = metaCache.put(data.file, cachableMeta);
+
+      if (info.Thumbnail && info.Thumbnail.buffer && info.Thumbnail.buffer.length > 0) {
+        var thumbnailFile = path.join(cacheDir, "120", data.file);
+        shFiles.writeFile(thumbnailFile, info.Thumbnail.buffer, function(err) {
+          if(err) {
+            console.error(err)
+            return;
+          }
+          console.log('Thumb saved: ' + thumbnailFile, info.Thumbnail.buffer.length)
+        });
+      } else {
+        console.log('No thumnail')
+        task_queue.queueTask('resize_image', { title: data.file, file: data.file, width: 120, height: 100});
+      }
 
       return Promise.all([keywordPromises, metaPromises].concat(regionPromises));
     })

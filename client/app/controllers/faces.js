@@ -1,5 +1,9 @@
 import Controller from '@ember/controller';
 
+import Ember from 'ember';
+
+const Logger = Ember.Logger;
+
 export default Controller.extend({
   addingPerson: false,
   selectedElement: undefined,
@@ -36,12 +40,12 @@ export default Controller.extend({
         this.set('selectedFace', face);
       } else {
         // TODO: Lookup media
-        console.log(face);
+        Logger.debug(face, event);
         this.set('activeMedia', face);
       }
     },
     personClicked(person) {
-      console.log(person);
+      Logger.debug(person);
     }
   },
   resetSelectedFace() {
