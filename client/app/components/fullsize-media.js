@@ -38,9 +38,9 @@ export default Component.extend({
         this._resetHandleKeyEventMthd = function() {
           window.removeEventListener("keydown", handleKeyMethd);
         };
-        history.pushState(a, "new title", '#view='+a.bigMedia);
+        history.pushState(a, '', '#view='+a.bigMedia);
       } else {
-        history.replaceState(a, "new title", '#view='+a.bigMedia);
+        history.replaceState(a, '', '#view='+a.bigMedia);
       }
     }
   },
@@ -147,9 +147,7 @@ export default Component.extend({
       this.get('fullscreenService').closeFullscreen();
     }
   },
-  _onpopstate(event) {
-    if (event.state && event.state.img === undefined) {
-      this._resetActiveMedia.bind(this)();
-    }
+  _onpopstate() {
+    this._resetActiveMedia.bind(this)();
   }
 });
