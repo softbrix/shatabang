@@ -1,4 +1,5 @@
-"use strict"
+"use strict";
+
 var dir = require('node-dir');
 var path = require('path');
 var Q = require('q');
@@ -61,13 +62,13 @@ module.exports = {
             }
             if(files === undefined) {
               callback('Directory not found');
+              return;
             }
 
-            var mediaFiles = /^(?!\.).+([mj]pe?g|png|mp4|m4a|mov|bmp|avi)$/i;
+            var mediaFiles = /^(?!\.).+([mj]pe?g|png|mp4|m4a|m4v|mov|bmp|avi)$/i;
             files = files.filter(function(item) {
               return mediaFiles.test(path.basename(item));
             });
-
 
             callback(undefined, files);
         });

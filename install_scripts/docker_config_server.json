@@ -1,7 +1,5 @@
 {
-  "port": 3001,
-  "baseUrl" : "/",
-  "storageDir" : "/mnt/sorterat/",
+  "storageDir" : "/mnt/sorted/",
   "cacheDir" : "/mnt/cache/",
   "server_salt" : "6548ee70d7d258e34eaf4daf9d8c30214bf8163e",
   "admin_hash" : "98962591ddd626a5857a82e4ad876975e71e1a9cf586ff4cc4c57eb453d172cd"

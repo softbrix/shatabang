@@ -2,12 +2,12 @@
 var Q = require('q');
 var thumbnailer = require('../modules/thumbnailer');
 var shFiles = require('../modules/shatabang_files');
-var shIndex = require('../modules/shatabang_index');
+var shIndex = require('stureby_index');
 var importer = require('./importer');
 var path = require('path');
 
 /**
-This method will process te configured import folder and update the index,
+This method will process the configured import folder and update the index,
 thumbnail and finger for each item in the import folder.
 **/
 var init = function(config, task_queue) {
@@ -20,7 +20,7 @@ var init = function(config, task_queue) {
   shFiles.mkdirsSync(duplicatesDir);
 
   task_queue.registerTaskProcessor('update_import_directory', function(data, job, done) {
-    console.log('update_import_directory', data, importDir);
+    //console.log('update_import_directory', data, importDir);
     shFiles.listMediaFiles(importDir, function(err, mediaFiles) {
         if(err) {
           console.error(err);
@@ -29,54 +29,50 @@ var init = function(config, task_queue) {
         var idx = shIndex(idx_dir);
 
         syncLoop(mediaFiles, function(filePath, i) {
-          console.log("Processing", i, filePath);
-          var deferred = Q.defer();
+          job.log("Processing", i, filePath);
 
-          var resolveFile = function(path) {
+          var updateProgress = function() {
             var len = mediaFiles.length;
             job.progress(i, len, {nextSlide : i === len ? 'itsdone' : i + 1});
-            deferred.resolve(path);
+          };
+
+          var handleError = function(err) {
+            console.error("Failed to import", err);
+            // Failed to import move to unknown dir
+            shFiles.moveFile(filePath, path.join(unknownDir, path.basename(filePath)));
+            return Promise.reject(err);
           };
 
           // This needs to run synchronolusly. Add to cache after each update.
-          thumbnailer.create_image_finger(filePath, function(err, b85Finger) {
-            if(err) {
-              console.error(err);
-              return deferred.reject(err);
-            }
-
+          return thumbnailer.create_image_finger(filePath).then(function(b85Finger) {
             var items = idx.get(b85Finger);
             if(items.length > 0) {
-              var newPath = path.join(duplicatesDir, path.basename(filePath));
-              shFiles.moveFile(filePath, newPath);
-              console.log("Exists", newPath);
-              resolveFile(newPath);
+              var duplicatesFilePath = path.join(duplicatesDir, path.basename(filePath));
+              shFiles.moveFile(filePath, duplicatesFilePath);
+              job.log("Exists", duplicatesFilePath);
+              updateProgress();
+              return duplicatesFilePath;
             } else {
-              console.log("new file");
-              importer(filePath, storageDir).then(function(relativePath) {
-                // TODO: add to imported list
+              importer(filePath, storageDir, task_queue).then(function(relativePath) {
+                // TODO: add to latest imported list
                 idx.put(b85Finger, relativePath);
-                console.log("Imported: ", relativePath, b85Finger);
+                job.log("Imported: ", relativePath, b85Finger);
                 /*imported_cache.push({
                   time: current_timestamp(),
                   path: relativePath
                 });*/
-                resolveFile(relativePath);
-              }, function() {
-                console.log("Failed to import");
-                // Failed to import move to unknown dir
-                shFiles.moveFile(filePath, path.join(unknownDir, path.basename(filePath)));
-                deferred.reject();
-              });
+                updateProgress();
+                return relativePath;
+              }, handleError);
             }
-          });
-          return deferred.promise;
+          }, handleError);
         }).then(function(importedFiles) {
-          console.log('files imported:', importedFiles);
+          if(importedFiles > 0) {
+            console.log('Files imported:', importedFiles);
+            job.log('Files imported:', importedFiles);
+          }
           done();
         }, done);
-
-
       });
   });
 };

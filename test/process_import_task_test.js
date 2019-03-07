@@ -14,7 +14,7 @@ var taskQueMock = {
   }
 };
 var config = {
-  importDir : '../data/sorted/import/',
-  cacheDir : '../cache',
-  storageDir : '../data/sorted'};
+  importDir : './test_data/',
+  cacheDir : './cache',
+  storageDir : './data/sorted'};
 taskProcess.init(config, taskQueMock);

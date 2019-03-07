@@ -1,25 +1,29 @@
 "use strict"
-var taskProcess = require('../task_processors/find_faces');
+var assert = require('assert');
 
-var relativeTestFile = "./2011/08/15/165257.JPG";
+var taskProcess = require('../task_processors/faces_find');
+var processTester = require('./process_test_base');
 
-var taskQueMock = {
-  registerTaskProcessor : function(name, func) {
-    var done = function() {
-      console.log('All set');
-    };
-    var job = 1;
-    var data = {
-      file: relativeTestFile
-    };
-    func(data, job, done);
-  },
-  queueTask : function(name, data) {
-    console.log('Queue task', name, data);
-  }
-};
-var config = {
-  importDir : '../data/sorted/import/',
-  cacheDir : '../cache',
-  storageDir : '../data/sorted'};
-taskProcess.init(config, taskQueMock);
+var relativeTestFile = "./faces.JPG";
+
+describe('Find faces process', function() {
+  it('should handle init method', function(done) {
+    processTester.initProcess(taskProcess, {
+      queueTask : function(name, data) {
+        assert.equal(relativeTestFile, data.file);
+        if(name !== 'faces_find') {
+          assert.notStrictEqual(undefined, data.faceInfo);
+          done();
+        }
+      },
+      registeredFunctionCallback: function(func) {
+        var data = {
+          file: relativeTestFile
+        };
+        func(data, processTester.job, (args) => {
+            processTester.doneOk(args);
+        });
+      }
+    });
+  });
+});

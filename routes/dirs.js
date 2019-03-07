@@ -5,13 +5,14 @@ var path    = require('path');
 var shFiles = require('../modules/shatabang_files');
 
 
-var cacheDir;
+var cacheDir, infoDirectory;
 router.initialize = function(config) {
   cacheDir = config.cacheDir;
+  infoDirectory = path.join(cacheDir, 'info');
 };
 
 router.get('/list',function(req,res){
-  shFiles.listSubDirs(path.join(cacheDir, 'info'), function(error, directories) {
+  shFiles.listSubDirs(infoDirectory, function(error, directories) {
     if(error) {
       console.log(error);
       res.writeHead(500, {'Content-Type': 'text/plain'});

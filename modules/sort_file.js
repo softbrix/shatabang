@@ -1,42 +1,52 @@
 "use strict"
-var mediaInfo = require('../modules/media_info');
+var mediaInfo = require('vega_media_info');
 var shFiles = require('../modules/shatabang_files');
 var path = require('path');
 
 // ex: 2015:12:11 12:10:09
-var dateRegexp = /^([\d]{2,4}).?(\d{1,2}).?(\d{1,2})\s(\d{1,2}).?(\d{1,2}).?(\d{1,2})/;
+//var dateRegexp = /^([\d]{2,4}).?(\d{1,2}).?(\d{1,2})\s(\d{1,2}).?(\d{1,2}).?(\d{1,2})/;
 
 var sort_file = function(sourceFile, destDir) {
-  //console.log('parseFile', item);
-
-  var destinationDir = path.join(destDir, 'unknown');
-  return mediaInfo.readMediaInfo(sourceFile).then(function (exifData) {
-    //console.log('exifData', exifData);
-    var date = exifData.CreateDate || exifData.ModifyDate;
-    var result = dateRegexp.exec(date);
-    //console.log(item, exifData.Tags); // Do something with your data!
-    var newFileName;
-    if (result && result.length > 3) {
-      var year = result[1], month = result[2], day = result[3];
-      destinationDir = path.join(destDir, year, month, day);
-      if (result.length > 6) {
-        var hh = result[4], mm = result[5], ss = result[6];
-        //console.log(date, hh,mm,ss);
-        newFileName = hh+mm+ss + path.extname(sourceFile);
-      }
-    } else {
-      console.log("Failed to parse the date in the exif information", sourceFile);
-    }
-    return moveFile(sourceFile, destinationDir, newFileName);
-  }, function(error) {
-    console.log(sourceFile, 'Error: ', (error.message || error));
+  var handleError = function(error) {
+    console.error(sourceFile, 'Error: ', (error.message || error));
+    var destinationDir = path.join(destDir, 'unknown');
     var fileName = path.basename(sourceFile);
     return moveFile(sourceFile, destinationDir, fileName);
-  });
+  };
+
+  return mediaInfo.readMediaInfo(sourceFile).then(function (exifData) {
+    //console.log('exifData', exifData);
+    var dateStr = exifData.CreateDate || exifData.ModifyDate;
+    if(dateStr === undefined) {
+      console.debug('exifData', exifData);
+      return handleError("Failed to parse the date in the exif information, '" + dateStr + "'");
+    }
+    var date = new Date(dateStr);
+    var newPath = buildPathFromDate(date, destDir);
+    var newFileName = buildFileNameFromDate(date, path.extname(sourceFile));
+    return moveFile(sourceFile, newPath, newFileName);
+  }, handleError);
+};
+
+var leftPad = function(d) {
+  return ("" + d).padStart(2, "0");
+};
+
+var buildPathFromDate = function(date, destDir) {
+  var year = "" + date.getFullYear(),
+  month = leftPad(date.getMonth() + 1),
+  day = leftPad(date.getDate());
+  return  path.join(destDir, year, month, day);
+};
+
+var buildFileNameFromDate = function(date, fileExt) {
+    var hh = leftPad(date.getHours()),
+    mm = leftPad(date.getMinutes()),
+    ss = leftPad(date.getSeconds());
+    return hh+mm+ss + fileExt;
 };
 
 var moveFile = function(sourceFile, destinationDir, fileName) {
-
   if(!shFiles.exists(destinationDir)) {
     shFiles.mkdirsSync(destinationDir);
   }

@@ -1,96 +1,81 @@
 {
   "name": "shatabang",
-  "version": "0.0.1",
+  "version": "0.6.6",
   "description": "Picture library managing tools",
   "author": "Andreas Sehr <andreas@sehr.se>",
-  "contributors": [
-    {
-      "name": "Foo Bar",
-      "email": "foo.bar@example.com"
-    }
-  ],
+  "contributors": [],
   "bin": {
     "module-name": ""
   },
   "scripts": {
-    "test": "vows --spec --isolate",
-    "start": "node read_files.js",
-    "predeploy": "echo im about to deploy",
-    "postdeploy": "echo ive deployed",
-    "prepublish": "echo soon to be published"
+    "dev": "npm-run-all --parallel start_redis run_server run_taskprocessor",
+    "test": "mocha",
+    "start": "npm-run-all --parallel run_server run_taskprocessor",
+    "start_redis": "redis-server",
+    "run_server": "node server.js",
+    "run_taskprocessor": "node task_processor.js",
+    "build_client": "cd client && ember build --environment='production'",
+    "postinstall": "cd client && npm install;"
   },
-  "main": "lib/foo.js",
+  "main": "server.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nodejitsu/browsenpm.org"
+    "url": "https://github.com/softbrix/shatabang"
   },
   "bugs": {
-    "url": "https://github.com/nodejitsu/browsenpm.org/issues"
+    "url": "https://github.com/softbrix/shatabang/issues"
   },
   "keywords": [
-    "nodejitsu",
-    "example",
-    "browsenpm"
+    "pictures",
+    "gallery",
+    "shatabang",
+    "softbrix",
+    "opencv",
+    "docker",
+    "ember",
+    "node"
   ],
   "dependencies": {
     "async": "^1.5.2",
-    "axios": "0.9.1",
     "babel-preset-react": "^6.5.0",
-    "babelify": "^7.2.0",
-    "base85": "^2.1.0",
     "body-parser": "^1.15.0",
     "compression": "^1.6.1",
-    "connect-redis": "^3.0.2",
-    "exif": "*",
-    "exiftool": "0.0.3",
+    "connect-redis": "3.3.3",
     "express": "4.13.3",
     "express-session": "^1.13.0",
-    "faced": "^1.2.0",
-    "ffprobe": "^1.1.0",
-    "fluent-ffmpeg": "git+https://github.com/mansehr/node-fluent-ffmpeg.git",
+    "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "*",
-    "jsonfile": "^2.2.3",
-    "kue": "^0.10.5",
+    "kue": "^0.11.6",
     "minimist": "^1.2.0",
-    "mp4js": "0.0.2",
     "multer": "1.1.0",
     "node-dir": "*",
-    "node-iptc": "git+https://github.com/mansehr/node-iptc.git",
+    "node-sha1": "^1.0.1",
+    "npm-run-all": "^4.0.2",
+    "obj-flatten": "^2.0.3",
+    "opencv4nodejs": "^2.38.0",
     "passport": "^0.3.2",
-    "passport-google": "^0.3.0",
-    "passport-google-oauth": "^1.0.0",
+    "passport-google-oauth20": "1.0.0",
     "passport-local": "1.0.0",
-    "path": "*",
-    "piexifjs": "^1.0.0",
     "progress": "1.1.8",
     "q": "^1.4.1",
-    "react": "^0.14.7",
-    "react-dom": "^0.14.7",
-    "redis": "^2.5.3",
+    "sha1-file": "^1.0.0",
     "sha256": "0.2.0",
-    "sharp": "mansehr/sharp",
-    "stringset": "^0.2.1",
-    "touch": "^1.0.0",
-    "underscore": "*"
+    "sharp": "^0.21.0",
+    "sharp-phash": "^0.2.0",
+    "stureby_index": "3.0.0",
+    "underscore": "*",
+    "uuid": "^3.2.1",
+    "variance": "^0.0.1",
+    "vega_media_info": "^2.3.0",
+    "vemdalen_index": "^1.4.2"
   },
   "devDependencies": {
-    "bootstrap": "^3.3.6",
-    "bootstrap-datepicker": "1.6.1",
-    "bootstrap-social": "^4.11.0",
-    "bootstrap-switch": "^3.3.2",
-    "font-awesome": "^4.5.0",
-    "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.0",
-    "mocha": "~2.3.3",
-    "should": "~7.1.0",
-    "supertest": "~1.1.0"
+    "fakeredis": "^2.0.0",
+    "mocha": "~2.3.3"
   },
   "preferGlobal": true,
   "private": true,
-  "publishConfig": {
-    "registry": "https://your-private-hosted-npm.registry.nodejitsu.com"
-  },
-  "subdomain": "foobar",
+  "subdomain": "shatabang",
   "analyze": true,
-  "license": "TBD"
+  "license": "MIT"
 }

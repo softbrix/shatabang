@@ -1,24 +1,25 @@
 "use strict";
 
+var FileTypeRegexp = require('./file_type_regexp');
+
 var Q = require('q');
 var fs = require('fs-extra');
-var base85 = require('base85');
 var path = require('path');
 var sharp = require('sharp');
 var ffmpeg = require('fluent-ffmpeg');
+const phash = require('sharp-phash');
 
-var mp4jsRegexp = /^(?!\.).+(m4a|mp4|mpe?g|mov)$/i;
+function binaryToHex(binary) {
+  return binary.replace(/[01]{4}/g, function(v){
+    return parseInt(v, 2).toString(16);
+  });
+}
 
-var replaceExt = function(filePath, newExt) {
-  var fileInfo = path.parse(filePath);
-  fileInfo.ext = newExt;
-  fileInfo.base = fileInfo.name + '.' + fileInfo.ext;
-  return path.format(fileInfo);
-};
-
-var getImageFileName = function(fileName) {
-  return mp4jsRegexp.test(path.basename(fileName)) ? replaceExt(fileName, 'jpg') : fileName;
-};
+function hexToBinary(binary) {
+  return binary.replace(/[0123456789abcdefgh]{2}/g, function(v){
+    return ("00000000" + (parseInt(v, 16)).toString(2)).substr(-8);
+  });
+}
 
 module.exports = {
   generateThumbnail : function(sourceFileName, outputFileName, width, height, isMaxSize) {
@@ -29,8 +30,8 @@ module.exports = {
           return;
         }
 
-      if(mp4jsRegexp.test(path.basename(sourceFileName))) {
-        outputFileName = getImageFileName(outputFileName);
+      if(FileTypeRegexp.isVideo(path.basename(sourceFileName))) {
+        outputFileName = FileTypeRegexp.toImageFileName(outputFileName);
 
         // TODO: This should be handled by the image resize, the ffmpeg lib
         // should only extract the frames from the video
@@ -42,12 +43,13 @@ module.exports = {
         // I think we should generate a single screenshot first
         // and then create a gif/png thumbnail with multiple images
         try {
+          console.log('Creating video thumb: ', sourceFileName);
           ffmpeg(sourceFileName)
             .on('error', function(err) {
               deffered.reject(err);
             })
             .on('end', function() {
-                deffered.resolve();
+                deffered.resolve(outputFileName);
             })
             .screenshots({
               timestamps: ['50%'],
@@ -69,7 +71,7 @@ module.exports = {
               if(err) {
                 deffered.reject('sharp: ' +err);
               }
-              deffered.resolve();
+              deffered.resolve(outputFileName);
             });
         };
 
@@ -97,7 +99,7 @@ module.exports = {
   thumbnailNeedsUpdate : function thumbnailNeedsUpdate(sourceFileName, destFileName) {
   	var destSync;
     try {
-  	   destSync = fs.statSync(getImageFileName(destFileName));
+  	   destSync = fs.statSync(FileTypeRegexp.toImageFileName(destFileName));
   	} catch(error) {
   		// ignore
   //		console.log('statSync',error);
@@ -111,44 +113,36 @@ module.exports = {
   	//console.log(destFileEdited.getTime(),' < ', srcFileEdited.getTime());
   	return destFileEdited.getTime() < srcFileEdited.getTime();
   },
-  create_image_finger : function create_image_finger(sourceFile, callback) {
-    var generateFinger = function(sourceFile, callback) {
+  create_image_finger : function create_image_finger(sourceFile) {
+    var generateFinger = function(sourceFile) {
       try {
         fs.statSync(sourceFile);
       } catch (e) {
-        callback("ERROR");
+        return Promise.reject(e);
       }
-      var image = sharp(sourceFile);
-      image
-        .rotate()
-        .resize(10, 10).
-        greyscale().
-        raw().
-        toBuffer().
-        then(function(buffer) {
-          var b85 = base85.encode(buffer);
-          callback(undefined, b85);
+      return phash(sourceFile)
+        .then(function(bitString) {
+          return binaryToHex(bitString);
         });
     };
 
     // Is this a supported movie file?
-    if(mp4jsRegexp.test(path.basename(sourceFile))) {
+    let sourceFileName = path.basename(sourceFile);
+    if(FileTypeRegexp.isVideo(sourceFileName)) {
       var tmpOutputImage = sourceFile + '.png';
       var width = 1920;
       var height = 1080;
       var isMaxSize = true;
-      this.generateThumbnail(sourceFile, tmpOutputImage, width, height, isMaxSize)
+      return this.generateThumbnail(sourceFile, tmpOutputImage, width, height, isMaxSize)
         .then(function(newSource) {
-          generateFinger(newSource, function(error, b85) {
+          return generateFinger(newSource).then(function(b85) {
             // Cleanup before callback
-            fs.unlink(tmpOutputImage);
-            callback(error, b85);
+            fs.unlink(tmpOutputImage, console.log);
+            return b85;
           });
       });
     } else {
-      generateFinger(sourceFile, callback);
+      return generateFinger(sourceFile);
     }
-
-
   }
 };
