@@ -108,9 +108,7 @@ module.exports = {
 
           return image
             .extract(ext)
-            .resize(face_max_width, face_max_height)
-            .max()
-            .withoutEnlargement(true)
+            .resize(face_max_width, face_max_height, { withoutEnlargement: true , fit: "inside"})
             .png()
             .toBuffer();
         });

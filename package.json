@@ -15,7 +15,7 @@
     "run_server": "node server.js",
     "run_taskprocessor": "node task_processor.js",
     "build_client": "cd client && ember build --environment='production'",
-    "postinstall": "cd client && npm install;"
+    "client_install": "cd client && npm install;"
   },
   "main": "server.js",
   "repository": {
@@ -41,7 +41,7 @@
     "body-parser": "1.18.2",
     "compression": "1.7.1",
     "connect-redis": "3.3.3",
-    "express": "4.13.3",
+    "express": "^4.16.4",
     "express-session": "1.15.6",
     "fluent-ffmpeg": "2.1.2",
     "fs-extra": "*",
@@ -52,7 +52,7 @@
     "node-sha1": "1.0.1",
     "npm-run-all": "4.1.2",
     "obj-flatten": "2.0.3",
-    "opencv4nodejs": "2.38.0",
+    "opencv4nodejs": "4.14.1",
     "passport": "0.3.2",
     "passport-google-oauth20": "1.0.0",
     "passport-local": "1.0.0",
@@ -60,7 +60,7 @@
     "q": "1.5.1",
     "sha1-file": "1.0.0",
     "sha256": "0.2.0",
-    "sharp": "0.21.1",
+    "sharp": "0.21.3",
     "sharp-phash": "1.0.1",
     "stureby_index": "3.0.0",
     "underscore": "*",
@@ -71,7 +71,7 @@
   },
   "devDependencies": {
     "fakeredis": "2.0.0",
-    "mocha": "2.3.4"
+    "mocha": "^6.0.2"
   },
   "preferGlobal": true,
   "private": true,
