@@ -32,13 +32,12 @@ var init = function(config, task_queue) {
           done(err);
         })
         .on('progress', function(progress) {
-          job.progress(progress.percent, 100);
+          job.progress(progress.percent);
         })
         .on('end', function() {
           done();
         })
         .on('start', function(commandLine) {
-          job.log('Spawned Ffmpeg with command: ' + commandLine);
           console.log('Spawned Ffmpeg with command: ' + commandLine);
         })
         .save(outputFileName);

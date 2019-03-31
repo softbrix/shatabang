@@ -19,7 +19,7 @@ var init = function(config, task_queue) {
     var relativeFilePath = data.file;
     var sourceFileName = path.resolve(path.join(cacheDir, "1920", relativeFilePath));
 
-    job.log('Faces crop', sourceFileName);
+    console.log('Faces crop', sourceFileName);
 
     if(!shFiles.exists(sourceFileName)) {
       return done('Missing file:' + sourceFileName);
@@ -34,7 +34,7 @@ var init = function(config, task_queue) {
       var compressed;
 
       if(json !== undefined && json.length > 0) {
-        job.log('Loaded json', json);
+        console.log('Loaded json', json);
         compressed = JSON.parse(json[0]);
         faces = compressed.map(faceInfo.expand);
       }
@@ -46,7 +46,7 @@ var init = function(config, task_queue) {
     }
     var jobError;
     var promises = faces.map(function(face) {
-      job.log('Face' , face);
+      console.log('Face' , face);
       return shFra.cropFace(sourceFileName, face).then(function(buffer) {
         // Save the buffer and store the new index to the face info
         const newId = faceInfo.toId(relativeFilePath, face);
@@ -60,7 +60,7 @@ var init = function(config, task_queue) {
       });
     });
     Promise.all(promises).then(function(faces) {
-      job.log('Faces' , faces);
+      console.log('Faces' , faces);
       var compressed = faces.map(faceInfo.compress);
       idx.update(relativeFilePath, JSON.stringify(compressed));
       done(jobError);

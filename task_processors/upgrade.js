@@ -17,19 +17,21 @@ var init = function(config, task_queue) {
   var latestVersion = 5;
 
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
+    console.log('Running upgrade')
+
     var redis = config.redisClient;
     // Check version in redisStore
     redis.get(versionKey, function (err, version) {
       if(err) {
-        job.log('Error while retrieving versionKey', err);
+        console.log('Error while retrieving versionKey', err);
         return;
       }
-      job.log('Index version', version);
+      console.log('Index version', version);
       if(!version) {
         version = 0;
         upgrade_v1(infoDirectory, storageDir, (error) => {
           if(error) {
-            job.log(error);
+            console.log(error);
           }
         });
         task_queue.queueTask('retry_unknown', {}, 'low');
@@ -41,12 +43,12 @@ var init = function(config, task_queue) {
         import_meta_to_index(infoDirectory, config.cacheDir, task_queue);
         task_queue.retryFailed();
 
-        job.log('Successfully upgraded index to', 'v'+latestVersion);
+        console.log('Successfully upgraded index to', 'v'+latestVersion);
         redis.set(versionKey, latestVersion, function() {
           done();
         });
       } else {
-        job.log('All done');
+        console.log('All done');
         done();
         return;
       }

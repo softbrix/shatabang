@@ -20,7 +20,7 @@ var storage =   multer.diskStorage({
   },
   filename: function (req, file, callback) {
     var filename = partPrefix+Date.now()+ '-' + file.originalname;
-    console.log('Uploading: ' + filename);
+    console.log('Uploading: ', filename);
     callback(null, filename);
   }
 });
@@ -36,8 +36,8 @@ router.post('/single',function(req,res) {
         }
         var file = req.file;
         shFiles.moveFile(file.path, importDir + '/' + file.filename.substr(partPrefix.length));
-
-        res.end("File is uploaded");
+        console.log('Uploading done', file.filename)
+        res.end("OK");
     });
 });
 
@@ -47,7 +47,7 @@ router.post('/multiple',function(req,res) {
           console.log(err);
             return res.status(500).end("Error uploading files.");
         }
-        res.end("Files are uploaded");
+        res.end("OK");
     });
 });
 
@@ -80,7 +80,7 @@ router.get('/import/list',function(req,res) {
   var last = imported_cache[imported_cache.length - 1];
   res.setHeader('Last-Modified', new Date(last.time));
 
-  // This should send the list with files to be imported
+  // TODO: This should send the list with files to be imported
   res.send("Abc").status(200);
  res.end();
 });

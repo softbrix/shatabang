@@ -69,7 +69,7 @@ module.exports = {
             .resize(width, height)
             .toFile(outputFileName, function(err) {
               if(err) {
-                deffered.reject('sharp: ' +err);
+                deffered.reject('sharp: ' + err);
               }
               deffered.resolve(outputFileName);
             });

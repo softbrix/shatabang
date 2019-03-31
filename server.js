@@ -8,7 +8,8 @@ const config       = require('./config.js'),
     session        = require('express-session'),
     sha256         = require('sha256'),
     task_queue     = require('./modules/task_queue'),
-    kue            = require('kue'),
+//    kue            = require('kue'),
+    Arena = require('bull-arena'),
     RedisStore     = require('connect-redis')( session ),
     redis          = require('redis'),
     app            = express(),
@@ -61,7 +62,7 @@ routes.push({path: 'faces', route: require('./routes/faces')});
 routes.push({path: 'duplicates', route: require('./routes/duplicates')});
 routes.push({path: 'dirs', route: require('./routes/dirs')});
 routes.push({path: 'indexes', route: require('./routes/indexes')});
-routes.push({path: 'kue', route: require('./routes/kue')});
+// routes.push({path: 'kue', route: require('./routes/kue')});
 routes.push({path: 'keywords', route: require('./routes/keywords')});
 routes.push({path: 'people', route: require('./routes/people')});
 routes.push({path: 'auth', route: require('./routes/auth'), public: true});
@@ -182,7 +183,7 @@ function requireAuthentication(req, res, next) {
 app.all('/images/*', requireAuthentication);
 app.all('/media/*', requireAuthentication);
 app.all('/video/*', requireAuthentication);
-app.all('/kue/*', requireAuthentication);
+// app.all('/kue/*', requireAuthentication);
 
 // Images is the route to the cached (resized) images
 app.use('/images', express.static(cacheDir));
@@ -218,8 +219,34 @@ routes.forEach(function(route) {
   app.use(path, route.route);
 });
 
-kue.app.set('title', 'Shatabang Work que');
-app.use('/kue', kue.app);
+const arenaConfig = Arena({
+  queues: [
+    {
+      // Name of the bull queue, this name must match up exactly with what you've defined in bull.
+      name: 'update_import_directory',
+
+      // Hostname or queue prefix, you can put whatever you want.
+      hostId: "sh",
+
+      // Redis auth.
+      redis: {
+        port: config.redisPort,
+        host: config.redisHost,
+        /*password: /* Your redis password ,*/
+      },
+    },
+  ],
+},
+{
+  // Make the arena dashboard become available at {my-site.com}/arena.
+  basePath: '/arena',
+
+  // Let express handle the listening.
+  disableListen: true
+});
+app.use('/', arenaConfig);
+// kue.app.set('title', 'Shatabang Work que');
+// app.use('/kue', kue.app);
 app.use('/', express.static(__dirname + "/client/dist/"));
 
 app.listen(config.port, function(){

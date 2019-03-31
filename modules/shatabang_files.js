@@ -55,23 +55,32 @@ var findAvaliableFileName = function(destination, retryCnt) {
 
 module.exports = {
   listMediaFiles : function(sourceDir, callback) {
-    dir.files(sourceDir,
-        function(err, files){
-            if (err) {
-              callback(err);
-            }
-            if(files === undefined) {
-              callback('Directory not found');
-              return;
-            }
+    return new Promise((resolve, reject) => {
+      if (callback === undefined) {
+        callback = (err, result) => {
+          if (err !== undefined) {
+            reject(err);
+          }
+          resolve(result);
+        };
+      }
+      dir.files(sourceDir, function(err, files){
+          if (err) {
+            callback(err);
+          }
+          if(files === undefined) {
+            callback('Directory not found');
+            return;
+          }
 
-            var mediaFiles = /^(?!\.).+([mj]pe?g|png|mp4|m4a|m4v|mov|bmp|avi)$/i;
-            files = files.filter(function(item) {
-              return mediaFiles.test(path.basename(item));
-            });
+          var mediaFiles = /^(?!\.).+([mj]pe?g|png|mp4|m4a|m4v|mov|bmp|avi)$/i;
+          files = files.filter(function(item) {
+            return mediaFiles.test(path.basename(item));
+          });
 
-            callback(undefined, files);
-        });
+          callback(undefined, files);
+      });
+    });
   },
   /**
   Only list the direct sub directories
@@ -97,6 +106,7 @@ module.exports = {
        fs.writeFile(filePath, fileContent, callback);
      });
    },
+   readFile : fs.readFile,
    mkdirsSync : function(dirPath) {
      return fs.mkdirsSync(dirPath);
    },

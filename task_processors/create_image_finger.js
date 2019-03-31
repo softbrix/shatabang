@@ -25,7 +25,7 @@ var init = function(config, task_queue) {
         thumbnailer.create_image_finger(sourceFile).then(function(b85) {
           var idx = shIndex(idx_finger_dir);
           idx.put(b85, data.file);
-          job.log('adding: ', data.file, b85);
+          console.log('adding: ', data.file, b85);
           idx.flush(true);
           done();
         }, done);

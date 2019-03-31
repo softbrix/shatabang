@@ -43,6 +43,7 @@ process.on('uncaughtException', function (err) {
 process.on('SIGINT', function () {
   console.error('Got SIGINT. Shuting down the queue.');
   clearTimeout(timeOut);
+  clearInterval(intervalTimer);
   config.redisClient.quit();
   task_queue.disconnect(2000, disconnectCallback);
 });
@@ -52,26 +53,32 @@ process.once( 'SIGTERM', function () {
   task_queue.disconnect(0, disconnectCallback);
 });
 
-task_queue.enableWatchDog();
+task_queue.queueTask('update_directory_list', {}, 'high');
 task_queue.queueTask('upgrade_check', {}, 'high')
-  .on('complete', () => {
+  .then(() => {
     console.log("Running task processor...");
-    queImport();
-  });
+    // queImport();
+  }, disconnectCallback);
 
 var timeOut = 0;
 var queImport = function() {
-  timeOut = setTimeout(function() {
+  timeOut = setTimeout(async function() {
     try {
-      task_queue.queueTask('update_import_directory', {}, 'low')
-      .on('complete', queImport)
-      .on('failed', function(errorMessage){
-        console.error('Job failed', errorMessage);
-        queImport();
-      });
+      let job = await task_queue.queueTask('update_import_directory', {}, 'low');
+      job.finished()
+        .then(queImport)
+        .catch(function(errorMessage){
+          console.error('Job failed', errorMessage);
+          queImport();
+        });
     } catch(e) {
       console.error('Taskprocessor catched error', e);
       queImport();
     }
   }, 10000);
 };
+
+
+var intervalTimer = setInterval(() => {
+  task_queue.queueTask('update_import_directory', {}, 'low')
+}, 3000);

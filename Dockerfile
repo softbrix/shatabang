@@ -1,6 +1,7 @@
 FROM softbrix/shatabang-base:latest
-MAINTAINER Andreas Sehr
+LABEL author="Andreas Sehr"
 
+ENV CLIENT_SOURCE https://github.com/softbrix/shatabang-web/releases/download/v0.3.2/shatabang-web--v0.3.2-6.tar.gz
 ENV SERVER_SALT 6548ee70d7d258e34eaf4daf9d8c30214bf8163e
 ENV ADMIN_HASH 98962591ddd626a5857a82e4ad876975e71e1a9cf586ff4cc4c57eb453d172cd
 ENV BASE_URL /
@@ -9,25 +10,31 @@ ENV PORT 3000
 
 #Install source
 # TODO: git checkout
-COPY *.json /usr/src/shatabang/
-COPY *.lock /usr/src/shatabang/
-COPY client/*.json /usr/src/shatabang/client/
+
+# COPY client/*.json /usr/src/shatabang/client/
 
 WORKDIR /usr/src/shatabang
 
-# Install app dependencies
-RUN yarn install --production --non-interactive --pure-lockfile && \
-# Build client
-    cd client && \
-    npm install
+COPY *.json /usr/src/shatabang/
+COPY *.js /usr/src/shatabang/
+COPY docker_start.sh .
+COPY modules modules/
+COPY task_processors task_processors/
+COPY routes routes/
 
-COPY . .
+# Install app dependencies
+RUN npm ci --only=production
+# Build client
+#    cd client && \
+#    npm install
 
 # Create empty config
 RUN echo '{}' > config_server.json && \
   chmod +x docker_start.sh && \
 # Build client
-    npm run build_client
+#    npm run build_client
+# Fetch client
+  curl -s -L ${CLIENT_SOURCE} | tar -xvz -C client
 
 # USER node
 

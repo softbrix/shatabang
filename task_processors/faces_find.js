@@ -18,7 +18,7 @@ var init = function(config, task_queue) {
   task_queue.registerTaskProcessor('faces_find', function(data, job, done) {
     var relativeFilePath = fileType.toImageFileName(data.file);
     var sourceFileName = path.resolve(path.join(cacheDir, "1920", relativeFilePath));
-    job.log('Faces find', sourceFileName);
+    console.log('Faces find', sourceFileName);
 
     if(!shFiles.exists(sourceFileName)) {
       return done('Missing file:' + sourceFileName);
@@ -32,7 +32,7 @@ var init = function(config, task_queue) {
       }
       var compressed = faces.map(faceInfo.compress);
       idx.update(relativeFilePath, JSON.stringify(compressed));
-      job.log(data);
+      console.log(data);
       // Queue crop faces
       task_queue.queueTask('faces_crop', {
           title: relativeFilePath,

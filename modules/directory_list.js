@@ -59,6 +59,23 @@ var writeMediaListFile = function(directory, cachedDir, relativeFilesList) {
   return deffered.promise;
 };
 
+var addMediaListFile = function(directory, cachedDir, relativeFile) {
+  var deffered = Q.defer();
+  var mediaListFile = path.join(cachedDir, 'info', directory, 'media.lst');
+  //console.log(mediaListFile);
+  shFiles.readFile(mediaListFile, (err, fileData) => {
+    if (err != undefined) {
+      deffered.reject(err);
+      return;
+    }
+    fileData += ',' + relativeFile;
+    writeMediaListFile(directory, cachedDir, fileData)
+      .then(deffered.resolve, deffered.reject);
+  });
+
+  return deffered.promise;
+};
+
 /**
  Processes the year directory and put file list in cache, then generate
  thumbnails for all items.
@@ -69,9 +86,26 @@ var processDirectory = function(directory, sourceDir, cachedDir) {
   });
 };
 
+var processSubDirectories = function(directory, cachedDir) {
+  var deffered = Q.defer();
+  shFiles.listSubDirs(directory, (err, dirs) => {
+    if (err !== undefined) {
+      deffered.reject(err);
+    }
+    let qs = dirs.map(dir => {
+      return processDirectory(dir, directory, cachedDir);
+    });
+    Promise.resolve(qs).then(deffered.resolve, deffered.reject);
+  })
+
+  return deffered.promise;
+}
+
 module.exports = {
   findMediaFiles : findMediaFiles,
+  processSubDirectories : processSubDirectories,
   processDirectory : processDirectory,
   sortFileListByDate : sortFileListByDate,
-  writeMediaListFile : writeMediaListFile
+  writeMediaListFile : writeMediaListFile,
+  addMediaListFile : addMediaListFile
 };
