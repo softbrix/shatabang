@@ -675,7 +675,7 @@ builtin-modules@^1.0.0:
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-1.1.1.tgz#270f076c5a72c02f5b65a47df94c5fe3a278892f"
   integrity sha1-Jw8HbFpywC9bZaR9+Uxf46J4iS8=
 
-bull-arena@^2.6.2:
+bull-arena@2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/bull-arena/-/bull-arena-2.6.2.tgz#cacb971d7dabbc7f3e04953f0f20b3502ebd20f3"
   integrity sha512-tQSllJdw4ne6BYDXhPgqLYPdCiCKKUonnXApa6HFA9erbmfNMxU57EKnIfrAa/a4BG6kiS9HdniZqzlpqIySUA==
@@ -692,7 +692,7 @@ bull-arena@^2.6.2:
     nodemon "^1.18.7"
     tablesort "^5.0.1"
 
-bull@^3.3.7, bull@^3.7.0:
+bull@3.7.0, bull@^3.3.7:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/bull/-/bull-3.7.0.tgz#ec9a8721a2cfb0421c501d28553ac1f9f025414d"
   integrity sha512-DHCALp+OOahK+q2hB3sZQew0CJn4W3zYIQsdMlnBCy7JYCnJ/bdj0MFHjo5k0ZhNZxzwhLErXt1yd3llV494UQ==
@@ -1418,7 +1418,7 @@ express-session@1.15.6:
     uid-safe "~2.1.5"
     utils-merge "1.0.1"
 
-express@^4.15.2, express@^4.16.4:
+express@4.16.4, express@^4.15.2:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/express/-/express-4.16.4.tgz#fddef61926109e24c515ea97fd2f1bdbf62df12e"
   integrity sha512-j12Uuyb4FMrd/qQAm6uCHAkPtO8FDTRJZBDd5D2KOL2eLaz1yUNdUB/NOIyq0iU4q4cFarsUCrnFDPBcnksuOg==
@@ -2800,7 +2800,7 @@ mobius1-selectr@2.4.2:
   resolved "https://registry.yarnpkg.com/mobius1-selectr/-/mobius1-selectr-2.4.2.tgz#b8a619c8a0ed6234590e5e5a9e979e15d9b4b89a"
   integrity sha512-yfy1sLxIDlgZjhThuG6gBsI4L2pJHRNaHth/hwPN5ESH5n2qkhfay/OnVmwhhDVYeui54NKIWeu6zWcobVcYtQ==
 
-mocha@^6.0.2:
+mocha@6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/mocha/-/mocha-6.0.2.tgz#cdc1a6fdf66472c079b5605bac59d29807702d2c"
   integrity sha512-RtTJsmmToGyeTznSOMoM6TPEk1A84FQaHIciKrRqARZx+B5ccJ5tXlmJzEKGBxZdqk9UjpRsesZTUkZmR5YnuQ==
@@ -3188,7 +3188,7 @@ opencv-build@^0.0.17:
   dependencies:
     npmlog "^4.1.2"
 
-opencv4nodejs@^4.14.1:
+opencv4nodejs@4.14.1:
   version "4.14.1"
   resolved "https://registry.yarnpkg.com/opencv4nodejs/-/opencv4nodejs-4.14.1.tgz#94a62f03d000d4fb05eb95e63c79f89e3f5fdaca"
   integrity sha512-gKXhCL0Atgql7Dr9/5N/iRwcwfcLaQ0eaCbtB/c/g5LXm3slN9Yl/U0bkqKvsorHhseiMyzAzpverxc/zzDpIw==
