@@ -51,7 +51,7 @@
     "multer": "1.1.0",
     "node-dir": "*",
     "node-sha1": "1.0.1",
-    "npm-run-all": "4.1.2",
+    "npm-run-all": "4.1.5",
     "obj-flatten": "2.0.3",
     "opencv4nodejs": "4.14.1",
     "passport": "0.3.2",
