@@ -62,16 +62,24 @@ var writeMediaListFile = function(directory, cachedDir, relativeFilesList) {
 var addMediaListFile = function(directory, cachedDir, relativeFile) {
   var deffered = Q.defer();
   var mediaListFile = path.join(cachedDir, 'info', directory, 'media.lst');
-  //console.log(mediaListFile);
-  shFiles.readFile(mediaListFile, (err, fileData) => {
-    if (err != undefined) {
-      deffered.reject(err);
-      return;
-    }
-    fileData += ',' + relativeFile;
-    writeMediaListFile(directory, cachedDir, fileData)
-      .then(deffered.resolve, deffered.reject);
-  });
+
+  if (shFiles.exists(mediaListFile)) {
+    //console.log(mediaListFile);
+    shFiles.readFile(mediaListFile, (err, fileData) => {
+      if (err != undefined) {
+        deffered.reject(err);
+        return;
+      }
+      fileData += ',' + relativeFile;
+      writeMediaListFile(directory, cachedDir, fileData)
+        .then(deffered.resolve, deffered.reject);
+    });
+  } else {
+    writeMediaListFile(directory, cachedDir, relativeFile)
+        .then(deffered.resolve, deffered.reject);
+  }
+
+  
 
   return deffered.promise;
 };

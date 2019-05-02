@@ -43,6 +43,7 @@ module.exports = {
           y: face.y / img_height,
           w: face.width / img_width, // Width
           h: face.height / img_height, // Height
+          sz: face.width * face.height
           /*
           Aditional but ignored data
           mouth: [],

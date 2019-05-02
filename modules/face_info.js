@@ -9,7 +9,8 @@ module.exports = {
       b: i.bid || '', // Buffer id
       s: i.sharp || -1, // Sharpness
       f: i.from,
-      p: i.personid || ''
+      p: i.personid || '',
+      sz: i.sz
     };
   },
   expand : function(d) {
@@ -18,6 +19,7 @@ module.exports = {
     d.y = obj.y;
     d.h = obj.h;
     d.w = obj.w;
+    d.sz = obj.sz;
     d.bid = d.b;
     d.s = d.sharp;
     d.from = d.f;
@@ -32,10 +34,6 @@ module.exports = {
     const doubleBlockWidth = 2 * 4;
     let faceId = (faceInfo.i !== undefined ? faceInfo.i : shFra.compressFaceInfo(faceInfo)).substr(0, doubleBlockWidth);
     return relativePath.replace(new RegExp('/', 'g'), '').substr(0, 14) + faceId;
-  },
-  calcSize : function(obj) {
-    obj.sz = obj.w * obj.h;
-    return obj;
   },
   sizeCompare : function(a, b) { // Sort descending
     return b.sz - a.sz;

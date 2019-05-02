@@ -22,12 +22,10 @@ var init = function(config, task_queue) {
 
   shFiles.mkdirsSync(duplicatesDir);
 
-  task_queue.registerTaskProcessorPromise('update_import_directory', async (data, job) => {
+  task_queue.registerTaskProcessor('update_import_directory', async (data, job, done) => {
     let mediaFiles = await shFiles.listMediaFiles(importDir);
         
     let idx = shIndex(idx_dir);
-
-    console.log(mediaFiles)
 
     return syncLoop(mediaFiles, async (filePath, i) => {
       console.log("Processing", i, filePath);
@@ -68,8 +66,9 @@ var init = function(config, task_queue) {
       if(importedFiles > 0) {
         console.log('Files imported:', importedFiles);
       }
-    });
-  });
+      done();
+    }, done);
+  }, {removeOnComplete: true});
 
   var importer = function(src) {
     const destDir = storageDir;

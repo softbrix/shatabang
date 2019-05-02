@@ -9,11 +9,11 @@ let processors = [
     require('./task_processors/faces_find'),
     require('./task_processors/faces_crop'),
     require('./task_processors/import_meta'),
-    require('./task_processors/process_import'),
-    require('./task_processors/update_directory_list'),
     require('./task_processors/resize_image'),
     require('./task_processors/retry_unknown'),
     require('./task_processors/run_task_in_folder'),
+    require('./task_processors/update_directory_list'),
+    require('./task_processors/update_import_directory'),
     require('./task_processors/upgrade'),
   ];
 
@@ -32,7 +32,7 @@ processors.forEach(function(processor) {
 });
 
 function disconnectCallback(err) {
-  console.log( 'Kue shutdown: ', err||'OK' );
+  console.log( 'Queue shutdown: ', err||'OK' );
   process.exit(0);
 };
 process.on('uncaughtException', function (err) {
@@ -43,7 +43,6 @@ process.on('uncaughtException', function (err) {
 process.on('SIGINT', function () {
   console.error('Got SIGINT. Shuting down the queue.');
   clearTimeout(timeOut);
-  clearInterval(intervalTimer);
   config.redisClient.quit();
   task_queue.disconnect(2000, disconnectCallback);
 });
@@ -75,10 +74,6 @@ var queImport = function() {
       console.error('Taskprocessor catched error', e);
       queImport();
     }
-  }, 10000);
+  }, 3000);
 };
-
-
-var intervalTimer = setInterval(() => {
-  task_queue.queueTask('update_import_directory', {}, 'low')
-}, 3000);
+queImport();

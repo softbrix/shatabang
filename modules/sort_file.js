@@ -6,6 +6,8 @@ var path = require('path');
 // ex: 2015:12:11 12:10:09
 //var dateRegexp = /^([\d]{2,4}).?(\d{1,2}).?(\d{1,2})\s(\d{1,2}).?(\d{1,2}).?(\d{1,2})/;
 
+const useExifToolFallback = process.env.EXIF_TOOL || true;
+
 var sort_file = function(sourceFile, destDir) {
   var handleError = function(error) {
     console.error(sourceFile, 'Error: ', (error.message || error));
@@ -14,7 +16,7 @@ var sort_file = function(sourceFile, destDir) {
     return moveFile(sourceFile, destinationDir, fileName);
   };
 
-  return mediaInfo.readMediaInfo(sourceFile).then(function (exifData) {
+  return mediaInfo.readMediaInfo(sourceFile, useExifToolFallback).then(function (exifData) {
     //console.log('exifData', exifData);
     var dateStr = exifData.CreateDate || exifData.ModifyDate;
     if(dateStr === undefined) {

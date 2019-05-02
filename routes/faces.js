@@ -40,7 +40,6 @@ router.get('/list/unknown',function(req,res) {
     var list = loadFaceItems().filter(face => face.n === undefined);
     list = list
       .map(faceInfo.expand)
-      .map(faceInfo.calcSize)
       .sort(faceInfo.sizeCompare);
     sendJsonList(res, list);
 });

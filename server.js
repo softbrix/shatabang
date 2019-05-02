@@ -75,7 +75,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(obj, done) {
-  // console.log('deserializeUser', obj.displayName);
+  // console.log('deserializeUser', obj);
   done(null, obj);
 });
 
@@ -91,7 +91,7 @@ if(config.google_auth) {
 
   var GOOGLE_ALLOWED_IDS = config.google_auth.allowed_ids;
   passport.use(new GoogleStrategy(config.google_auth,
-    function(accessToken, refreshToken, profile, done) {
+    function(token, refreshToken, profile, done) {
       if(!profile) {
         done("Missing profile", null);
         return;
@@ -120,7 +120,7 @@ if(config.google_auth) {
       // represent the logged-in user.  In a typical application, you would want
       // to associate the Google account with a user record in your database,
       // and return that user instead.
-      return done(null, profile);
+      return done(null, {profile, token});
     }
   ));
 }
@@ -219,23 +219,32 @@ routes.forEach(function(route) {
   app.use(path, route.route);
 });
 
+const arenaRedisConf = {
+  port: config.redisPort,
+  host: config.redisHost,
+  /*password: /* Your redis password ,*/
+};
+const queueNames =  [
+  'clear_index', 
+  'create_image_finger', 
+  'encode_video', 
+  'faces_crop', 
+  'faces_find', 
+  'import_meta', 
+  'resize_image', 
+  'retry_unknown', 
+  'run_task_in_folder',
+   'update_directory_list', 
+   'upgrade_check', 
+   'update_import_directory'];
+const queConf = {
+  hostId: "shatabang",
+  prefix: 'shTasks',
+  redis: arenaRedisConf,
+};
+
 const arenaConfig = Arena({
-  queues: [
-    {
-      // Name of the bull queue, this name must match up exactly with what you've defined in bull.
-      name: 'update_import_directory',
-
-      // Hostname or queue prefix, you can put whatever you want.
-      hostId: "sh",
-
-      // Redis auth.
-      redis: {
-        port: config.redisPort,
-        host: config.redisHost,
-        /*password: /* Your redis password ,*/
-      },
-    },
-  ],
+  queues: queueNames.map(name => Object.assign({}, queConf, {name: name})),
 },
 {
   // Make the arena dashboard become available at {my-site.com}/arena.

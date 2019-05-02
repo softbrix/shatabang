@@ -18,7 +18,6 @@ var init = function(config, task_queue) {
   task_queue.registerTaskProcessor('faces_find', function(data, job, done) {
     var relativeFilePath = fileType.toImageFileName(data.file);
     var sourceFileName = path.resolve(path.join(cacheDir, "1920", relativeFilePath));
-    console.log('Faces find', sourceFileName);
 
     if(!shFiles.exists(sourceFileName)) {
       return done('Missing file:' + sourceFileName);

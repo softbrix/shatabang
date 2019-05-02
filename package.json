@@ -12,7 +12,7 @@
     "test": "mocha",
     "start": "npm-run-all --parallel run_server run_taskprocessor",
     "start_redis": "redis-server",
-    "run_server": "node server.js",
+    "run_server": "nodemon",
     "run_taskprocessor": "node task_processor.js",
     "build_client": "cd client && ember build --environment='production'",
     "client_install": "cd client && npm install;"
@@ -47,6 +47,7 @@
     "express-session": "1.15.6",
     "fluent-ffmpeg": "2.1.2",
     "fs-extra": "*",
+    "googleapis": "^39.2.0",
     "minimist": "1.2.0",
     "multer": "1.1.0",
     "node-dir": "*",
@@ -54,11 +55,13 @@
     "npm-run-all": "4.1.2",
     "obj-flatten": "2.0.3",
     "opencv4nodejs": "^4.14.1",
-    "passport": "0.3.2",
+    "passport": "0.4.0",
     "passport-google-oauth20": "1.0.0",
     "passport-local": "1.0.0",
     "progress": "1.1.8",
     "q": "1.5.1",
+    "request": "2.88.0",
+    "request-promise": "4.2.4",
     "sha1-file": "1.0.0",
     "sha256": "0.2.0",
     "sharp": "0.21.3",
@@ -67,12 +70,13 @@
     "underscore": "*",
     "uuid": "3.2.1",
     "variance": "0.0.1",
-    "vega_media_info": "2.3.1",
+    "vega_media_info": "2.4.0",
     "vemdalen_index": "1.4.2"
   },
   "devDependencies": {
     "fakeredis": "2.0.0",
-    "mocha": "^6.0.2"
+    "mocha": "^6.0.2",
+    "nodemon": "^1.18.11"
   },
   "preferGlobal": true,
   "private": true,
