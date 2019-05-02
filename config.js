@@ -24,4 +24,9 @@ config.redisPort = process.env.REDIS_PORT_6379_TCP_PORT || config.redisPort || 6
 config.baseUrl = process.env.BASE_URL || config.baseUrl || '/';
 config.port = process.env.PORT || config.port || 3000;
 
+// Set the correct profile URL that does not require any additional APIs
+if (config.google_auth) {
+  config.google_auth.userProfileURL = config.google_auth.userProfileURL || 'https://www.googleapis.com/oauth2/v3/userinfo';
+}
+
 module.exports = config;

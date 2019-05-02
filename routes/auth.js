@@ -23,9 +23,10 @@ router.initialize = function(config) {
    // will redirect the user back to the application at
    //     /api/auth/google/return configured in the config_server.json
    router.get('/google', passport.authenticate('google',
-   { scope: ['https://www.googleapis.com/auth/userinfo.email'
-     /*'https://www.googleapis.com/auth/drive.photos.readonly',
-     'https://www.googleapis.com/auth/plus.media.upload'*/] }));
+   { scope: ['https://www.googleapis.com/auth/userinfo.email',
+     'https://www.googleapis.com/auth/drive.photos.readonly',
+     'https://www.googleapis.com/auth/photoslibrary.readonly'
+     /*'https://www.googleapis.com/auth/plus.media.upload'*/] }));
 
    // Google will redirect the user to this URL after authentication.  Finish
    // the process by verifying the assertion.  If valid, the user will be
@@ -33,6 +34,9 @@ router.initialize = function(config) {
    router.get('/google/return',
      passport.authenticate('google', { failureRedirect: baseUrl + '?bad=true' }),
      function(req, res) {
+       console.log(req.query.code)
+       console.log(req.user.token)
+       
       // Successful authentication, redirect home.
       res.redirect(baseUrl);
     });

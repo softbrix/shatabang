@@ -8,7 +8,7 @@ if(process.argv.length < 3) {
 var sourceFile = process.argv[2];
 
 var main = function() {
-  mediaInfo.readMediaInfo(sourceFile).then(function( data){ console.log(data.Tags); });
+  mediaInfo.readMediaInfo(sourceFile, true).then(function( data){ console.log(data); });
   //mediaInfo.getTags(sourceFile);
   /*mediaInfo.addTag(sourceFile, "Student").then(function() {
     mediaInfo.removeTag(sourceFile, "Monkey").then(function() {
