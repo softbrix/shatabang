@@ -53,7 +53,7 @@
     "node-dir": "*",
     "node-sha1": "1.0.1",
     "npm-run-all": "4.1.5",
-    "obj-flatten": "2.0.3",
+    "obj-flatten": "2.0.4",
     "opencv4nodejs": "4.14.1",
     "passport": "0.4.0",
     "passport-google-oauth20": "1.0.0",
