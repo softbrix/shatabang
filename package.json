@@ -76,7 +76,7 @@
   "devDependencies": {
     "fakeredis": "2.0.0",
     "mocha": "6.1.4",
-    "nodemon": "1.18.11"
+    "nodemon": "1.19.0"
   },
   "preferGlobal": true,
   "private": true,
