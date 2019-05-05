@@ -36,7 +36,7 @@
     "node"
   ],
   "dependencies": {
-    "async": "1.5.2",
+    "async": "2.6.2",
     "babel-preset-react": "6.24.1",
     "body-parser": "1.19.0",
     "bull": "3.7.0",
