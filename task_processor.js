@@ -14,7 +14,7 @@ let processors = [
     require('./task_processors/run_task_in_folder'),
     require('./task_processors/update_directory_list'),
     require('./task_processors/update_import_directory'),
-    require('./task_processors/upgrade'),
+    require('./task_processors/upgrade_check'),
   ];
 
 let config = require('./config.js');

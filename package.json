@@ -70,7 +70,7 @@
     "underscore": "*",
     "uuid": "3.3.2",
     "variance": "0.0.1",
-    "vega_media_info": "2.4.0",
+    "vega_media_info": "2.4.2",
     "vemdalen_index": "1.4.2"
   },
   "devDependencies": {
