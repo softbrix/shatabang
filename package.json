@@ -58,7 +58,7 @@
     "passport": "0.4.0",
     "passport-google-oauth20": "1.0.0",
     "passport-local": "1.0.0",
-    "progress": "1.1.8",
+    "progress": "2.0.3",
     "q": "1.5.1",
     "request": "2.88.0",
     "request-promise": "4.2.4",
