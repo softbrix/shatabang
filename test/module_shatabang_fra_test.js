@@ -41,36 +41,6 @@ describe('Shatabang Face recognition algorithm', function() {
   it('should reject if the file is not found', function() {
     return shFra.findFaces('./noFile').then(assert.fail, assert.ok);
   });
-  it('should be able to compress face info', function() {
-    var info = {
-      x: 0.3857421875,
-      y: 0.17423133235724744,
-      w: 0.2119140625,
-      h: 0.31771595900439237
-    };
-    assert.equal('62C02C9A36405156',shFra.compressFaceInfo(info));
-  });
-  it('should be able to compress face info which needs padding', function() {
-    var info = {
-      x: 0.6989583333333333,
-      y: 0.875,
-      w: 0.03802083333333333,
-      h: 0.050694444444444445
-    };
-    assert.deepEqual('B2EEDFFF09BC0CFA', shFra.compressFaceInfo(info));
-  });
-
-  it('should be able to expand face info', function() {
-    var info = {
-      x: 0.38574807354848556,
-      y: 0.17422751201647974,
-      w: 0.2119172961013199,
-      h: 0.3177233539330129
-    };
-    assert.deepEqual(info, shFra.expandFaceInfo('62C02C9A36405156'));
-  });
-
-
 
   it('should be able to calculate a blur value of buffer', function() {
     var expected_buffer = fs.readFileSync(expectedFileInfo)

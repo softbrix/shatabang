@@ -33,12 +33,15 @@ processors.forEach(function(processor) {
 
 function disconnectCallback(err) {
   console.log( 'Queue shutdown: ', err||'OK' );
-  process.exit(0);
 };
 process.on('uncaughtException', function (err) {
   console.error('Uncaught exception', err.stack);
   config.redisClient.quit();
   task_queue.disconnect(0, disconnectCallback);
+});
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+  // application specific logging, throwing an error, or other logic here
 });
 process.on('SIGINT', function () {
   console.error('Got SIGINT. Shuting down the queue.');

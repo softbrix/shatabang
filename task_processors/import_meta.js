@@ -4,7 +4,6 @@ const flatten = require('obj-flatten');
 const faceInfo = require('../modules/face_info');
 const shFiles = require('../modules/shatabang_files');
 const PersonInfo = require('../modules/person_info');
-const shFra = require('../modules/shatabang_fra');
 const mediaInfo = require('vega_media_info');
 const vemdalenIndex = require("vemdalen_index");
 
@@ -17,21 +16,6 @@ function filterKeyWords(meta) {
       .filter(([key, val]) => key.toLowerCase().indexOf('error') < 0)
       .map(([key, val]) => val)
       .filter(val => val !== undefined && typeof(val) === 'string' && val.trim().length > 0);
-}
-
-function extractRegions(meta, filePath) {
-  if(  meta.Regions === undefined
-    || meta.Regions.regionList === undefined) {
-      return [];
-  }
-  return meta.Regions.regionList.map(region => {
-      region = Object.assign(region, region.area);
-      region.from = 'meta';
-
-      var compressed = faceInfo.compress(region);
-      let key = faceInfo.toId(filePath, compressed);
-      return [key, region.name, compressed];
-    });
 }
 
 // Sometimes I find stuff on the internet that actuallyworks =)
@@ -57,18 +41,45 @@ function extractCachableMeta(meta) {
 var init = function(config, task_queue) {
   const storageDir = config.storageDir,
         cacheDir = config.cacheDir;
-  let keywordsIndex = vemdalenIndex('keywords:', {
+  const keywordsIndex = vemdalenIndex('keywords:', {
     indexType: 'strings_unique',
     client: config.redisClient
   });
-  let metaCache = vemdalenIndex('meta:', {
+  const metaCache = vemdalenIndex('meta:', {
     indexType: 'object',
     client: config.redisClient
   });
-  let regionsCache = vemdalenIndex('metaRegions:', {
+  const regionsCache = vemdalenIndex('metaRegions:', {
     indexType: 'object',
     client: config.redisClient
   });
+  const personInfo = PersonInfo(config.redisClient);
+
+  function extractRegions(meta, filePath) {
+    if(  meta.Regions === undefined
+      || meta.Regions.regionList === undefined) {
+        return [];
+    }
+    return meta.Regions.regionList.map(region => {
+        region = Object.assign(region, region.area);
+        region.from = 'meta';
+  
+        var compressed = faceInfo.compress(region);
+        let key = faceInfo.toId(filePath, region);
+        return updateRegionName(key, region.name, compressed);
+      });
+  }
+  
+  function updateRegionName(key, name, compressed) {
+    if(name !== undefined && name.length > 0) {
+      return personInfo.getOrCreate(name, key).then(personInfo => {
+        compressed.p = personInfo.id;
+        return Promise.resolve({key: compressed});
+      });
+    } else {
+      return Promise.resolve({key: compressed});
+    }
+  }
 
   task_queue.registerTaskProcessor('import_meta', function(data, job, done) {
     // Hack: Due to a temporary bug in importer, should be ok to remove
@@ -84,19 +95,13 @@ var init = function(config, task_queue) {
         keywordsIndex.put(val, data.file)
       });
 
-      let personInfo = PersonInfo(config.redisClient);
       // Store regions
-      let regionPromises = extractRegions(info, data.file)
-        .map(([key, name, compressed]) => {
-          if(name !== undefined && name.length > 0) {
-            return personInfo.getOrCreate(name, key).then(personInfo => {
-              compressed.p = personInfo.id;
-              return regionsCache.put(key, compressed);
-            });
-          } else {
-            return regionsCache.put(key, compressed);
-          }
-        });
+      const regionPromises = extractRegions(info, data.file);
+      Promise.all(regionPromises).then(regionList => {
+        if(regionList.length > 0) {
+          regionsCache.put(data.file, regionList)
+        }
+      });
 
 
       // Store meta cache

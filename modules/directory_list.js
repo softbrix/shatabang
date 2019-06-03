@@ -2,7 +2,6 @@
 
 var shFiles = require('./shatabang_files');
 var path = require('path');
-var Q = require('q');
 
 
 // file list is a lot of entries like '/year/month/day/time.xyz'
@@ -25,63 +24,60 @@ var sortFileListByDate = function(fileList) {
 };
 
 var findMediaFiles = function(directory, sourceDir) {
-  var deffered = Q.defer();
-  shFiles.listMediaFiles(path.join(sourceDir, directory), function(err, filesList) {
-    if (err) {
-      deffered.reject(err);
-      return;
-    }
+  return new Promise(function(resolve, reject) {
+    shFiles.listMediaFiles(path.join(sourceDir, directory), function(err, filesList) {
+      if (err) {
+        reject(err);
+        return;
+      }
 
-    var relativeFilesList = filesList.map(function(item) {
-      return path.relative(sourceDir, item);
+      var relativeFilesList = filesList.map(function(item) {
+        return path.relative(sourceDir, item);
+      });
+
+      relativeFilesList = sortFileListByDate(relativeFilesList);
+
+      resolve(relativeFilesList);
     });
-
-    relativeFilesList = sortFileListByDate(relativeFilesList);
-
-    deffered.resolve(relativeFilesList);
   });
-  return deffered.promise;
 };
 
 var writeMediaListFile = function(directory, cachedDir, relativeFilesList) {
-  var deffered = Q.defer();
-  var mediaListFile = path.join(cachedDir, 'info', directory, 'media.lst');
-  //console.log(mediaListFile);
+  return new Promise(function(resolve, reject) {
+    var mediaListFile = path.join(cachedDir, 'info', directory, 'media.lst');
+    //console.log(mediaListFile);
 
-  shFiles.writeFile(mediaListFile, relativeFilesList, function(err) {
-    if(err) {
-      deffered.reject(err);
-      return;
-    }
-    console.log("The file was saved: ", directory);
-    deffered.resolve(mediaListFile);
+    shFiles.writeFile(mediaListFile, relativeFilesList, function(err) {
+      if(err) {
+        reject(err);
+        return;
+      }
+      console.log("The file was saved: ", directory);
+      resolve(mediaListFile);
+    });
   });
-  return deffered.promise;
 };
 
 var addMediaListFile = function(directory, cachedDir, relativeFile) {
-  var deffered = Q.defer();
-  var mediaListFile = path.join(cachedDir, 'info', directory, 'media.lst');
+  return new Promise(function(resolve, reject) {
+    var mediaListFile = path.join(cachedDir, 'info', directory, 'media.lst');
 
-  if (shFiles.exists(mediaListFile)) {
-    //console.log(mediaListFile);
-    shFiles.readFile(mediaListFile, (err, fileData) => {
-      if (err != undefined) {
-        deffered.reject(err);
-        return;
-      }
-      fileData += ',' + relativeFile;
-      writeMediaListFile(directory, cachedDir, fileData)
-        .then(deffered.resolve, deffered.reject);
-    });
-  } else {
-    writeMediaListFile(directory, cachedDir, relativeFile)
-        .then(deffered.resolve, deffered.reject);
-  }
-
-  
-
-  return deffered.promise;
+    if (shFiles.exists(mediaListFile)) {
+      //console.log(mediaListFile);
+      shFiles.readFile(mediaListFile, (err, fileData) => {
+        if (err != undefined) {
+          reject(err);
+          return;
+        }
+        fileData += ',' + relativeFile;
+        writeMediaListFile(directory, cachedDir, fileData)
+          .then(resolve, reject);
+      });
+    } else {
+      writeMediaListFile(directory, cachedDir, relativeFile)
+          .then(resolve, reject);
+    }
+  });
 };
 
 /**
@@ -95,18 +91,17 @@ var processDirectory = function(directory, sourceDir, cachedDir) {
 };
 
 var processSubDirectories = function(directory, cachedDir) {
-  var deffered = Q.defer();
-  shFiles.listSubDirs(directory, (err, dirs) => {
-    if (err !== undefined) {
-      deffered.reject(err);
-    }
-    let qs = dirs.map(dir => {
-      return processDirectory(dir, directory, cachedDir);
-    });
-    Promise.resolve(qs).then(deffered.resolve, deffered.reject);
-  })
-
-  return deffered.promise;
+  return new Promise(function(resolve, reject) {
+    shFiles.listSubDirs(directory, (err, dirs) => {
+      if (err !== undefined) {
+        reject(err);
+      }
+      let qs = dirs.map(dir => {
+        return processDirectory(dir, directory, cachedDir);
+      });
+      Promise.resolve(qs).then(resolve, reject);
+    })
+  });
 }
 
 module.exports = {

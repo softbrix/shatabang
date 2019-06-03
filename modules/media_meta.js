@@ -3,7 +3,6 @@
 const _ = require('underscore');
 const fs = require('fs');
 const path = require('path');
-var Q = require('q');
 
 const DEFAULT_FILE_NAME = 'media.meta';
 
@@ -22,34 +21,35 @@ let _instance = function(cacheDirectory, fileName) {
     // Read multiple
     getAll : function() {
       if(!_.isUndefined(_objs)) {
-        return Q.resolve(_objs);
+        return Promise.resolve(_objs);
       }
       if(!_.isUndefined(_readDeferred)) {
-        return _readDeferred.promise;
+        return _readDeferred;
       }
 
-      _readDeferred = Q.defer();
-      fs.readFile(metaFilePath, (err,data) => {
-        if(err) {
-          // ENOENT = File is missing
-          if(err.code !== 'ENOENT') {
-            _readDeferred.reject(err);
-            return;
+      _readDeferred = new Promise(function(resolve, reject) {
+        fs.readFile(metaFilePath, (err,data) => {
+          if(err) {
+            // ENOENT = File is missing
+            if(err.code !== 'ENOENT') {
+              reject(err);
+              return;
+            }
           }
-        }
-        if(_.isUndefined(data)) {
-          // No file found, initialize empty object
-          _objs = {};
-        } else {
-          _objs = JSON.parse(data);
-          if(!_.isObject(_objs)) {
-            _readDeferred.reject('Stored type is not an object');
-            return;
+          if(_.isUndefined(data)) {
+            // No file found, initialize empty object
+            _objs = {};
+          } else {
+            _objs = JSON.parse(data);
+            if(!_.isObject(_objs)) {
+              reject('Stored type is not an object');
+              return;
+            }
           }
-        }
-        _readDeferred.resolve(_objs);
+          resolve(_objs);
+        });
       });
-      return _readDeferred.promise;
+      return _readDeferred;
     },
     // Read single
     get : function(key) {

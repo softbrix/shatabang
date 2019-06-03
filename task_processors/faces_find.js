@@ -29,9 +29,13 @@ var init = function(config, task_queue) {
         done();
         return;
       }
-      var compressed = faces.map(faceInfo.compress);
-      idx.update(relativeFilePath, JSON.stringify(compressed));
-      console.log(data);
+      
+      faces.forEach((face) => {
+        const compressed = faceInfo.compress(face);
+        const id = faceInfo.toId(relativeFilePath, face);
+        idx.update(id, JSON.stringify(compressed));
+      })
+
       // Queue crop faces
       task_queue.queueTask('faces_crop', {
           title: relativeFilePath,

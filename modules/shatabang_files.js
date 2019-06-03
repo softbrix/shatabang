@@ -2,11 +2,10 @@
 
 var dir = require('node-dir');
 var path = require('path');
-var Q = require('q');
 var exec = require('child_process').exec;
 var fs = require('fs-extra');
 
-var fileEditFallback = function(fileHandlingMethod, source, newDestination, deferred) {
+var fileEditFallback = function(fileHandlingMethod, source, newDestination, resolve, reject) {
   var command = fileHandlingMethod + '"' + source + '"' + ' "' + newDestination + '"';
   //console.log(command);
   return function(error) {
@@ -15,23 +14,22 @@ var fileEditFallback = function(fileHandlingMethod, source, newDestination, defe
         exec(command, function(error/*, stdout, stderr*/) {
           if (error) {
             console.log(command, error);
-            deferred.reject(error);
+            reject(error);
           } else {
-            deferred.resolve(newDestination, source);
+            resolve(newDestination, source);
           }
         });
       } else {
         console.error('Move error', error);
-        deferred.reject(error);
+        reject(error);
       }
     } else {
-      deferred.resolve(newDestination, source);
+      resolve(newDestination, source);
     }
   };
 };
 
 var findAvaliableFileName = function(destination, retryCnt) {
-  var deferred = Q.defer();
   var newDestination = destination;
   if (retryCnt > 0) {
     var fileInfo = path.parse(destination);
@@ -39,18 +37,19 @@ var findAvaliableFileName = function(destination, retryCnt) {
     fileInfo.base = fileInfo.name + fileInfo.ext;
     newDestination = path.format(fileInfo);
   }
-  fs.access(newDestination, fs.F_OK, function(err) {
-    if (!err) {
-      findAvaliableFileName(destination, (retryCnt || 0) + 1).then(function(name) {
-        deferred.resolve(name);
-      }, function(error) {
-        deferred.reject(error);
-      });
-    } else {
-      deferred.resolve(newDestination);
-    }
+  return new Promise(function(resolve, reject) {
+    fs.access(newDestination, fs.F_OK, function(err) {
+      if (!err) {
+        findAvaliableFileName(destination, (retryCnt || 0) + 1).then(function(name) {
+          resolve(name);
+        }, function(error) {
+          reject(error);
+        });
+      } else {
+        resolve(newDestination);
+      }
+    });
   });
-  return deferred.promise;
 };
 
 module.exports = {
@@ -90,69 +89,69 @@ module.exports = {
       function(file) {
         return fs.statSync(path.join(sourceDir, file)).isDirectory();
       }));
-   },
-   // List all subdir paths
-   listSubDirPaths : function(sourceDir, callback) {
-     dir.subdirs(sourceDir, callback);
-   },
-   /**
-   The write file method will first create the folder for the file to be in
-   */
-   writeFile : function(filePath, fileContent, callback) {
-     fs.mkdirs(path.dirname(filePath), function(error) {
-       if (error) {
-           console.log(filePath, 'Error: '+error.message);
-       }
-       fs.writeFile(filePath, fileContent, callback);
-     });
-   },
-   readFile : fs.readFile,
-   mkdirsSync : function(dirPath) {
-     return fs.mkdirsSync(dirPath);
-   },
-   exists : function(path) {
-     try {
-       fs.statSync(path);
-       return true;
-     } catch (e) {
-       return false;
-     }
-   },
-   moveFile : function(source, destination) {
-     var deferred = Q.defer();
-     findAvaliableFileName(destination).then(function(newDestination) {
-       //console.log('newDest', newDestination, path.dirname(newDestination));
-       // TODO: This should probably be removed
-       /*var error = fs.mkdirsSync(path.dirname(newDestination));
-       if (error) {
-         console.log(newDestination, 'Error with new destination: ', error.message || error);
-       }*/
+  },
+  // List all subdir paths
+  listSubDirPaths : function(sourceDir, callback) {
+    dir.subdirs(sourceDir, callback);
+  },
+  /**
+  The write file method will first create the folder for the file to be in
+  */
+  writeFile : function(filePath, fileContent, callback) {
+    fs.mkdirs(path.dirname(filePath), function(error) {
+      if (error) {
+          console.log(filePath, 'Error: '+error.message);
+      }
+      fs.writeFile(filePath, fileContent, callback);
+    });
+  },
+  readFile : fs.readFile,
+  mkdirsSync : function(dirPath) {
+    return fs.mkdirsSync(dirPath);
+  },
+  exists : function(path) {
+    try {
+      fs.statSync(path);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  },
+  moveFile : function(source, destination) {
+    return new Promise(function(resolve, reject) {
+      findAvaliableFileName(destination).then(function(newDestination) {
+        //console.log('newDest', newDestination, path.dirname(newDestination));
+        // TODO: This should probably be removed
+        /*var error = fs.mkdirsSync(path.dirname(newDestination));
+        if (error) {
+          console.log(newDestination, 'Error with new destination: ', error.message || error);
+        }*/
 
-       fs.rename(source, newDestination, fileEditFallback("mv", source, newDestination, deferred));
-     });
-     return deferred.promise;
-   },
-   copyFile : function(source, destination) {
-     var deferred = Q.defer();
-     findAvaliableFileName(destination).then(function(newDestination) {
-       //console.log('newDest', newDestination, path.dirname(newDestination));
-       /*var error = fs.mkdirsSync(path.dirname(newDestination));
-       if (error) {
-         console.log(newDestination, 'Error with new destination: ', error.message || error);
-       }*/
+        fs.rename(source, newDestination, fileEditFallback("mv", source, newDestination, resolve, reject));
+      });
+    });
+  },
+  copyFile : function(source, destination) {
+    return new Promise(function(resolve, reject) {
+      findAvaliableFileName(destination).then(function(newDestination) {
+        //console.log('newDest', newDestination, path.dirname(newDestination));
+        /*var error = fs.mkdirsSync(path.dirname(newDestination));
+        if (error) {
+          console.log(newDestination, 'Error with new destination: ', error.message || error);
+        }*/
 
-       fs.copy(source, newDestination, fileEditFallback("mv", source, newDestination, deferred));
-     });
-     return deferred.promise;
-   },
-   deleteFile : function(source) {
-     var deferred = Q.defer();
-     fs.unlink(source, function(err) {
-       if(err) {
-         deferred.reject(err);
-       }
-       deferred.resolve();
-     });
-     return deferred;
-   }
+        fs.copy(source, newDestination, fileEditFallback("mv", source, newDestination, resolve, reject));
+      });
+    });
+  },
+  deleteFile : function(source) {
+  return new Promise(function(resolve, reject) {
+    fs.unlink(source, function(err) {
+      if(err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+  }
 };

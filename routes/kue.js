@@ -19,7 +19,6 @@ router.post('/add/:name/:priority/',function(req,res){
   var priority = req.params.priority;
   var params = req.body || {};
 
-  console.log('The id: ' + id, params);
   res.end("id: " + id + ", priority: " + priority);
   task_queue.queueTask(id, params, priority);
 });

@@ -48,7 +48,13 @@ config.redisClient = redis.createClient({
 task_queue.connect(config);
 
 // Check that directories exists
-[uploadDir, importDir, deleteDir, path.join(cacheDir, 'info')].forEach(function(directory) {
+[ 
+  deleteDir,
+  importDir, 
+  uploadDir,  
+  path.join(cacheDir, 'info'),
+  path.join(storageDir, 'unknown')
+].forEach(function(directory) {
   if(!shFiles.exists(directory)) {
     console.log("Directory dir does not exists. Trying to create it.", directory);
     shFiles.mkdirsSync(directory);

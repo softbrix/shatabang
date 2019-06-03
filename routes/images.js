@@ -17,7 +17,6 @@ router.initialize = function(config) {
 };
 
 router.post('/delete',function(req,res){
-    console.log(req.body);
     if(!req.body.length) {
       res.send("Missing post data").status(400);
       return;
@@ -29,7 +28,6 @@ router.post('/delete',function(req,res){
       var cache300 = path.join(cacheDir, '300', reference);
       var cache1920 = path.join(cacheDir, '1920', reference);
 
-      console.log(sourceFile, ' ', destFile);
       shFiles.moveFile(sourceFile, destFile)
         .then(console.log, function(error) {
           console.log('Error:', error);

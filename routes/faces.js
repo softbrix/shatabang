@@ -17,13 +17,19 @@ function loadFaceItems() {
   idx.keys().forEach(function(key) {
     var items = idx.get(key);
     if(items.length > 0) {
-      JSON.parse(items[0]).forEach(function(itm) {
-        itm.k = key;
+      items.forEach(function(str) {
+        let itm = JSON.parse(str);
+        itm.b = key;
+        itm.path = faceInfo.fromIdToPath(key);
         faceItems.push(itm);
       });
     }
   });
   return faceItems;
+}
+
+function noPerson(face) {
+  return face.p === undefined || face.p.length === 0;
 }
 
 function sendJsonList(res, list) {
@@ -37,7 +43,8 @@ router.get('/list',function(req,res){
 });
 
 router.get('/list/unknown',function(req,res) {
-    var list = loadFaceItems().filter(face => face.n === undefined);
+    var list = loadFaceItems()
+      .filter(noPerson );
     list = list
       .map(faceInfo.expand)
       .sort(faceInfo.sizeCompare);
@@ -59,6 +66,12 @@ router.get('/face/:id', function(req,res){
     // HTTP No Content
     res.sendStatus(204);
   }
+});
+
+router.delete('/:id',function(req,res){
+  shIndex(idx_dir).delete(req.params.id)
+  shIndex(faces_idx_dir).delete(req.params.id);
+  res.end('ok')
 });
 
 module.exports = router;

@@ -14,7 +14,7 @@ var init = function(config, task_queue) {
   var infoDirectory = path.join(config.cacheDir, 'info');
   var storageDir = config.storageDir;
   var versionKey = 'shatabangVersion';
-  var latestVersion = 6;
+  var latestVersion = 7;
 
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
     console.log('Running upgrade')
@@ -35,12 +35,12 @@ var init = function(config, task_queue) {
           }
         });
       }
-      if(version < 3) {
-        upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
-      }
       if(version < 5) {
         import_meta_to_index(infoDirectory, config.cacheDir, task_queue);
-      } 
+      }
+      if(version <= 6) {
+        upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
+      }
 
       if (version !== latestVersion) {
         task_queue.queueTask('retry_unknown', {}, 'low');
@@ -98,8 +98,8 @@ var upgrade_v1 = function(infoDirectory, storageDir, cb) {
 
 /** Re run all face recognitions so we add the cropped information to the index **/
 function upgrade_faces_index(infoDirectory, cache_dir, task_queue) {
-  var idx = shIndex(path.join(cache_dir, 'idx_faces'));
-  idx.clear();
+  shIndex(path.join(cache_dir, 'idx_faces')).clear();
+  shIndex(path.join(cache_dir, 'idx_faces_crop')).clear();
 
   allMedia(infoDirectory, function(items) {
     items.filter(FileType.isImage).forEach((relativeDest) => {

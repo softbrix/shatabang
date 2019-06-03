@@ -7,7 +7,7 @@ var disconnect = function disconnect(timeout, cb) {
   debug('Disconnect queue called');
   if (!dying) {
     dying = true;
-    let closers = Object.values(queues).forEach(q => q.close());
+    let closers = Object.values(queues).map(q => q.close());
     Promise.all(closers).then(cb, cb);
   }
 };
@@ -108,13 +108,6 @@ module.exports = {
   connect: function(config) {
     console.log('connect config', config);
     conf = config;
-
-    let queue = new Queue('shatabang'/*, {
-      redis: {
-        host: config.redisHost,
-        port: config.redisPort
-      }
-    }*/);
   },
   queueTask : function(name, params, priority, createIfMissing) {
     debug('Adding job', name);
@@ -138,9 +131,13 @@ module.exports = {
     /*queue.getActive().then(jobs => {
       jobs.forEach(job => job.moveToFailed().then(() => job.retry()));
     });*/
-    queue.process(function(job, done) {
+    queue.process(async (job, done) =>{
       // debug('Running job', name);
-      taskProcessor(job.data, job, done);
+      try {
+        await taskProcessor(job.data, job, done);
+      } catch(err) {
+        console.log('Error in task processor', name, err);
+      }
     });
 
     return queue;

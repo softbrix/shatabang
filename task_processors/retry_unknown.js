@@ -1,5 +1,4 @@
 "use strict"
-var Q = require('q');
 var shFiles = require('../modules/shatabang_files');
 var path = require('path');
 
@@ -15,17 +14,17 @@ var init = function(config, task_queue) {
 
   task_queue.registerTaskProcessor('retry_unknown', function(data, job, done) {
     shFiles.listMediaFiles(unknownDir, function(err, mediaFiles) {
-        if(err) {
-          console.error(err);
-          return done(err);
-        }
+      if(err) {
+        console.error(err);
+        return done(err);
+      }
 
-        mediaFiles.forEach(function(filePath) {
-          var newPath = path.join(importDir, path.basename(filePath));
-          shFiles.moveFile(filePath, newPath);
-        });
-        done();
+      mediaFiles.forEach(function(filePath) {
+        var newPath = path.join(importDir, path.basename(filePath));
+        shFiles.moveFile(filePath, newPath);
       });
+      done();
+    });
   });
 };
 

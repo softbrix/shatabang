@@ -2,7 +2,6 @@
 
 var FileTypeRegexp = require('./file_type_regexp');
 
-var Q = require('q');
 var fs = require('fs-extra');
 var path = require('path');
 var sharp = require('sharp');
@@ -23,78 +22,78 @@ function hexToBinary(binary) {
 
 module.exports = {
   generateThumbnail : function(sourceFileName, outputFileName, width, height, isMaxSize) {
-    var deffered = Q.defer();
-    fs.mkdirs(path.dirname(outputFileName), function(error) {
-      if (error) {
-          deffered.reject('mkdirs:'+error);
-          return;
-        }
+    return new Promise(function(resolve, reject) {
+      fs.mkdirs(path.dirname(outputFileName), function(error) {
+        if (error) {
+            reject('mkdirs:'+error);
+            return;
+          }
 
-      if(FileTypeRegexp.isVideo(path.basename(sourceFileName))) {
-        outputFileName = FileTypeRegexp.toImageFileName(outputFileName);
+        if(FileTypeRegexp.isVideo(path.basename(sourceFileName))) {
+          outputFileName = FileTypeRegexp.toImageFileName(outputFileName);
 
-        // TODO: This should be handled by the image resize, the ffmpeg lib
-        // should only extract the frames from the video
-        width = width === undefined ? '?' : width;
-        height = height === undefined || isMaxSize ? '?' : height;
+          // TODO: This should be handled by the image resize, the ffmpeg lib
+          // should only extract the frames from the video
+          width = width === undefined ? '?' : width;
+          height = height === undefined || isMaxSize ? '?' : height;
 
-        var size =''+width+'x'+height;
-        // This operation is really heavy even on my mac book,
-        // I think we should generate a single screenshot first
-        // and then create a gif/png thumbnail with multiple images
-        try {
-          console.log('Creating video thumb: ', sourceFileName);
-          ffmpeg(sourceFileName)
-            .on('error', function(err) {
-              deffered.reject(err);
-            })
-            .on('end', function() {
-                deffered.resolve(outputFileName);
-            })
-            .screenshots({
-              timestamps: ['50%'],
-              filename: path.basename(outputFileName),
-              folder: path.dirname(outputFileName),
-              size: size
-            });
-        } catch(err) {
-          console.log('catched', err);
-          deffered.reject(sourceFileName + ':' + err);
-        }
-      } else {
-        var image = sharp(sourceFileName);
-
-        var handleImageResize = function(width, height) {
-          image.rotate()
-            .resize(width, height)
-            .toFile(outputFileName, function(err) {
-              if(err) {
-                deffered.reject('sharp: ' + err);
-              }
-              deffered.resolve(outputFileName);
-            });
-        };
-
-        if(isMaxSize) {
-          image
-            .metadata()
-            .then(function(metadata) {
-              var imgAspect = metadata.width / metadata.height;
-              if(imgAspect > 1) {
-                // Image is wider
-                height = undefined;
-              } else {
-                width = undefined;
-              }
-
-              handleImageResize(width, height);
-            });
+          var size =''+width+'x'+height;
+          // This operation is really heavy even on my mac book,
+          // I think we should generate a single screenshot first
+          // and then create a gif/png thumbnail with multiple images
+          try {
+            console.log('Creating video thumb: ', sourceFileName);
+            ffmpeg(sourceFileName)
+              .on('error', function(err) {
+                reject(err);
+              })
+              .on('end', function() {
+                  resolve(outputFileName);
+              })
+              .screenshots({
+                timestamps: ['50%'],
+                filename: path.basename(outputFileName),
+                folder: path.dirname(outputFileName),
+                size: size
+              });
+          } catch(err) {
+            console.log('catched', err);
+            reject(sourceFileName + ':' + err);
+          }
         } else {
-          handleImageResize(width, height);
+          var image = sharp(sourceFileName);
+
+          var handleImageResize = function(width, height) {
+            image.rotate()
+              .resize(width, height)
+              .toFile(outputFileName, function(err) {
+                if(err) {
+                  reject('sharp: ' + err);
+                }
+                resolve(outputFileName);
+              });
+          };
+
+          if(isMaxSize) {
+            image
+              .metadata()
+              .then(function(metadata) {
+                var imgAspect = metadata.width / metadata.height;
+                if(imgAspect > 1) {
+                  // Image is wider
+                  height = undefined;
+                } else {
+                  width = undefined;
+                }
+
+                handleImageResize(width, height);
+              });
+          } else {
+            handleImageResize(width, height);
+          }
         }
-      }
+      });
     });
-    return deffered.promise;
   },
   thumbnailNeedsUpdate : function thumbnailNeedsUpdate(sourceFileName, destFileName) {
   	var destSync;

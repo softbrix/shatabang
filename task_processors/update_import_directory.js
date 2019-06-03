@@ -1,5 +1,4 @@
 "use strict"
-var Q = require('q');
 var thumbnailer = require('../modules/thumbnailer');
 var shFiles = require('../modules/shatabang_files');
 var sort_file = require('../modules/sort_file');
@@ -111,22 +110,22 @@ var init = function(config, task_queue) {
 };
 
 function syncLoop(list, method) {
-  var deferred = Q.defer();
-  if(list === undefined) {
-    deferred.resolve([]);
-  }
-  var i = 0;
-  var next = function() {
-    //console.log('nextloop', i);
-    if(i < list.length) {
-      method(list[i], i).then(next, next);
-    } else {
-      deferred.resolve(i);
+  return new Promise(function(resolve, reject) {
+    if(list === undefined) {
+      resolve([]);
     }
-    ++i;
-  };
-  next();
-  return deferred.promise;
+    var i = 0;
+    var next = function() {
+      //console.log('nextloop', i);
+      if(i < list.length) {
+        method(list[i], i).then(next, next);
+      } else {
+        resolve(i);
+      }
+      ++i;
+    };
+    next();
+  });
 }
 
 

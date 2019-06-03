@@ -1,11 +1,13 @@
 "use strict"
 var express = require('express');
 var router  = express.Router();
-
+var path = require('path');
+var shIndex = require('stureby_index');
 var PersonInfo = require("../modules/person_info");
-var personInfo;
 
+var personInfo, idx_dir;
 router.initialize = function(config) {
+  idx_dir = path.join(config.cacheDir, 'idx_faces');
   personInfo = PersonInfo(config.redisClient);
 };
 
@@ -18,8 +20,14 @@ router.get('/', function(req, res) {
   });
 });
 
-function savePersonInRegion(regionId, person) {
-  // TODO: Implement
+function savePersonInRegion(id, person) {
+  var idx = shIndex(idx_dir);
+  var data = idx.get(id);
+  if(data && data.length > 0) {
+    data = JSON.parse(data[0]);
+    data.p = person.id;
+    idx.update(id, JSON.stringify(data));
+  }
 }
 
 router.post('/', function(req, res) {
@@ -31,8 +39,8 @@ router.post('/', function(req, res) {
   personInfo.getOrCreate(person.name, person.thumbnail)
     .then(
     (savedPerson) => {
-      res.end(JSON.stringify({ person: savedPerson}));
       savePersonInRegion(person.thumbnail, savedPerson);
+      res.end(JSON.stringify({ person: savedPerson}));
     },
     (err) => res.status(500).end(err)
   );

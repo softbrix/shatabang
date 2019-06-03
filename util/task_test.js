@@ -3,7 +3,6 @@ var task_queue = require('../modules/task_queue');
 
 
 task_queue.registerTaskProcessor('tags', function(data, job, done) {
-  console.log(data);
   var pending = data.a, total = pending;
 
   var interval = setInterval(function(){
@@ -15,7 +14,6 @@ task_queue.registerTaskProcessor('tags', function(data, job, done) {
 });
 
 task_queue.registerTaskProcessor('resize_img', function(data, job, done) {
-  console.log(data);
   var pending = data.a, total = pending;
 
   var interval = setInterval(function(){
