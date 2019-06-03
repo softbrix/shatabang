@@ -1,7 +1,7 @@
 FROM softbrix/shatabang-base:latest
 LABEL author="Andreas Sehr"
 
-ENV CLIENT_SOURCE https://github.com/softbrix/shatabang-web/releases/download/v0.3.2/shatabang-web--v0.3.2-6.tar.gz
+ENV CLIENT_SOURCE https://github.com/softbrix/shatabang-web/releases/download/v0.3.4/shatabang-web--v0.3.4-21.tar.gz
 ENV SERVER_SALT 6548ee70d7d258e34eaf4daf9d8c30214bf8163e
 ENV ADMIN_HASH 98962591ddd626a5857a82e4ad876975e71e1a9cf586ff4cc4c57eb453d172cd
 ENV BASE_URL /
