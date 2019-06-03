@@ -33,6 +33,7 @@ processors.forEach(function(processor) {
 
 function disconnectCallback(err) {
   console.log( 'Queue shutdown: ', err||'OK' );
+  process.exit(0);
 };
 process.on('uncaughtException', function (err) {
   console.error('Uncaught exception', err.stack);
