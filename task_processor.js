@@ -38,7 +38,7 @@ function disconnectCallback(err) {
 process.on('uncaughtException', function (err) {
   console.error('Uncaught exception', err.stack);
   config.redisClient.quit();
-  task_queue.disconnect(0, disconnectCallback);
+  task_queue.disconnect(2000, disconnectCallback);
 });
 process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
@@ -53,7 +53,7 @@ process.on('SIGINT', function () {
 process.once( 'SIGTERM', function () {
   console.error('Got SIGTERM. Shuting down the queue now.');
   config.redisClient.quit();
-  task_queue.disconnect(0, disconnectCallback);
+  task_queue.disconnect(2000, disconnectCallback);
 });
 
 task_queue.queueTask('update_directory_list', {}, 'high');

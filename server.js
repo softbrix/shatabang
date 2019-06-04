@@ -254,12 +254,12 @@ const arenaConfig = Arena({
 },
 {
   // Make the arena dashboard become available at {my-site.com}/arena.
-  basePath: '/arena',
+  basePath: config.baseUrl + 'arena',
 
   // Let express handle the listening.
   disableListen: true
 });
-app.use('/', arenaConfig);
+app.use('/', requireAuthentication, arenaConfig);
 // kue.app.set('title', 'Shatabang Work que');
 // app.use('/kue', kue.app);
 app.use('/', express.static(__dirname + "/client/dist/"));
