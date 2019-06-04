@@ -5,13 +5,7 @@ ENV CLIENT_SOURCE https://github.com/softbrix/shatabang-web/releases/download/v0
 ENV SERVER_SALT 6548ee70d7d258e34eaf4daf9d8c30214bf8163e
 ENV ADMIN_HASH 98962591ddd626a5857a82e4ad876975e71e1a9cf586ff4cc4c57eb453d172cd
 ENV BASE_URL /
-ENV BUILD_BASE_URL /replacemeurl/
 ENV PORT 3000
-
-#Install source
-# TODO: git checkout
-
-# COPY client/*.json /usr/src/shatabang/client/
 
 WORKDIR /usr/src/shatabang
 
