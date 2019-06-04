@@ -7,9 +7,9 @@ const config       = require('./config.js'),
     shFiles        = require('./modules/shatabang_files'),
     session        = require('express-session'),
     sha256         = require('sha256'),
+    url            = require('url'),
     task_queue     = require('./modules/task_queue'),
-//    kue            = require('kue'),
-    Arena = require('bull-arena'),
+    Arena          = require('bull-arena'),
     RedisStore     = require('connect-redis')( session ),
     redis          = require('redis'),
     app            = express(),
@@ -249,12 +249,13 @@ const queConf = {
   redis: arenaRedisConf,
 };
 
+const baseUrlPath = url.parse(config.baseUrl, true).pathname;
 const arenaConfig = Arena({
   queues: queueNames.map(name => Object.assign({}, queConf, {name: name})),
 },
 {
   // Make the arena dashboard become available at {my-site.com}/arena.
-  basePath: config.baseUrl + 'arena',
+  basePath: baseUrlPath + 'arena',
 
   // Let express handle the listening.
   disableListen: true
