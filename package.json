@@ -62,7 +62,7 @@
     "sha256": "0.2.0",
     "sharp": "0.22.1",
     "sharp-phash": "1.0.2",
-    "stureby_index": "3.0.0",
+    "stureby_index": "3.1.2",
     "underscore": "1.9.1",
     "uuid": "3.3.2",
     "variance": "0.0.1",
