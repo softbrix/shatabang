@@ -9,7 +9,7 @@ const config       = require('./config.js'),
     sha256         = require('sha256'),
     url            = require('url'),
     task_queue     = require('./modules/task_queue'),
-    Arena          = require('bull-arena'),
+    Arena          = require('./node_modules_local/' + 'bull-arena'),
     RedisStore     = require('connect-redis')( session ),
     redis          = require('redis'),
     app            = express(),
@@ -189,7 +189,7 @@ function requireAuthentication(req, res, next) {
 app.all('/images/*', requireAuthentication);
 app.all('/media/*', requireAuthentication);
 app.all('/video/*', requireAuthentication);
-// app.all('/kue/*', requireAuthentication);
+app.all('/arena/*', requireAuthentication);
 
 // Images is the route to the cached (resized) images
 app.use('/images', express.static(cacheDir));
@@ -254,15 +254,11 @@ const arenaConfig = Arena({
   queues: queueNames.map(name => Object.assign({}, queConf, {name: name})),
 },
 {
-  // Make the arena dashboard become available at {my-site.com}/arena.
-  basePath: baseUrlPath + 'arena',
-
-  // Let express handle the listening.
-  disableListen: true
+  basePath: baseUrlPath != '/' ? baseUrlPath : undefined,
+  disableListen: true // Let express handle the listening.
 });
-app.use('/', requireAuthentication, arenaConfig);
-// kue.app.set('title', 'Shatabang Work que');
-// app.use('/kue', kue.app);
+app.use('/arena', arenaConfig);
+
 app.use('/', express.static(__dirname + "/client/dist/"));
 
 app.listen(config.port, function(){
