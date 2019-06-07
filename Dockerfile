@@ -16,17 +16,11 @@ COPY modules modules/
 COPY task_processors task_processors/
 COPY routes routes/
 
-# Install app dependencies
-RUN npm ci --only=production
-# Build client
-#    cd client && \
-#    npm install
-
+# Install app dependencies whitout removing node_modules folder
+RUN npm install --only=production && \
 # Create empty config
-RUN echo '{}' > config_server.json && \
+  echo '{}' > config_server.json && \
   chmod +x docker_start.sh && \
-# Build client
-#    npm run build_client
 # Fetch client
   curl -s -L ${CLIENT_SOURCE} | tar -xvz -C client
 

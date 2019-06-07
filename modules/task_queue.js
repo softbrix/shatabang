@@ -8,7 +8,7 @@ var disconnect = function disconnect(timeout, cb) {
   if (!dying) {
     dying = true;
     let closers = Object.values(queues).map(q => q.close());
-    Promise.all(closers).then(cb, cb);
+    Promise.all(closers).then(() => { cb() }, cb);
   }
 };
 

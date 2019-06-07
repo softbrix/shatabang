@@ -2,7 +2,7 @@
 var express = require('express');
 var router  = express.Router();
 
-var vemdalenIndex = require("vemdalen_index");
+var vemdalenIndex = require("vemdalen-index");
 var index;
 
 const namespace = 'keywords:';

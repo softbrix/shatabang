@@ -1,6 +1,6 @@
 "use strict";
 
-var shIndex = require('stureby_index');
+var shIndex = require('stureby-index');
 var path = require('path');
 var fs   = require('fs-extra');
 

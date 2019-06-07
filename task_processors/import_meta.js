@@ -4,8 +4,8 @@ const flatten = require('obj-flatten');
 const faceInfo = require('../modules/face_info');
 const shFiles = require('../modules/shatabang_files');
 const PersonInfo = require('../modules/person_info');
-const mediaInfo = require('vega_media_info');
-const vemdalenIndex = require("vemdalen_index");
+const mediaInfo = require('vega-media-info');
+const vemdalenIndex = require("vemdalen-index");
 
 function notUndefined(val) {
   return val !== undefined;

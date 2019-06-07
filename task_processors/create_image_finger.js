@@ -2,7 +2,7 @@
 
 var thumbnailer = require('../modules/thumbnailer');
 var shFiles = require('../modules/shatabang_files');
-var shIndex = require('stureby_index');
+var shIndex = require('stureby-index');
 var sha1File = require('sha1-file');
 var path = require('path');
 

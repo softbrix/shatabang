@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var express = require('express');
 var router  = express.Router();
 var path = require('path');
-var shIndex = require('stureby_index');
+var shIndex = require('stureby-index');
 
 router.initialize = function(config) {
   var

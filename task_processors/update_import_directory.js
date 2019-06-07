@@ -5,7 +5,7 @@ var sort_file = require('../modules/sort_file');
 var fileMatcher = require('../modules/file_type_regexp');
 var directory_list = require('../modules/directory_list');
 var path = require('path');
-var shIndex = require('stureby_index');
+var shIndex = require('stureby-index');
 var path = require('path');
 
 /**

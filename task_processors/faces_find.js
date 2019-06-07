@@ -1,7 +1,7 @@
 "use strict"
 
 /*jslint node: true, nomen: true*/
-var shIndex = require('stureby_index');
+var shIndex = require('stureby-index');
 var shFiles = require('../modules/shatabang_files');
 var shFra = require('../modules/shatabang_fra');
 var faceInfo = require('../modules/face_info');

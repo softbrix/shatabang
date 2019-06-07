@@ -2,8 +2,8 @@
 
 var directory_list = require('../modules/directory_list');
 var shFiles = require('../modules/shatabang_files');
-var mediaInfo = require('vega_media_info');
-var shIndex = require('stureby_index');
+var mediaInfo = require('vega-media-info');
+var shIndex = require('stureby-index');
 var thumbnailer = require('../modules/thumbnailer');
 var _ = require('underscore');
 var path = require('path');

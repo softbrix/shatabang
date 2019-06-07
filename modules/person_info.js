@@ -1,4 +1,4 @@
-const vemdalenIndex = require("vemdalen_index");
+const vemdalenIndex = require("vemdalen-index");
 
 module.exports = function(redisClient) {
 

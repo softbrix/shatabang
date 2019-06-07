@@ -1,4 +1,4 @@
-var mediaInfo = require('vega_media_info');
+var mediaInfo = require('vega-media-info');
 
 if(process.argv.length < 3) {
     console.log('Must give source and destination dirs as parameters');
