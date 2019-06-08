@@ -15,6 +15,7 @@ COPY docker_start.sh .
 COPY modules modules/
 COPY task_processors task_processors/
 COPY routes routes/
+COPY node_modules_local node_modules_local/
 
 # Install app dependencies whitout removing node_modules folder
 RUN npm install --only=production && \
