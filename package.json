@@ -43,7 +43,7 @@
     "compression": "1.7.4",
     "connect-redis": "3.4.1",
     "express": "4.17.1",
-    "express-session": "1.16.1",
+    "express-session": "1.16.2",
     "fluent-ffmpeg": "2.1.2",
     "fs-extra": "8.0.1",
     "googleapis": "39.2.0",
