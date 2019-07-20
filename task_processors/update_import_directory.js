@@ -72,7 +72,7 @@ var init = function(config, task_queue) {
   var importer = function(src) {
     const destDir = storageDir;
     console.log('Importing', src, destDir);
-     return sort_file(src, destDir).then(async function(newDest) {
+     return sort_file(src, destDir).then(function(newDest) {
        console.log('NewDest', newDest);
        var relativeDest = path.relative(destDir, newDest);
        console.log('Relative', relativeDest);
