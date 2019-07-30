@@ -3,6 +3,8 @@
 var shFiles = require('../modules/shatabang_files');
 var path = require('path');
 
+const PROCESS_NAME = 'run_task_in_folder';
+
 var init = function(config, task_queue) {
   var storageDir = config.storageDir;
 
@@ -12,18 +14,19 @@ var init = function(config, task_queue) {
   data.task_name = name of the new task to run
   data.priority = priority of the new job
    */
-  task_queue.registerTaskProcessor('run_task_in_folder', function(data, job, done) {
+  task_queue.registerTaskProcessor(PROCESS_NAME, function(data, job, done) {
     var searchDir = path.join(storageDir, data.dir);
+    console.log(PROCESS_NAME, searchDir);
     shFiles.listMediaFiles(searchDir, function(err, mediaFiles) {
         if(err) {
-          console.error(err);
+          console.error(PROCESS_NAME, err);
           return done(err);
         }
         if(mediaFiles === undefined || !mediaFiles.length) {
           return done('No files found');
         }
         mediaFiles.forEach(function(fullPath) {
-          console.log('add task', data.task_name, fullPath);
+          console.log(PROCESS_NAME, 'add task', data.task_name, fullPath);
           var file = path.relative(storageDir, fullPath);
           var params = data.param || {};
           params.file = file;

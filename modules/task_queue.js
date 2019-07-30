@@ -17,11 +17,11 @@ var conf;
 var jobcnt = 0;
 const DEBUG = false;
 
-function debug() {
-  if (DEBUG) {
-    debug(arguments);
-  }
+var debug = () => {}
+if (DEBUG) {
+  debug = console.debug;
 }
+const log = console.log;
 
 function createQueue(name, jobOptions) {
   let queue = new Queue(name, {
@@ -126,11 +126,8 @@ module.exports = {
     });
   },
   registerTaskProcessor : function(name, taskProcessor, jobOptions) {
-    debug('Register processor', name);
+    log('Register processor', name);
     let queue = createQueue(name, jobOptions);
-    /*queue.getActive().then(jobs => {
-      jobs.forEach(job => job.moveToFailed().then(() => job.retry()));
-    });*/
     queue.process(async (job, done) =>{
       // debug('Running job', name);
       try {
@@ -143,7 +140,7 @@ module.exports = {
     return queue;
   },
   registerTaskProcessorPromise : function(name, taskProcessor) {
-    debug('Register processor with promise', name);
+    log('Register processor with promise', name);
     let queue = createQueue(name);
 
     queue.process((job) => {
@@ -152,6 +149,13 @@ module.exports = {
     });
 
     return queue;
+  },
+  registerProcess : function(name, pathToProcessor, concurrency) {
+    log('Register separate processor with promise', name);
+    let queue = createQueue(name);
+
+    concurrency = concurrency || 1
+    queue.process(concurrency, pathToProcessor);
   },
   disconnect : disconnect,
   retryFailed: function() {

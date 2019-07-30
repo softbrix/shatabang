@@ -36,7 +36,7 @@ router.post('/delete',function(req,res){
       shFiles.deleteFile(cache1920);
 
       var directory = reference.split(path.sep)[0];
-      task_queue.queueTask('update_directory_list', { title: directory, dir: directory});
+      task_queue.queueTask('update_directory_list', { title: directory, dir: directory}, 'high', true);
     });
 
     res.send("OK").status(200);

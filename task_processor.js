@@ -5,7 +5,6 @@ let task_queue = require('./modules/task_queue');
 let processors = [
     require('./task_processors/clear_index'),
     require('./task_processors/create_image_finger'),
-    require('./task_processors/encode_video'),
     require('./task_processors/faces_find'),
     require('./task_processors/faces_crop'),
     require('./task_processors/import_meta'),
@@ -30,6 +29,8 @@ task_queue.connect(config);
 processors.forEach(function(processor) {
   processor.init(config, task_queue);
 });
+// The following tasks runs in a separate process
+task_queue.registerProcess('encode_video', __dirname + '/task_processors/encode_video');
 
 function disconnectCallback(err) {
   console.log( 'Queue shutdown: ', err||'OK' );

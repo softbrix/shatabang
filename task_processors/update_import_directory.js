@@ -40,7 +40,7 @@ var init = function(config, task_queue) {
         if(items.length > 0) {
           var duplicatesFilePath = path.join(duplicatesDir, path.basename(filePath));
           await shFiles.moveFile(filePath, duplicatesFilePath);
-          console.log("Exists", duplicatesFilePath);
+          console.log("Exists in image finger cache", duplicatesFilePath);
           updateProgress();
           return duplicatesFilePath;
         } else {
@@ -99,8 +99,12 @@ var init = function(config, task_queue) {
   
        if(fileMatcher.isVideo(src)) {
          // TODO: Encode video in multiple formats and sizes, Search for faces etc.
-         task_queue.queueTask('encode_video', { title: relativeDest, file: relativeDest}, 'low');
-         //task_queue.queueTask('prepare_video', { file: newDest});
+         task_queue.queueTask('encode_video', { 
+            title: relativeDest, 
+            file: relativeDest,
+            cacheDir: config.cacheDir,
+            storageDir: config.storageDir,
+            }, 'low');
        }
   
        return relativeDest;
