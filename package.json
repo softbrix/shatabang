@@ -61,7 +61,7 @@
     "sha1-file": "1.0.4",
     "sha256": "0.2.0",
     "sharp": "0.22.1",
-    "sharp-phash": "1.0.2",
+    "sharp-phash": "1.1.0",
     "stureby-index": "3.1.4",
     "underscore": "1.9.1",
     "uuid": "3.3.2",
