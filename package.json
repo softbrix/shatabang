@@ -60,7 +60,7 @@
     "request-promise": "4.2.4",
     "sha1-file": "1.0.4",
     "sha256": "0.2.0",
-    "sharp": "0.22.1",
+    "sharp": "0.25.4",
     "sharp-phash": "1.0.2",
     "stureby-index": "3.1.4",
     "underscore": "1.9.1",
