@@ -13,7 +13,7 @@
     "handlebars": "^4.0.10",
     "handlebars-helpers": "^0.10.0",
     "lodash": "^4.17.4",
-    "nodemon": "^1.18.7",
+    "nodemon": "^2.0.0",
     "jsoneditor": "^5.9.6",
     "tablesort": "^5.0.1"
   },
