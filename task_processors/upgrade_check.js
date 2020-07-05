@@ -3,6 +3,7 @@
 var shIndex = require('stureby-index');
 var path = require('path');
 var fs = require('fs');
+var ImportLog = require('../modules/import_log');
 var MediaMeta = require('../modules/media_meta.js');
 var FileType = require('../modules/file_type_regexp.js');
 var shFiles = require('../modules/shatabang_files');
@@ -14,7 +15,7 @@ var init = function(config, task_queue) {
   var infoDirectory = path.join(config.cacheDir, 'info');
   var storageDir = config.storageDir;
   var versionKey = 'shatabangVersion';
-  var latestVersion = 7;
+  var latestVersion = 202006;
 
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
     console.log('Running upgrade')
@@ -40,6 +41,9 @@ var init = function(config, task_queue) {
       }
       if(version <= 6) {
         upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
+      }
+      if(version <= 202006) {
+        add_import_cache();
       }
 
       if (version !== latestVersion) {
@@ -113,6 +117,14 @@ function import_meta_to_index(infoDirectory, cache_dir, task_queue) {
   allMedia(infoDirectory, function(items) {
     items.forEach((relativeDest) => {
       task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest}, 'low');
+    });
+  });
+}
+
+function add_import_cache(infoDirectory) {
+  allMedia(infoDirectory, async function(items) {
+    items.forEach((relativeDest) => {
+      importLog.push(relativeDest);
     });
   });
 }

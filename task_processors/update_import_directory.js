@@ -4,6 +4,7 @@ var shFiles = require('../modules/shatabang_files');
 var sort_file = require('../modules/sort_file');
 var fileMatcher = require('../modules/file_type_regexp');
 var directory_list = require('../modules/directory_list');
+var ImportLog = require('../modules/import_log');
 var path = require('path');
 var shIndex = require('stureby-index');
 var path = require('path');
@@ -13,19 +14,20 @@ This method will process the configured import folder and update the index,
 thumbnail and finger for each item in the import folder.
 **/
 var init = function(config, task_queue) {
-  var storageDir = config.storageDir,
+  const storageDir = config.storageDir,
   idx_dir = path.join(config.cacheDir, 'idx_finger'),
   importDir = path.join(storageDir, 'import'),
   unknownDir = path.join(storageDir, 'unknown'),
   duplicatesDir = path.join(storageDir, 'duplicates');
 
+  const importLog = new ImportLog(config.cacheDir);
+  const idx = shIndex(idx_dir);
+
   shFiles.mkdirsSync(duplicatesDir);
 
   task_queue.registerTaskProcessor('update_import_directory', async (data, job, done) => {
     let mediaFiles = await shFiles.listMediaFiles(importDir);
-        
-    let idx = shIndex(idx_dir);
-
+    
     return syncLoop(mediaFiles, async (filePath, i) => {
       console.log("Processing", i, filePath);
 
@@ -45,13 +47,9 @@ var init = function(config, task_queue) {
           return duplicatesFilePath;
         } else {
           let relativePath = await importer(filePath)
-          // TODO: add to latest imported list
+          importLog.push(relativePath);
           idx.put(b85Finger, relativePath);
           console.log("Imported: ", relativePath, b85Finger);
-          /*imported_cache.push({
-            time: current_timestamp(),
-            path: relativePath
-          });*/
           updateProgress();
           return relativePath;
         }
