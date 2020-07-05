@@ -4,8 +4,8 @@ var assert = require('assert');
 var fs = require('fs');
 var shFra = require('../modules/shatabang_fra');
 
-var relativeTestFile = "./test/test_data/1920/faces.JPG";
-var noFaceFile = "./test/test_data/1920/no_face.JPG";
+var relativeTestFile = "./test/test_data/1920/faces.jpg";
+var noFaceFile = "./test/test_data/1920/no_face.jpg";
 var expectedFileInfo = "./test/test_data/face_out.png.bs64";
 
 describe('Shatabang Face recognition algorithm', function() {
@@ -25,7 +25,6 @@ describe('Shatabang Face recognition algorithm', function() {
           if(expectedFileInfo !== undefined) {
             var expected_buffer = fs.readFileSync(expectedFileInfo);
 
-            //console.log(buffer.toString('base64'));
             assert.equal(expected_buffer.toString().trim().length,
               buffer.toString('base64').length);
           }
@@ -45,7 +44,7 @@ describe('Shatabang Face recognition algorithm', function() {
   it('should be able to calculate a blur value of buffer', function() {
     var expected_buffer = fs.readFileSync(expectedFileInfo)
     return shFra.imageBlurValue(Buffer.from(expected_buffer.toString(),'base64')).then(value => {
-      assert.equal(value, 528.2847871599977);
+      assert.equal(value, 527.6376387900019);
     });
   });
 
