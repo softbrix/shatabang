@@ -1,27 +1,30 @@
 const ArrayCache = require('idre-array-cache');
 const path = require('path');
 
-function current_timestamp() {
-    return new Date().getTime();
-}
-
 class ImportLog {
     constructor(cacheDir) {
         var importLogPath = path.join(cacheDir, 'importlog');
         this._log = new ArrayCache();
-        return this._log.open(importLogPath); // Delay option is default 200ms
+        // The open call is async but this should be fine and the ArrayCache is self healing
+        this._log.open(importLogPath); // Delay option is default 200ms
     }
     push(relativeFilePath) {
-        this._log.push(relativeFilePath + '*' + current_timestamp());
+        this._log.push(relativeFilePath + '*' + Date.now());
     }
-    close() {
-        this._log.close();
+    async clear() {
+        await this._log.clear();
+    }
+    async close() {
+        await this._log.close();
     }
     slice(start, end) {
-        this._log.slice(start, end);
+        return this._log.slice(start, end);
     }
     tail(index) {
-        this._log.slice(index);
+        return this._log.slice(index);
+    }
+    lastTimestamp() {
+        return  (this._log.slice(-1)[0] || '').split('*')[1];
     }
 }
 

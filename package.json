@@ -8,12 +8,12 @@
     "module-name": ""
   },
   "scripts": {
-    "dev": "npm-run-all --parallel start_redis run_server run_taskprocessor",
+    "dev": "npm-run-all --parallel start_redis server taskprocessor",
     "test": "mocha",
-    "start": "npm-run-all --parallel run_server run_taskprocessor",
+    "start": "npm-run-all --parallel server taskprocessor",
     "start_redis": "redis-server",
-    "run_server": "nodemon",
-    "run_taskprocessor": "nodemon task_processor.js",
+    "server": "nodemon",
+    "taskprocessor": "nodemon task_processor.js",
     "build_client": "cd client && ember build --environment='production'",
     "client_install": "cd client && npm install;"
   },
@@ -47,7 +47,7 @@
     "fluent-ffmpeg": "2.1.2",
     "fs-extra": "8.1.0",
     "googleapis": "39.2.0",
-    "idre-array-cache": "0.1.0",
+    "idre-array-cache": "0.2.3",
     "minimist": "^1.2.5",
     "multer": "1.4.1",
     "node-dir": "0.1.17",

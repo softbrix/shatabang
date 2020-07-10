@@ -4,7 +4,6 @@ var router  = express.Router();
 var path    = require('path');
 var shFiles = require('../modules/shatabang_files');
 
-
 var cacheDir, infoDirectory;
 router.initialize = function(config) {
   cacheDir = config.cacheDir;
@@ -22,6 +21,5 @@ router.get('/list',function(req,res){
     res.send(directories).status(200);
   });
 });
-
 
 module.exports = router;

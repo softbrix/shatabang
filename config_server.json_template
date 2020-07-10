@@ -1,4 +1,6 @@
 {
-  storageDir : "dir to source files",
-  cacheDir : "dir to cached files"
+  "storageDir" : "./data or other dir to source files",
+  "cacheDir" : "./cache or other dir to cached files",
+  "serverSalt" : "111222333 Write some random string here"
+  "admin_hash" : "$(echo -n -e "ADMIN_PASSWORD$salt" | shasum -a 256 | awk '{print $1}')"
 }

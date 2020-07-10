@@ -42,8 +42,8 @@ var init = function(config, task_queue) {
       if(version <= 6) {
         upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
       }
-      if(version <= 202006) {
-        add_import_cache();
+      if(version < 202006) {
+        add_import_cache(infoDirectory, config.cacheDir);
       }
 
       if (version !== latestVersion) {
@@ -121,12 +121,16 @@ function import_meta_to_index(infoDirectory, cache_dir, task_queue) {
   });
 }
 
-function add_import_cache(infoDirectory) {
+// Clear import cache and all all imported media
+async function add_import_cache(infoDirectory, cacheDir) {
+  var importLog = new ImportLog(cacheDir);
+  await importLog.clear(); 
   allMedia(infoDirectory, async function(items) {
     items.forEach((relativeDest) => {
       importLog.push(relativeDest);
     });
   });
+  await importLog.close()
 }
 
 /** Function which returns all media files ordered in a single array with all items. */
