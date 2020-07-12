@@ -5,6 +5,7 @@ var sort_file = require('../modules/sort_file');
 var fileMatcher = require('../modules/file_type_regexp');
 var directory_list = require('../modules/directory_list');
 var ImportLog = require('../modules/import_log');
+var mediaInfo = require('vega-media-info');
 var path = require('path');
 var shIndex = require('stureby-index');
 var path = require('path');
@@ -46,8 +47,12 @@ var init = function(config, task_queue) {
           updateProgress();
           return duplicatesFilePath;
         } else {
-          let relativePath = await importer(filePath)
-          importLog.push(relativePath);
+          let relativePath = await importer(filePath);
+          // Todo: remove this duplication of double media info read
+          var filePath = path.join(storageDir, relativePath);
+          var exifData = await mediaInfo.readMediaInfo(filePath, process.env.EXIF_TOOL || true);
+          var dateStr = exifData.CreateDate || exifData.ModifyDate;
+          importLog.push(new Date(dateStr).getTime(), new Date().getTime());
           idx.put(b85Finger, relativePath);
           console.log("Imported: ", relativePath, b85Finger);
           updateProgress();

@@ -8,8 +8,11 @@ class ImportLog {
         // The open call is async but this should be fine and the ArrayCache is self healing
         this._log.open(importLogPath); // Delay option is default 200ms
     }
-    push(relativeFilePath) {
-        this._log.push(relativeFilePath + '*' + Date.now());
+    push(id, date) {
+        if (date === undefined) {
+            throw new Error('date parameter is required');
+        }
+        this._log.push(id + '*' + date);
     }
     async clear() {
         await this._log.clear();
