@@ -46,7 +46,7 @@
     "express-session": "1.16.2",
     "fluent-ffmpeg": "2.1.2",
     "fs-extra": "8.1.0",
-    "googleapis": "39.2.0",
+    "googleapis": "55.0.0",
     "idre-array-cache": "0.2.3",
     "minimist": "^1.2.5",
     "multer": "1.4.1",
