@@ -5,9 +5,9 @@
 !modules/*.js
 !processor/*
 !server/*
+!client/*
 
 # Blacklist node_modules
-server/node_modules
+client/node_modules
 processor/node_modules
-
-
+server/node_modules
