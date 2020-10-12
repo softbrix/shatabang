@@ -1,8 +1,7 @@
 web:
-  image: 'softbrix/shatabang'
-  restart: always
+  image: 'softbrix/shatabang-server'
+  restart: unless-stopped
   hostname: 'shatabang'
-  restart: always
   environment:
    - _BASE_URL=http://localhost:3000/
    - _GOOGLE_AUTH=
@@ -11,6 +10,15 @@ web:
    - _SERVER_SALT=
   ports:
     - '3000:3000'
+  volumes:
+    - './data/cache:/mnt/cache'
+    - './data/sorted/:/mnt/sorted'
+  links:
+    - "redis:redis"
+processor:
+  image: 'softbrix/shatabang-processor'
+#  build: processor
+  restart: unless-stopped
   volumes:
     - './data/cache:/mnt/cache'
     - './data/sorted/:/mnt/sorted'

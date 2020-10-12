@@ -1,5 +1,5 @@
 "use strict"
-var taskProcess = require('../task_processors/update_import_directory');
+var taskProcess = require('../processor/update_import_directory');
 
 var taskQueMock = {
   registerTaskProcessor : function(name, func) {

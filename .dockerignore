@@ -1,7 +1,13 @@
-.git
-node_modules
-npm-debug.log
-cache
-data
-test
-install_scripts
+# Blacklist everything
+*
+
+# Whitelist src-code
+!modules/*.js
+!processor/*
+!server/*
+
+# Blacklist node_modules
+server/node_modules
+processor/node_modules
+
+

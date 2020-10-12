@@ -1,22 +1,19 @@
 {
-  "name": "shatabang",
+  "name": "shatabang-processor",
   "version": "0.8.1",
   "description": "Picture library managing tools",
-  "author": "Andreas Sehr <andreas@sehr.se>",
+  "author": "Andreas Sehr <andreas@softbrix.se>",
   "contributors": [],
   "bin": {
     "module-name": ""
   },
   "scripts": {
-    "dev": "npm-run-all --parallel start_redis server",
+    "dev": "npm-run-all --parallel start_redis start",
     "test": "mocha",
-    "start": "node --preserve-symlinks server/server.js",
     "start_redis": "redis-server",
-    "server": "nodemon",
-    "build_client": "cd client && ember build --environment='production'",
-    "client_install": "cd client && npm install;"
+    "start": "nodemon main.js"
   },
-  "main": "server/server.js",
+  "main": "server.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/softbrix/shatabang"
@@ -36,14 +33,20 @@
   ],
   "dependencies": {
     "bull": "3.10.0",
-    "connect-redis": "3.4.2",
-    "idre-array-cache": "0.2.3",
+    "fluent-ffmpeg": "2.1.2",
     "fs-extra": "8.1.0",
+    "idre-array-cache": "0.2.3",
     "node-dir": "0.1.17",
+    "obj-flatten": "2.0.4",
+    "opencv4nodejs": "4.17.0",
     "redis": "^3.0.2",
-    "sha256": "0.2.0",
+    "sha1-file": "1.0.4",
+    "sharp": "0.25.4",
+    "sharp-phash": "1.1.0",
     "stureby-index": "3.1.4",
     "underscore": "1.9.1",
+    "variance": "0.0.1",
+    "vega-media-info": "2.6.0",
     "vemdalen-index": "1.5.0"
   },
   "devDependencies": {

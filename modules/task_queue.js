@@ -106,7 +106,7 @@ function createQueue(name, jobOptions) {
 
 module.exports = {
   connect: function(config) {
-    console.log('connect config', config);
+    debug('connect config', config);
     conf = config;
   },
   queueTask : function(name, params, priority, createIfMissing) {

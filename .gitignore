@@ -1,6 +1,9 @@
-/node_modules
+node_modules
 config_server.json
 cache
 data
 build
 dump.rdb
+
+.DS_Store
+test/test_data

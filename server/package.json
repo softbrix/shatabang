@@ -1,7 +1,7 @@
 {
-  "name": "shatabang",
+  "name": "shatabang-server",
   "version": "0.8.1",
-  "description": "Picture library managing tools",
+  "description": "Server script for the Shatabang Picture library managing tools",
   "author": "Andreas Sehr <andreas@sehr.se>",
   "contributors": [],
   "bin": {
@@ -10,13 +10,10 @@
   "scripts": {
     "dev": "npm-run-all --parallel start_redis server",
     "test": "mocha",
-    "start": "node --preserve-symlinks server/server.js",
-    "start_redis": "redis-server",
-    "server": "nodemon",
-    "build_client": "cd client && ember build --environment='production'",
-    "client_install": "cd client && npm install;"
+    "start": "node --preserve-symlinks server.js",
+    "start_redis": "redis-server"
   },
-  "main": "server/server.js",
+  "main": "server.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/softbrix/shatabang"
@@ -29,28 +26,31 @@
     "gallery",
     "shatabang",
     "softbrix",
-    "opencv",
     "docker",
-    "ember",
     "node"
   ],
   "dependencies": {
+    "body-parser": "1.19.0",
     "bull": "3.10.0",
+    "bull-arena": "^3.2.2",
+    "compression": "1.7.4",
     "connect-redis": "3.4.2",
+    "express": "4.17.1",
+    "express-session": "1.16.2",
     "idre-array-cache": "0.2.3",
     "fs-extra": "8.1.0",
+    "multer": "1.4.1",
     "node-dir": "0.1.17",
+    "passport": "0.4.0",
+    "passport-google-oauth20": "1.0.0",
+    "passport-local": "1.0.0",
     "redis": "^3.0.2",
+    "request": "2.88.0",
+    "request-promise": "4.2.4",
     "sha256": "0.2.0",
     "stureby-index": "3.1.4",
     "underscore": "1.9.1",
     "vemdalen-index": "1.5.0"
-  },
-  "devDependencies": {
-    "fakeredis": "2.0.0",
-    "mocha": "^8.0.1",
-    "nodemon": "^2.0.4",
-    "npm-run-all": "4.1.5"
   },
   "preferGlobal": true,
   "private": true,
