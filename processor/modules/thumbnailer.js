@@ -25,55 +25,22 @@ module.exports = {
     return new Promise(function(resolve, reject) {
       fs.mkdirs(path.dirname(outputFileName), function(error) {
         if (error) {
-            reject('mkdirs:'+error);
-            return;
+          reject('mkdirs:' + error);
+          return;
+        }
+        var handleImageResize = function(imageSrc) {
+          var image = sharp(imageSrc);
+          // Do resize is used later
+          var doResize = function() {
+            return image.rotate()
+            .resize(width, height)
+            .toFile(outputFileName, function(err) {
+              if(err) {
+                reject('sharp: ' + err);
+              }
+              resolve(outputFileName);
+            });
           }
-
-        if(FileTypeRegexp.isVideo(path.basename(sourceFileName))) {
-          outputFileName = FileTypeRegexp.toImageFileName(outputFileName);
-
-          // TODO: This should be handled by the image resize, the ffmpeg lib
-          // should only extract the frames from the video
-          width = width === undefined ? '?' : width;
-          height = height === undefined || isMaxSize ? '?' : height;
-
-          var size =''+width+'x'+height;
-          // This operation is really heavy even on my mac book,
-          // I think we should generate a single screenshot first
-          // and then create a gif/png thumbnail with multiple images
-          try {
-            console.log('Creating video thumb: ', sourceFileName);
-            ffmpeg(sourceFileName)
-              .on('error', function(err) {
-                reject(err);
-              })
-              .on('end', function() {
-                  resolve(outputFileName);
-              })
-              .screenshots({
-                timestamps: ['50%'],
-                filename: path.basename(outputFileName),
-                folder: path.dirname(outputFileName),
-                size: size
-              });
-          } catch(err) {
-            console.log('catched', err);
-            reject(sourceFileName + ':' + err);
-          }
-        } else {
-          var image = sharp(sourceFileName);
-
-          var handleImageResize = function(width, height) {
-            image.rotate()
-              .resize(width, height)
-              .toFile(outputFileName, function(err) {
-                if(err) {
-                  reject('sharp: ' + err);
-                }
-                resolve(outputFileName);
-              });
-          };
-
           if(isMaxSize) {
             image
               .metadata()
@@ -86,11 +53,44 @@ module.exports = {
                   width = undefined;
                 }
 
-                handleImageResize(width, height);
+                doResize();
               });
           } else {
-            handleImageResize(width, height);
+            doResize();
           }
+        };
+
+        if(FileTypeRegexp.isVideo(path.basename(sourceFileName))) {
+          const PREFIX = 'v';
+          var videoOutPath = path.dirname(sourceFileName);
+          var videoImageOutFileName = PREFIX + FileTypeRegexp.toImageFileName(path.basename(sourceFileName));
+          const videoOutFullPath = path.join(videoOutPath, videoImageOutFileName);
+          
+          if (fs.existsSync(videoOutFullPath)) {
+            // TODO: Allow force update?
+            handleImageResize(videoOutFullPath);
+          } else {
+            try {
+              console.log('Creating video thumb: ', sourceFileName, videoOutFullPath);
+              ffmpeg(sourceFileName)
+                .on('error', function(err) {
+                  reject(err);
+                })
+                .on('end', function() {
+                  handleImageResize(videoOutFullPath);
+                })
+                .screenshots({
+                  timestamps: ['10%'],
+                  filename: videoImageOutFileName,
+                  folder: videoOutPath
+                });
+            } catch(err) {
+              console.log('catched', err);
+              reject(sourceFileName + ':' + err);
+            }
+          }
+        } else {
+          handleImageResize(sourceFileName);
         }
       });
     });

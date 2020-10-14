@@ -35,7 +35,7 @@ module.exports = function(job, done) {
       // Run on almost all cores
       '-threads ' + CORES_TO_USE,
       // Limit image size to 1920x1080
-      //'-vf "scale=\'min(' + MAX_WIDTH + ',iw)\':\'min(' + MAX_HEIGHT +',ih)\'"'
+      '-vf "scale=\'min(' + MAX_WIDTH + ',iw)\':\'min(' + MAX_HEIGHT +',ih)\'"'
     ])
     .on('error', function(err) {
       console.log('Error encoding file', err);
