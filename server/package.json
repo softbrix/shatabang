@@ -48,7 +48,7 @@
     "request": "2.88.0",
     "request-promise": "4.2.4",
     "sha256": "0.2.0",
-    "stureby-index": "3.1.4",
+    "stureby-index": "3.2.0",
     "underscore": "1.9.1",
     "vemdalen-index": "1.5.0"
   },
