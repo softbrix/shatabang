@@ -1,6 +1,6 @@
 "use strict";
 
-var Queue= require('bull');
+var Queue = require('bull');
 
 var dying = false;
 var disconnect = function disconnect(timeout, cb) {
@@ -122,14 +122,14 @@ module.exports = {
     // queue.getJobCounts().then(debug, debug);
     return queue.add(params, {
       priority: getPrio(priority),
-      jobId: ""+Date.now()+jobcnt++
+      jobId: new Date().toISOString() + '_' + jobcnt++
     });
   },
   registerTaskProcessor : function(name, taskProcessor, jobOptions) {
     log('Register processor', name);
     let queue = createQueue(name, jobOptions);
     queue.process(async (job, done) => {
-      if (jobOptions.removeOnComplete !== true) {
+      if ((jobOptions || {}).removeOnComplete !== true) {
         log('Running job: ', name, job.data.title);
       }
       try {
@@ -174,7 +174,28 @@ module.exports = {
         }
       });
     });
-  }
+  },
+  getJobCounts: function(qName) {
+    if (queues[qName] === undefined) {
+      createQueue(qName);
+    }
+    return (queues[qName]||{}).getJobCounts();
+  },
+  names: () => [
+    'clear_index',
+    'create_image_finger',
+    'encode_video',
+    'faces_crop',
+    'faces_find',
+    'import_meta',
+    'resize_image',
+    'retry_unknown',
+    'run_task_in_folder',
+    'update_directory_list',
+    'upgrade_check',
+// Keep the update import loop on the side
+//    'update_import_directory'
+  ]
 };
 
 function getPrio(value) {

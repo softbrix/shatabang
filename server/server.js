@@ -5,6 +5,7 @@ const config       = require('./common/config.js'),
     task_queue     = require('./common/task_queue'),
     Bull           = require('bull'),
     Arena          = require('bull-arena'),
+    { setQueues, BullAdapter, router } = require('bull-board'),
     express        = require("express"),
     bodyParser     = require('body-parser'),
     compression    = require('compression'),
@@ -191,6 +192,7 @@ app.all('/images/*', requireAuthentication);
 app.all('/media/*', requireAuthentication);
 app.all('/video/*', requireAuthentication);
 app.all('/arena/*', requireAuthentication);
+app.all('/queuestat/*', requireAuthentication);
 
 // Images is the route to the cached (resized) images
 app.use('/images', express.static(cacheDir));
@@ -231,19 +233,7 @@ const arenaRedisConf = {
   host: config.redisHost,
   /*password: /* Your redis password ,*/
 };
-const queueNames =  [
-  'clear_index', 
-  'create_image_finger', 
-  'encode_video', 
-  'faces_crop', 
-  'faces_find', 
-  'import_meta', 
-  'resize_image', 
-  'retry_unknown', 
-  'run_task_in_folder',
-   'update_directory_list', 
-   'upgrade_check', 
-   'update_import_directory'];
+const queueNames =  task_queue.names();
 const queConf = {
   hostId: "shatabang",
   prefix: 'shTasks',
@@ -260,6 +250,10 @@ const arenaConfig = Arena({
   disableListen: true // Let express handle the listening.
 });
 app.use('/arena', arenaConfig);
+
+// Bull-board route
+setQueues(queueNames.map(name => new BullAdapter(new Bull(name, { redis: arenaRedisConf, prefix: 'shTasks', }))));
+app.use('/queuestat', router);
 
 app.use('/', express.static(__dirname + "/client/dist/"));
 

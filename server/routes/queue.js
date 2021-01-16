@@ -14,6 +14,27 @@ router.initialize = function(config) {
 
 router.use('/*', bodyParser.urlencoded({ extended: true }));
 
+let getQueueStatus = function(req,res){
+  var queueName = req.params.queue;
+  let selectedNames;
+  if (queueName !== undefined) {
+    selectedNames = [queueName];
+  } else {
+    selectedNames = task_queue.names();
+  }
+
+  return Promise.all(selectedNames.map(qName => task_queue.getJobCounts(qName)))
+    .then(stats => {
+      res.end(JSON.stringify(selectedNames.reduce(function(result, field, index) {
+        result[field] = stats[index];
+        return result;
+      }, {})));
+    });
+};
+
+router.get('/status', getQueueStatus);
+router.get('/status/:queue', getQueueStatus);
+
 router.post('/add/:name/:priority/',function(req,res){
   var id = req.params.name;
   var priority = req.params.priority;
