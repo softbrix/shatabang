@@ -6,11 +6,15 @@ var router  = express.Router();
 
 var auth_methods = [], passport, baseUrl;
 
+function isEmpty(s) {
+  return s !== undefined && typeof s === 'string' && s.length > 0;
+}
+
 router.initialize = function(config) {
   [{conf : 'admin_hash', name : 'admin'},
    {conf : 'google_auth', name : 'google'} ]
    .forEach(function(e) {
-     if(!_.isEmpty(config[e.conf])) {
+     if(!isEmpty(config[e.conf])) {
          auth_methods.push(e.name);
      }
    });

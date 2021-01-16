@@ -59,7 +59,8 @@ let importedRoute = function(req, res) {
     lastModifiedDate.setTime(lastTimeStamp);
     res.setHeader('Last-Modified', lastModifiedDate.toUTCString());
   }
-  res.send(JSON.stringify(importLog.tail(lastId)));
+  let response = JSON.stringify(importLog.tail(lastId))
+  res.send(response.replace(/"/g,''));
 };
 
 router.get('/imported/:lastId', importedRoute);

@@ -8,11 +8,11 @@ class ImportLog {
         // The open call is async but this should be fine and the ArrayCache is self healing
         this._log.open(importLogPath); // Delay option is default 200ms
     }
-    push(id, date) {
-        if (date === undefined) {
-            throw new Error('date parameter is required');
+    push(id) {
+        if (!Number.isInteger(id)) {
+            throw new Error('Expected {id} to be numeric, was: ' + typeof id);
         }
-        this._log.push(id + '*' + date);
+        this._log.push(id);
     }
     async clear() {
         await this._log.clear();
@@ -30,9 +30,5 @@ class ImportLog {
         return  (this._log.slice(-1)[0] || '').split('*')[1];
     }
 }
-
-
-
-
 
 module.exports = ImportLog;

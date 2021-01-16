@@ -13,7 +13,7 @@
     "start_redis": "redis-server",
     "start": "nodemon main.js"
   },
-  "main": "server.js",
+  "main": "main.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/softbrix/shatabang"
@@ -35,19 +35,19 @@
     "bull": "3.10.0",
     "fluent-ffmpeg": "2.1.2",
     "fs-extra": "8.1.0",
-    "idre-array-cache": "0.2.3",
+    "idre-array-cache": "0.3.1",
     "node-dir": "0.1.17",
     "obj-flatten": "2.0.4",
-    "opencv4nodejs": "4.17.0",
+    "opencv4nodejs": "5.6.0",
     "redis": "^3.0.2",
     "sha1-file": "1.0.4",
     "sharp": "0.25.4",
     "sharp-phash": "1.1.0",
-    "stureby-index": "3.1.4",
+    "stureby-index": "3.2.0",
     "underscore": "1.9.1",
     "variance": "0.0.1",
     "vega-media-info": "2.6.0",
-    "vemdalen-index": "1.5.0"
+    "vemdalen-index": "2.0.1"
   },
   "devDependencies": {
     "fakeredis": "2.0.0",

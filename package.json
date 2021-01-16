@@ -8,13 +8,16 @@
     "module-name": ""
   },
   "scripts": {
-    "dev": "npm-run-all --parallel start_redis server",
+    "dev": "npm-run-all --parallel start_redis server processor",
     "test": "mocha",
     "start": "node --preserve-symlinks server/server.js",
     "start_redis": "redis-server",
+    "processor": "nodemon processor/main.js",
     "server": "nodemon",
     "build_client": "cd client && ember build --environment='production'",
-    "client_install": "cd client && npm install;"
+    "client_install": "cd client && npm install;",
+    "postinstall": "npm i --prefix server; npm i --prefix processor",
+    "postaudit": "npm audit --prefix server; npm audit --prefix processor"
   },
   "main": "server/server.js",
   "repository": {
@@ -37,21 +40,23 @@
   "dependencies": {
     "bull": "3.10.0",
     "connect-redis": "3.4.2",
-    "idre-array-cache": "0.2.3",
     "fs-extra": "8.1.0",
+    "idre-array-cache": "0.3.1",
     "node-dir": "0.1.17",
     "redis": "^3.0.2",
     "sha256": "0.2.0",
     "sharp": "0.25.4",
-    "stureby-index": "3.1.4",
+    "stureby-index": "3.2.0",
     "underscore": "1.9.1",
-    "vemdalen-index": "1.5.0"
+    "vega-media-info": "^2.6.0",
+    "vemdalen-index": "2.0.1"
   },
   "devDependencies": {
     "fakeredis": "2.0.0",
     "mocha": "^8.0.1",
     "nodemon": "^2.0.4",
-    "npm-run-all": "4.1.5"
+    "npm-run-all": "4.1.5",
+    "progress": "^2.0.3"
   },
   "preferGlobal": true,
   "private": true,

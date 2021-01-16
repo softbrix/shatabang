@@ -1,7 +1,7 @@
 "use strict"
 
 /*jslint node: true, nomen: true*/
-var shIndex = require('stureby-index');
+var indexes = require('../common/indexes');
 var shFiles = require('../common/shatabang_files');
 var shFra = require('../modules/shatabang_fra');
 var faceInfo = require('../common/face_info');
@@ -11,8 +11,7 @@ var path = require('path');
 
 /** Part one of detecting faces in images **/
 var init = function(config, task_queue) {
-  var idx = shIndex(path.join(config.cacheDir, 'idx_faces'));
-  //var storageDir = config.storageDir;
+  var idx = indexes.facesIndex(config.cacheDir);
   var cacheDir = config.cacheDir;
 
   task_queue.registerTaskProcessor('faces_find', function(data, job, done) {

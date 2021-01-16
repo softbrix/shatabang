@@ -25,6 +25,8 @@ processor:
     - "redis:redis"
 redis:
   image: redis
+#  volumes:
+#    - './data/redis:/data'
 webdav:
   image: softbrix/webdav
   ports:

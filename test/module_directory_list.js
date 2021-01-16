@@ -2,7 +2,7 @@
 
 "use strict"
 var assert = require('assert');
-var DirectoryList = require('../modules/directory_list');
+var DirectoryList = require('../processor/modules/directory_list');
 
 describe('List directory module', function() {
   it('processDirectory', function() {

@@ -1,13 +1,13 @@
 "use strict"
-var express = require('express');
-var router  = express.Router();
-var path = require('path');
-var shIndex = require('stureby-index');
-var PersonInfo = require("../common/person_info");
+const express = require('express');
+const router  = express.Router();
+const path = require('path');
+const indexes = require('../common/indexes');
+const PersonInfo = require("../common/person_info");
 
-var personInfo, idx_dir;
+var personInfo, cacheDir;
 router.initialize = function(config) {
-  idx_dir = path.join(config.cacheDir, 'idx_faces');
+  cacheDir = config.cacheDir;
   personInfo = PersonInfo(config.redisClient);
 };
 
@@ -21,7 +21,7 @@ router.get('/', function(req, res) {
 });
 
 function savePersonInRegion(id, person) {
-  var idx = shIndex(idx_dir);
+  var idx = indexes.facesIndex(cacheDir);
   var data = idx.get(id);
   if(data && data.length > 0) {
     data = JSON.parse(data[0]);

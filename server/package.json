@@ -31,13 +31,13 @@
   ],
   "dependencies": {
     "body-parser": "1.19.0",
-    "bull": "3.10.0",
-    "bull-arena": "^3.2.2",
+    "bull": "3.20.0",
+    "bull-arena": "3.7.0",
     "compression": "1.7.4",
     "connect-redis": "3.4.2",
     "express": "4.17.1",
     "express-session": "1.16.2",
-    "idre-array-cache": "0.2.3",
+    "idre-array-cache": "0.3.1",
     "fs-extra": "8.1.0",
     "multer": "1.4.1",
     "node-dir": "0.1.17",
@@ -48,9 +48,8 @@
     "request": "2.88.0",
     "request-promise": "4.2.4",
     "sha256": "0.2.0",
-    "stureby-index": "3.1.4",
-    "underscore": "1.9.1",
-    "vemdalen-index": "1.5.0"
+    "stureby-index": "3.2.0",
+    "vemdalen-index": "2.0.1"
   },
   "preferGlobal": true,
   "private": true,

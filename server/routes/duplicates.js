@@ -2,15 +2,16 @@
 var express = require('express');
 var router  = express.Router();
 var path = require('path');
-var shIndex = require('stureby-index');
+var indexes = require('../common/indexes');
 
-var idx_dir;
+var cacheDir;
 router.initialize = function(config) {
-  idx_dir = path.join(config.cacheDir, 'idx_finger');
+  cacheDir = config.cacheDir;
 };
 
 router.get('/list',function(req,res){
-    var idx = shIndex(idx_dir), written = false;
+    var idx = indexes.imgFingerIndex(cacheDir), 
+    written = false;
     res.setHeader('content-type', 'application/json');
     res.write("[");
     idx.keys().forEach(function(key) {

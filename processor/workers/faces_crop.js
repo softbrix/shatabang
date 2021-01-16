@@ -1,17 +1,18 @@
 "use strict"
 
 /*jslint node: true, nomen: true*/
-var shIndex = require('stureby-index');
-var shFiles = require('../common/shatabang_files');
-var shFra = require('../modules/shatabang_fra');
-var faceInfo = require('../common/face_info');
-var path = require('path');
+const indexes = require('../common/indexes');
+const shFiles = require('../common/shatabang_files');
+const shFra = require('../modules/shatabang_fra');
+const faceInfo = require('../common/face_info');
+const path = require('path');
 
 
 /** Part one of detecting faces in images **/
 var init = function(config, task_queue) {
-  var idx = shIndex(path.join(config.cacheDir, 'idx_faces'));
-  var idx_crop = shIndex(path.join(config.cacheDir, 'idx_faces_crop'));
+  var idx = indexes.facesIndex(config.cacheDir);
+  var idx_crop = indexes.facesCropIndex(config.cacheDir);
+
   //var storageDir = config.storageDir;
   var cacheDir = config.cacheDir;
 
@@ -25,7 +26,6 @@ var init = function(config, task_queue) {
       return done('Missing file:' + sourceFileName);
     }
 
-    
     const faces = data.faceInfo;
 
     if(!faces.length) {

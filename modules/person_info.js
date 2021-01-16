@@ -1,19 +1,10 @@
-const vemdalenIndex = require("vemdalen-index");
+const indexes = require("./indexes");
 
 module.exports = function(redisClient) {
 
-  let personIndex = vemdalenIndex('persons:', {
-    indexType: 'object',
-    client: redisClient
-  });
-  let personNameIndex = vemdalenIndex('personNames:', {
-    indexType: 'string',
-    client: redisClient
-  });
-  let personFacesIndex = vemdalenIndex('personFaces:', {
-    indexType: 'strings_unique',
-    client: redisClient
-  });
+  let personIndex = indexes.personIndex(redisClient);
+  let personNameIndex = indexes.personNameIndex(redisClient);
+  let personFacesIndex = indexes.personFacesIndex(redisClient);
 
   let addId = function(id) {
     return (obj) => { obj.id = id; return obj };

@@ -2,17 +2,16 @@
 var express = require('express');
 var router  = express.Router();
 var path = require('path');
-var shIndex = require('stureby-index');
+var indexes = require('../common/indexes');
 var faceInfo = require('../common/face_info');
 
-var idx_dir, faces_idx_dir;
+var cacheDir;
 router.initialize = function(config) {
-  idx_dir = path.join(config.cacheDir, 'idx_faces');
-  faces_idx_dir = path.join(config.cacheDir, 'idx_faces_crop');
+  cacheDir = config.cacheDir;
 };
 
 function loadFaceItems() {
-  var idx = shIndex(idx_dir)
+  var idx = indexes.facesIndex(cacheDir)
   var faceItems = [];
   idx.keys().forEach(function(key) {
     var items = idx.get(key);
@@ -53,7 +52,7 @@ router.get('/list/unknown',function(req,res) {
 
 router.get('/face/:id', function(req,res){
   var id = req.params.id;
-  var idx = shIndex(faces_idx_dir);
+  var idx = indexes.facesCropIndex(cacheDir);
   var data = idx.get(id);
   if(data.length) {
     var buf = Buffer.from(data[0], 'base64');
@@ -69,8 +68,8 @@ router.get('/face/:id', function(req,res){
 });
 
 router.delete('/:id',function(req,res){
-  shIndex(idx_dir).delete(req.params.id)
-  shIndex(faces_idx_dir).delete(req.params.id);
+  indexes.facesIndex(cacheDir).delete(req.params.id)
+  indexes.facesCropIndex(cacheDir).delete(req.params.id);
   res.end('ok')
 });
 

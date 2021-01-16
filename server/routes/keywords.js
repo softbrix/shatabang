@@ -1,21 +1,15 @@
 "use strict"
-var express = require('express');
-var router  = express.Router();
+const express = require('express');
+const router  = express.Router();
+const indexes = require("../common/indexes");
 
-var vemdalenIndex = require("vemdalen-index");
 var index;
 
-const namespace = 'keywords:';
-
 router.initialize = function(config) {
-  index = vemdalenIndex(namespace, {
-    indexType: 'strings',
-    client: config.redisClient
-  });
+  index = indexes.keywordsIndex(config.redisClient);
 };
 
 router.get('/', function(req, res) {
-  var persons = [];
   index.keys().then((keys) => {
     res.end(JSON.stringify({keywords:keys}))
   })

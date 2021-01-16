@@ -1,5 +1,5 @@
 "use strict"
-var taskProcess = require('../processor/update_import_directory');
+var taskProcess = require('../processor/workers/update_import_directory');
 
 var taskQueMock = {
   registerTaskProcessor : function(name, func) {
@@ -11,6 +11,9 @@ var taskQueMock = {
   },
   queueTask : function(name, data) {
     console.log('Queue task', name, data);
+    return {
+      finished: () => { then: (cb) => { cb(); } }
+    }
   }
 };
 var config = {

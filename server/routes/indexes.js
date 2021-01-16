@@ -2,18 +2,12 @@
 var bodyParser = require('body-parser');
 var express = require('express');
 var router  = express.Router();
-var path = require('path');
-var shIndex = require('stureby-index');
+const indexes = require('../common/indexes')
 
 router.initialize = function(config) {
-  var
-  idx_file_sha_dir = path.join(config.cacheDir, 'idx_file_sha'),
-  idx_finger_dir = path.join(config.cacheDir, 'idx_finger'),
-  idx_rating_dir = path.join(config.cacheDir, 'idx_rating');
-
-  router.get('/sha/keys', getKeys(shIndex(idx_file_sha_dir)));
-  router.get('/fingers/keys', getKeys(shIndex(idx_finger_dir)));
-  router.get('/rating/keys', getKeys(shIndex(idx_rating_dir)));
+  router.get('/sha/keys', getKeys(indexes.fileShaIndex(config.cacheDir)));
+  router.get('/fingers/keys', getKeys(indexes.imgFingerIndex(config.cacheDir)));
+  router.get('/rating/keys', getKeys(indexes.ratingIndex(config.cacheDir)));
 
   router.post('/rating/add', function(req, res) {
     var file = req.body.file, rating = req.body.rating;
@@ -25,7 +19,7 @@ router.initialize = function(config) {
       res.status(400).send("Rating should be between 0 and 1").end();
       return;
     }
-    var idx = shIndex(idx_rating_dir);
+    var idx = indexes.ratingIndex(config.cacheDir);
     idx.put(file, rating);
     res.end();
   });

@@ -128,12 +128,14 @@ module.exports = {
   registerTaskProcessor : function(name, taskProcessor, jobOptions) {
     log('Register processor', name);
     let queue = createQueue(name, jobOptions);
-    queue.process(async (job, done) =>{
-      // debug('Running job', name);
+    queue.process(async (job, done) => {
+      if (jobOptions.removeOnComplete !== true) {
+        log('Running job: ', name, job.data.title);
+      }
       try {
         await taskProcessor(job.data, job, done);
       } catch(err) {
-        console.log('Error in task processor', name, err);
+        log('Error in task processor', name, err);
       }
     });
 
@@ -162,8 +164,14 @@ module.exports = {
     Object.values(queues).forEach(async queue => {
       let jobs = await queue.getFailed(0, 1000);
       jobs.forEach(j => { 
-        j.retry();
-        debug('Restarting job: ', j.id);
+        // TODO: add config value when to remove failed jobs
+        if (j.attemptsMade > 3) {
+          j.discard();
+          debug('Discard job: ', j.id);
+        } else {
+          j.retry();
+          debug('Restarting job: ', j.id);
+        }
       });
     });
   }

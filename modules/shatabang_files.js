@@ -7,7 +7,7 @@ var fs = require('fs-extra');
 
 var fileEditFallback = function(fileHandlingMethod, source, newDestination, resolve, reject) {
   var command = fileHandlingMethod + '"' + source + '"' + ' "' + newDestination + '"';
-  //console.log(command);
+
   return function(error) {
     if (error) {
       if (error.code === 'EXDEV') {
@@ -90,6 +90,11 @@ module.exports = {
         return fs.statSync(path.join(sourceDir, file)).isDirectory();
       }));
   },
+  listSubDirsAsync : async function(sourceDir) {
+    return new Promise((resolve) => {
+      this.listSubDirs(sourceDir, (ignore, dirs) => resolve(dirs));
+    });
+  },
   // List all subdir paths
   listSubDirPaths : function(sourceDir, callback) {
     dir.subdirs(sourceDir, callback);
@@ -120,26 +125,14 @@ module.exports = {
   moveFile : function(source, destination) {
     return new Promise(function(resolve, reject) {
       findAvaliableFileName(destination).then(function(newDestination) {
-        //console.log('newDest', newDestination, path.dirname(newDestination));
-        // TODO: This should probably be removed
-        /*var error = fs.mkdirsSync(path.dirname(newDestination));
-        if (error) {
-          console.log(newDestination, 'Error with new destination: ', error.message || error);
-        }*/
-
         fs.rename(source, newDestination, fileEditFallback("mv", source, newDestination, resolve, reject));
+        return newDestination;
       });
     });
   },
   copyFile : function(source, destination) {
     return new Promise(function(resolve, reject) {
       findAvaliableFileName(destination).then(function(newDestination) {
-        //console.log('newDest', newDestination, path.dirname(newDestination));
-        /*var error = fs.mkdirsSync(path.dirname(newDestination));
-        if (error) {
-          console.log(newDestination, 'Error with new destination: ', error.message || error);
-        }*/
-
         fs.copy(source, newDestination, fileEditFallback("mv", source, newDestination, resolve, reject));
       });
     });

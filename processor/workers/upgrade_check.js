@@ -1,13 +1,16 @@
 "use strict";
 
-var shIndex = require('stureby-index');
-var path = require('path');
-var fs = require('fs');
-var ImportLog = require('../common/import_log');
-var mediaInfo = require('vega-media-info');
-var MediaMeta = require('../modules/media_meta');
-var FileType = require('../modules/file_type_regexp');
-var shFiles = require('../common/shatabang_files');
+const shIndex = require('stureby-index');
+const path = require('path');
+const fs = require('fs');
+const mediaInfo = require('vega-media-info');
+const ImportLog = require('../common/import_log');
+const MediaMeta = require('../modules/media_meta');
+const fileMatcher = require('../modules/file_type_regexp');
+const FileType = require('../modules/file_type_regexp');
+const shFiles = require('../common/shatabang_files');
+const indexes = require("../common/indexes");
+const DirectoryList = require('../modules/directory_list');
 
 /**
 This task should run every time the task processor is restarted
@@ -16,14 +19,14 @@ var init = function(config, task_queue) {
   var infoDirectory = path.join(config.cacheDir, 'info');
   var storageDir = config.storageDir;
   var versionKey = 'shatabangVersion';
-  var latestVersion = 202007;
+  var latestVersion = 202012;
 
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
     console.log('Running upgrade')
 
     var redis = config.redisClient;
     // Check version in redisStore
-    redis.get(versionKey, function (err, version) {
+    redis.get(versionKey, async function (err, version) {
       if(err) {
         console.log('Error while retrieving versionKey', err);
         return;
@@ -37,14 +40,14 @@ var init = function(config, task_queue) {
           }
         });
       }
-      if(version < 5) {
-        import_meta_to_index(infoDirectory, config.cacheDir, task_queue);
-      }
-      if(version <= 6) {
+      if(version < 202012) {
+        await updateMediaLists(storageDir, config.cacheDir);
+        await add_import_cache(infoDirectory, storageDir, config.cacheDir);
+        await clearVemdalenIndexes(redis);
+        await clearSturebyIndexes(config.cacheDir);
+        import_meta_to_index(infoDirectory, config.storageDir, task_queue);
         upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
-      }
-      if(version < 202007) {
-        add_import_cache(infoDirectory, storageDir, config.cacheDir);
+        reecode_videos(infoDirectory, storageDir, config.cacheDir, task_queue);
       }
 
       if (version !== latestVersion) {
@@ -102,63 +105,124 @@ var upgrade_v1 = function(infoDirectory, storageDir, cb) {
 };
 
 /** Re run all face recognitions so we add the cropped information to the index **/
-function upgrade_faces_index(infoDirectory, cache_dir, task_queue) {
-  shIndex(path.join(cache_dir, 'idx_faces')).clear();
-  shIndex(path.join(cache_dir, 'idx_faces_crop')).clear();
+async function upgrade_faces_index(infoDirectory, cacheDir, task_queue) {
+  indexes.facesIndex(cacheDir).clear();
+  indexes.facesCropIndex(cacheDir).clear();
 
-  allMedia(infoDirectory, function(items) {
-    items.filter(FileType.isImage).forEach((relativeDest) => {
-      task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest}, 'low');
-    });
+  const items = await allMedia(infoDirectory);
+  items.filter(FileType.isImage).forEach((relativeDest) => {
+    task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest}, 'low');
   });
+}
+
+/** Clear all indexes stored in redis **/
+function clearVemdalenIndexes(redisClient) {
+  return Promise.all([
+    indexes.keywordsIndex(redisClient),
+    indexes.metaIndex(redisClient),
+    indexes.regionsIndex(redisClient)
+  ].map(index => index.clear()));
+}
+
+/* Clear all indexes stored on disk, rerun meta import and upgrade_faces_index */
+function clearSturebyIndexes(cacheDir) {
+  return Promise.all([
+    indexes.fileShaIndex(cacheDir),
+    indexes.imgFingerIndex(cacheDir),
+    indexes.facesIndex(cacheDir),
+    indexes.facesCropIndex(cacheDir)
+  ].map(index => index.clear()));
 }
 
 /** Re run all face recognitions so we add the cropped information to the index **/
-function import_meta_to_index(infoDirectory, cache_dir, task_queue) {
-  allMedia(infoDirectory, function(items) {
-    items.forEach((relativeDest) => {
-      task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest}, 'low');
-    });
+async function import_meta_to_index(infoDirectory, storageDir, task_queue) {
+  const items = await allMedia(infoDirectory);
+  items.forEach(async (relativeDest) => {
+    var filePath = path.join(storageDir, relativeDest);
+    const exifData = await mediaInfo.readMediaInfo(filePath, true);
+    const timestamp = new Date(exifData.CreateDate || exifData.ModifyDate).getTime();
+    task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest, id: '' + timestamp }, 'low');
+    task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
   });
 }
 
-// Clear import cache and all all imported media
+// Clear import cache and add all imported media
 async function add_import_cache(infoDirectory, storageDir, cacheDir) {
   var importLog = new ImportLog(cacheDir);
-  await importLog.clear(); 
-  allMedia(infoDirectory, async function(items) {
-    for (var i in items) {
-      var relativeDest = items[i];
-      var filePath = path.join(storageDir, relativeDest);
-      var stat = await fs.promises.stat(filePath);
-      var exifData = await mediaInfo.readMediaInfo(filePath, process.env.EXIF_TOOL || true);
-      var dateStr = exifData.CreateDate || exifData.ModifyDate;
-      importLog.push(new Date(dateStr).getTime(), new Date(stat.atime).getTime());
+  try {
+    await importLog.clear(); 
+  } catch(e) {
+    console.error('Failed to clear import log cache', e);
+  }
+  const items = await allMedia(infoDirectory);
+  let datesTimes = new Set();
+  for (var i in items) {
+    var relativeDest = items[i];
+    var filePath = path.join(storageDir, relativeDest);
+    var exifData = await mediaInfo.readMediaInfo(filePath, process.env.EXIF_TOOL || true);
+    var dateStr = exifData.CreateDate || exifData.ModifyDate;
+    var d = new Date(dateStr).getTime();
+    if (!Number.isInteger(d)) {
+      console.log('Import log, date is not a number, failed to add', filePath, dateStr)
+      continue;
     }
-    await importLog.close();
+    datesTimes.add(d);
+  }
+  console.log('Adding to import log', datesTimes.size, 'items');
+  datesTimes.forEach(d => importLog.push(d));
+  importLog.close();
+}
+
+async function reecode_videos(infoDirectory, storageDir, cacheDir, task_queue) {
+  const items = await allMedia(infoDirectory);
+  for (var i in items) {
+    var relativeDest = items[i];
+    var data = { 
+      title: relativeDest, 
+      file: relativeDest,
+      cacheDir: cacheDir,
+      storageDir: storageDir
+    };
+
+    task_queue.queueTask('resize_image', Object.assign({ width: 300, height: 200 }, data));
+    task_queue.queueTask('resize_image', Object.assign({ width: 1920, height: 1080, keepAspec: true }, data));
+
+    if(fileMatcher.isVideo(relativeDest)) {
+      // TODO: Encode video in multiple formats and sizes, Search for faces etc.
+      task_queue.queueTask('encode_video', Object.assign({ width: 1920, height: 1080 }, data), 'low');
+      task_queue.queueTask('encode_video', Object.assign({ width: 960, height: 540 }, data), 'low');
+    }
+  }
+}
+
+async function updateMediaLists(storageDir, cacheDir) {
+  let dirs = await shFiles.listSubDirsAsync(storageDir);
+
+  dirs.forEach((dir) => {
+    if(!isNumber(dir)) {
+      return;
+    }
+    DirectoryList.processDirectory(dir, storageDir, cacheDir);
   });
+  console.log('Updated media lists');
 }
 
 /** Function which returns all media files ordered in a single array with all items. */
-function allMedia(infoDirectory, cb) {
-  shFiles.listSubDirs(infoDirectory, function(error, dirs) {
-    if(error) {
-      return cb(error);
+async function allMedia(infoDirectory) {
+  const dirs = await shFiles.listSubDirsAsync(infoDirectory);
+  var result = [];
+  // Add all images to the media index with user rating 0.5
+  dirs.forEach((dir) => {
+    if(!isNumber(dir)) {
+      return;
     }
-    var result = [];
-    // Add all images to the media index with user rating 0.5
-    dirs.forEach((dir) => {
-      if(!isNumber(dir)) {
-        return;
-      }
-      var yearDir = path.join(infoDirectory, dir);
-      var mediaLst = fs.readFileSync(path.join(yearDir, 'media.lst'), 'UTF-8').split(',');
-      mediaLst.forEach((itm) => {
-        result.push(itm);
-      });
+    var yearDir = path.join(infoDirectory, dir);
+    var mediaLst = fs.readFileSync(path.join(yearDir, 'media.lst'), 'UTF-8').split(',');
+    mediaLst.forEach((itm) => {
+      result.push(itm);
     });
-    cb(result);
   });
+  return result;
 }
 
 module.exports = {

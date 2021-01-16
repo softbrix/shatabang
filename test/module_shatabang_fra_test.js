@@ -2,7 +2,7 @@
 
 var assert = require('assert');
 var fs = require('fs');
-var shFra = require('../modules/shatabang_fra');
+var shFra = require('../processor/modules/shatabang_fra');
 
 var relativeTestFile = "./test/test_data/1920/faces.jpg";
 var noFaceFile = "./test/test_data/1920/no_face.jpg";
@@ -13,22 +13,12 @@ describe('Shatabang Face recognition algorithm', function() {
     this.timeout(60000);
     return shFra.findFaces(relativeTestFile).then(
       function(data) {
-        assert.equal(1, data.length);
+        assert.strictEqual(1, data.length);
         var info = data[0];
-        assert.equal(0.3876953125, info.x);
-        assert.equal(0.17715959004392387, info.y);
-        assert.equal(0.2080078125, info.w);
-        assert.equal(0.3118594436310395, info.h);
-
-        return shFra.cropFace(relativeTestFile, data[0])
-          .then( function(buffer) {
-          if(expectedFileInfo !== undefined) {
-            var expected_buffer = fs.readFileSync(expectedFileInfo);
-
-            assert.equal(expected_buffer.toString().trim().length,
-              buffer.toString('base64').length);
-          }
-        });
+        assert.strictEqual(0.3876953125, info.x);
+        assert.strictEqual(0.17715959004392387, info.y);
+        assert.strictEqual(0.2080078125, info.w);
+        assert.strictEqual(0.3118594436310395, info.h);
       }, assert.fail);
   });
   it('should handle face lookup on an image with no face', function() {
@@ -42,9 +32,9 @@ describe('Shatabang Face recognition algorithm', function() {
   });
 
   it('should be able to calculate a blur value of buffer', function() {
-    var expected_buffer = fs.readFileSync(expectedFileInfo)
-    return shFra.imageBlurValue(Buffer.from(expected_buffer.toString(),'base64')).then(value => {
-      assert.equal(value, 527.6376387900019);
+    var expected_buffer = fs.readFileSync(relativeTestFile)
+    return shFra.imageBlurValue(expected_buffer).then(value => {
+      assert.equal(value, 129.319451269357);
     });
   });
 
@@ -56,15 +46,24 @@ describe('Shatabang Face recognition algorithm', function() {
 
   // This can be used as a debug example to extract the faces in an image
 
-  var relativeCropFile = "./test/test_data/1920/faces.JPG";
-  xit('crop found faces', function() {
+  var relativeCropFile = "./test/test_data/1920/faces.jpg";
+  it('crop found faces', function() {
     this.timeout(60000);
     return shFra.findFaces(relativeCropFile).then(function(data) {
       console.log('face count: ', data.length);
       var c = 0;
       var promises = data.map((d) => {
         return shFra.cropFace(relativeCropFile, d)
-          .then((buf) => fs.writeFile('./test/test_data/t'+(++c)+'_image.png', buf, console.log), assert.fail);
+          .then((buffer) => {
+            if (c == 0) {
+              if(expectedFileInfo !== undefined) {
+                var expected_buffer = fs.readFileSync(expectedFileInfo);
+                fs.writeFileSync(expectedFileInfo + 'res', buffer.toString('base64'));
+                assert.strictEqual(buffer.toString('base64').length, expected_buffer.toString().trim().length);
+              }
+            }
+            fs.writeFile('./test/test_data/t'+(++c)+'_image.png', buffer, console.log)
+          } , assert.fail);
         });
       return Promise.all(promises);
     }, assert.fail);

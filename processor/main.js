@@ -22,7 +22,18 @@ let processors = [
 // Initialize the default redis client
 config.redisClient = redis.createClient({
   host: config.redisHost,
-  port: config.redisPort
+  port: config.redisPort,
+  retry_strategy: function(options) {
+    if (options.attempt > 10) {
+      return undefined; // End reconnecting with built in error
+    }
+    if (options.error && options.error.code === "ECONNREFUSED") {
+      // End reconnecting on a specific error and flush all commands with a individual error
+      return new Error("The server refused the connection");
+    }
+    // reconnect after
+    return Math.min(options.attempt * 100, 3000);
+  },
 });
 task_queue.connect(config);
 
@@ -43,7 +54,7 @@ process.on('uncaughtException', function (err) {
 });
 process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-  // application specific logging, throwing an error, or other logic here
+  console.dir(reason.stack);
 });
 process.on('SIGINT', function () {
   console.error('Got SIGINT. Shuting down the queue.');

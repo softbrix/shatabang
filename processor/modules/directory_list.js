@@ -45,8 +45,6 @@ var findMediaFiles = function(directory, sourceDir) {
 var writeMediaListFile = function(directory, cachedDir, relativeFilesList) {
   return new Promise(function(resolve, reject) {
     var mediaListFile = path.join(cachedDir, 'info', directory, 'media.lst');
-    //console.log(mediaListFile);
-
     shFiles.writeFile(mediaListFile, relativeFilesList, function(err) {
       if(err) {
         reject(err);
@@ -63,13 +61,14 @@ var addMediaListFile = function(directory, cachedDir, relativeFile) {
     var mediaListFile = path.join(cachedDir, 'info', directory, 'media.lst');
 
     if (shFiles.exists(mediaListFile)) {
-      //console.log(mediaListFile);
       shFiles.readFile(mediaListFile, (err, fileData) => {
         if (err != undefined) {
           reject(err);
           return;
         }
+
         fileData += ',' + relativeFile;
+        
         writeMediaListFile(directory, cachedDir, fileData)
           .then(resolve, reject);
       });
@@ -86,7 +85,7 @@ var addMediaListFile = function(directory, cachedDir, relativeFile) {
  */
 var processDirectory = function(directory, sourceDir, cachedDir) {
   return findMediaFiles(directory, sourceDir).then(function(relativeFilesList) {
-    return writeMediaListFile(directory, cachedDir, relativeFilesList);
+    return writeMediaListFile(directory, cachedDir, relativeFilesList.join(','));
   });
 };
 

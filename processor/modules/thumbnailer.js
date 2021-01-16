@@ -29,6 +29,7 @@ module.exports = {
           return;
         }
         var handleImageResize = function(imageSrc) {
+          outputFileName = FileTypeRegexp.toImageFileName(outputFileName);
           var image = sharp(imageSrc);
           // Do resize is used later
           var doResize = function() {
@@ -54,7 +55,7 @@ module.exports = {
                 }
 
                 doResize();
-              });
+              }, reject);
           } else {
             doResize();
           }
@@ -62,7 +63,7 @@ module.exports = {
 
         if(FileTypeRegexp.isVideo(path.basename(sourceFileName))) {
           const PREFIX = 'v';
-          var videoOutPath = path.dirname(sourceFileName);
+          var videoOutPath = path.dirname(outputFileName);
           var videoImageOutFileName = PREFIX + FileTypeRegexp.toImageFileName(path.basename(sourceFileName));
           const videoOutFullPath = path.join(videoOutPath, videoImageOutFileName);
           
