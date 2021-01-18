@@ -5,8 +5,8 @@ var async = require('async');
 var path = require('path');
 var ProgressBar = require('progress');
 var mediaInfo = require('vega-media-info');
-var sort_file = require('./modules/sort_file');
-var shFiles =   require('./modules/shatabang_files');
+var sort_file = require('../processor/modules/sort_file');
+var shFiles =   require('../modules/shatabang_files');
 
 var argv = require('minimist')(process.argv.slice(2));
 

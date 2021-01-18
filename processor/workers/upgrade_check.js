@@ -159,6 +159,7 @@ async function add_import_cache(infoDirectory, storageDir, cacheDir) {
   for (var i in items) {
     var relativeDest = items[i];
     var filePath = path.join(storageDir, relativeDest);
+    console.log(i, relativeDest);
     var exifData = await mediaInfo.readMediaInfo(filePath, process.env.EXIF_TOOL || true);
     var dateStr = exifData.CreateDate || exifData.ModifyDate;
     var d = new Date(dateStr).getTime();
@@ -167,7 +168,11 @@ async function add_import_cache(infoDirectory, storageDir, cacheDir) {
       continue;
     }
     datesTimes.add(d);
+    if (datesTimes.size() % 500) {
+      console.log('Import log: ', datesTimes.size() / items.length, '%');
+    }
   }
+  console.log('Import log: 100%');
   console.log('Adding to import log', datesTimes.size, 'items');
   datesTimes.forEach(d => importLog.push(d));
   importLog.close();
@@ -198,13 +203,14 @@ async function reecode_videos(infoDirectory, storageDir, cacheDir, task_queue) {
 async function updateMediaLists(storageDir, cacheDir) {
   let dirs = await shFiles.listSubDirsAsync(storageDir);
 
-  dirs.forEach((dir) => {
+  return Promise.all(dirs.map((dir) => {
     if(!isNumber(dir)) {
-      return;
+      return Promise.resolve();
     }
-    DirectoryList.processDirectory(dir, storageDir, cacheDir);
+    return DirectoryList.processDirectory(dir, storageDir, cacheDir);
+  })).then(() => {
+    console.log('Updated media lists');
   });
-  console.log('Updated media lists');
 }
 
 /** Function which returns all media files ordered in a single array with all items. */
