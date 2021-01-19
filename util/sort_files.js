@@ -74,12 +74,15 @@ var filesToProcess = [];
 var processNext = function() {
   setTimeout(function() {
     if (filesToProcess.length > 0) {
-      sort_file(filesToProcess.pop(), destDir)
-      .then(doNext, function(error) {
-        console.log(error);
-        processNext();
+      let filePath = filesToProcess.pop();
+      mediaInfo.readMediaInfo(filePath, useExifToolFallback).then( exifData => {
+        sort_file(filePath, destDir, exifData)
+        .then(doNext, function(error) {
+          console.log(error);
+          processNext();
+        });
+        bar.tick();
       });
-      bar.tick();
     } else {
       console.log('Finished moving files. ');
       if (addTagsWorkerQueue.length() > 0) {

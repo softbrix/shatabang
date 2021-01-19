@@ -68,7 +68,7 @@ process.once( 'SIGTERM', function () {
   task_queue.disconnect(2000, disconnectCallback);
 });
 
-task_queue.queueTask('update_directory_list', {}, 'high');
+// task_queue.queueTask('update_directory_list', {}, 'high');
 task_queue.queueTask('upgrade_check', {}, 'high')
   .then(() => {
     console.log("Running task processor...");

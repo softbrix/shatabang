@@ -49,7 +49,7 @@
     "sharp": "0.25.4",
     "stureby-index": "3.2.0",
     "underscore": "1.9.1",
-    "vega-media-info": "2.6.0",
+    "vega-media-info": "2.6.1",
     "vemdalen-index": "2.0.1"
   },
   "devDependencies": {

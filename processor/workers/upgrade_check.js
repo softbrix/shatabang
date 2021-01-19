@@ -168,8 +168,8 @@ async function add_import_cache(infoDirectory, storageDir, cacheDir) {
       continue;
     }
     datesTimes.add(d);
-    if (datesTimes.size() % 500) {
-      console.log('Import log: ', datesTimes.size() / items.length, '%');
+    if (datesTimes.size % 500 == 0) {
+      console.log('Import log: ', datesTimes.size / items.length, '%');
     }
   }
   console.log('Import log: 100%');
