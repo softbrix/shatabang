@@ -193,6 +193,7 @@ app.all('/media/*', requireAuthentication);
 app.all('/video/*', requireAuthentication);
 app.all('/arena/*', requireAuthentication);
 app.all('/queuestat/*', requireAuthentication);
+app.all('/admin/*', requireAuthentication);
 
 // Images is the route to the cached (resized) images
 app.use('/images', express.static(cacheDir));
@@ -254,6 +255,10 @@ app.use('/arena', arenaConfig);
 // Bull-board route
 setQueues(queueNames.map(name => new BullAdapter(new Bull(name, { redis: arenaRedisConf, prefix: 'shTasks', }))));
 app.use('/queuestat', router);
+app.use('/admin/queuestat', (req, res, next) => {
+    req.proxyUrl = baseUrlPath + '/admin/queuestat';
+    next();
+}, router);
 
 app.use('/', express.static(__dirname + "/client/dist/"));
 
