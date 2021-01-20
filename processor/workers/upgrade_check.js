@@ -169,7 +169,7 @@ async function add_import_cache(infoDirectory, storageDir, cacheDir) {
     }
     datesTimes.add(d);
     if (datesTimes.size % 500 == 0) {
-      console.log('Import log: ', datesTimes.size / items.length, '%');
+      console.log('Import log: ', Math.round(10000 * (datesTimes.size / items.length))/100, '%');
     }
   }
   console.log('Import log: 100%');

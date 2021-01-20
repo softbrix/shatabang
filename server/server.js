@@ -5,7 +5,7 @@ const config       = require('./common/config.js'),
     task_queue     = require('./common/task_queue'),
     Bull           = require('bull'),
     Arena          = require('bull-arena'),
-    { setQueues, BullAdapter, router } = require('bull-board'),
+    { setQueues, BullAdapter, router: bullBoardRouter } = require('bull-board'),
     express        = require("express"),
     bodyParser     = require('body-parser'),
     compression    = require('compression'),
@@ -178,21 +178,27 @@ app.get('/login', sendIndex);
 //   the request is authenticated (typically via a persistent login session),
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
-function requireAuthentication(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
+function requireAuthentication(redirectUrl) {
+  return (req, res, next) => {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    if (redirectUrl !== undefined) {
+      res.redirect(url);
+    } else {
+      res.send().status(401);
+    }
   }
-  res.send().status(401);
 }
 
 /// End Authentication
 
 // Secure the api and images path
-app.all('/images/*', requireAuthentication);
-app.all('/media/*', requireAuthentication);
-app.all('/video/*', requireAuthentication);
-app.all('/arena/*', requireAuthentication);
-app.all('/queuestat/*', requireAuthentication);
+app.all('/images/*', requireAuthentication());
+app.all('/media/*', requireAuthentication());
+app.all('/video/*', requireAuthentication());
+app.all('/arena/*', requireAuthentication(baseUrlPath + '/login'));
+app.all('/queuestat/*', requireAuthentication(baseUrlPath + '/login'));
 
 // Images is the route to the cached (resized) images
 app.use('/images', express.static(cacheDir));
@@ -253,7 +259,7 @@ app.use('/arena', arenaConfig);
 
 // Bull-board route
 setQueues(queueNames.map(name => new BullAdapter(new Bull(name, { redis: arenaRedisConf, prefix: 'shTasks', }))));
-app.use('/queuestat', router);
+app.use('/queuestat', bullBoardRouter);
 
 app.use('/', express.static(__dirname + "/client/dist/"));
 
