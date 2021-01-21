@@ -12,6 +12,7 @@ var disconnect = function disconnect(timeout, cb) {
   }
 };
 
+const PREFIX = 'shTasks';
 const queues = {};
 var conf;
 var jobcnt = 0;
@@ -29,7 +30,7 @@ function createQueue(name, jobOptions) {
       host: conf.redisHost,
       port: conf.redisPort
     },
-    prefix: 'shTasks',
+    prefix: PREFIX,
     defaultJobOptions: Object.assign({
       priority: getPrio('mid'),
       attempts: 2,
@@ -195,7 +196,8 @@ module.exports = {
     'upgrade_check',
 // Keep the update import loop on the side
 //    'update_import_directory'
-  ]
+  ],
+  prefix: PREFIX
 };
 
 function getPrio(value) {

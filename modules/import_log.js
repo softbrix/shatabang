@@ -10,7 +10,7 @@ class ImportLog {
     }
     push(id) {
         if (!Number.isInteger(id)) {
-            throw new Error('Expected {id} to be numeric, was: ' + typeof id);
+            throw new Error('Expected {id} to be numeric, was: ' + typeof id + '/' + id);
         }
         this._log.push(id);
     }

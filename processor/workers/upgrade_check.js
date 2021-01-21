@@ -19,47 +19,58 @@ var init = function(config, task_queue) {
   var infoDirectory = path.join(config.cacheDir, 'info');
   var storageDir = config.storageDir;
   var versionKey = 'shatabangVersion';
-  var latestVersion = 202012;
+  var latestVersion = '202013';
 
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
-    console.log('Running upgrade')
+    function logger () {
+      job.log.apply(job, arguments);
+      console.log.apply(console, arguments);
+    }
+    logger('Running upgrade')
 
     var redis = config.redisClient;
     // Check version in redisStore
     redis.get(versionKey, async function (err, version) {
       if(err) {
-        console.log('Error while retrieving versionKey', err);
+        logger('Error while retrieving versionKey', err);
         return;
       }
-      console.log('Index version', version);
+      logger('Index version', version);
       if(!version) {
         version = 0;
         upgrade_v1(infoDirectory, storageDir, (error) => {
           if(error) {
-            console.log(error);
+            logger(error);
           }
         });
       }
-      if(version < 202012) {
+      if(version < latestVersion) {
         await updateMediaLists(storageDir, config.cacheDir);
+        logger('Updated media lists');
         await add_import_cache(infoDirectory, storageDir, config.cacheDir);
+        logger('Added import cache');
         await clearVemdalenIndexes(redis);
+        logger('Cleared Vemdalen indexes');
         await clearSturebyIndexes(config.cacheDir);
-        import_meta_to_index(infoDirectory, config.storageDir, task_queue);
-        upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
-        reecode_videos(infoDirectory, storageDir, config.cacheDir, task_queue);
+        logger('Cleared stureby indexes');
+        await import_meta_to_index(infoDirectory, config.storageDir, task_queue);
+        logger('Queued import meta to index tasks');
+        await upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
+        logger('Queued upgraded faces index tasks');
+        await reecode_videos(infoDirectory, storageDir, config.cacheDir, task_queue);
+        logger('Queued reencode videos tasks');
       }
 
       if (version !== latestVersion) {
         task_queue.queueTask('retry_unknown', {}, 'low');
         task_queue.retryFailed();
 
-        console.log('Successfully upgraded index to', 'v'+latestVersion);
+        logger('Successfully upgraded index to', 'v'+latestVersion);
         redis.set(versionKey, latestVersion, function() {
           done();
         });
       } else {
-        console.log('All done');
+        logger('All done');
         done();
         return;
       }
@@ -137,13 +148,14 @@ function clearSturebyIndexes(cacheDir) {
 /** Re run all face recognitions so we add the cropped information to the index **/
 async function import_meta_to_index(infoDirectory, storageDir, task_queue) {
   const items = await allMedia(infoDirectory);
-  items.forEach(async (relativeDest) => {
+  for (var i in items) {
+    var relativeDest = items[i];
     var filePath = path.join(storageDir, relativeDest);
     const exifData = await mediaInfo.readMediaInfo(filePath, true);
     const timestamp = new Date(exifData.CreateDate || exifData.ModifyDate).getTime();
     task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest, id: '' + timestamp }, 'low');
     task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
-  });
+  }
 }
 
 // Clear import cache and add all imported media

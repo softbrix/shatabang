@@ -51,6 +51,7 @@ process.on('uncaughtException', function (err) {
   console.error('Uncaught exception', err.stack);
   config.redisClient.quit();
   task_queue.disconnect(2000, disconnectCallback);
+  setTimeout(disconnectCallback, 10000);
 });
 process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);

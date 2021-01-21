@@ -30,7 +30,7 @@ var init = function(config, task_queue) {
     let mediaFiles = await shFiles.listMediaFiles(importDir);
     
     return syncLoop(mediaFiles, async (filePath, i) => {
-      console.log("Processing", i, filePath);
+      job.log("Processing", i, filePath);
 
       var updateProgress = function() {
         job.progress(100 * i / mediaFiles.length);
@@ -38,7 +38,7 @@ var init = function(config, task_queue) {
 
       try {
         var exifData = await mediaInfo.readMediaInfo(filePath, useExifToolFallback);
-        if (exifData === undefined) {
+        if (exifData === undefined || (exifData.CreateDate || exifData.ModifyDate) === undefined) {
           throw Error("Failed to read exif data from " + filePath);
         }
         var date = new Date(exifData.CreateDate || exifData.ModifyDate);
@@ -46,19 +46,23 @@ var init = function(config, task_queue) {
         // This needs to run synchronolusly. Add to cache after each update.
         if(items.length > 0) {
           var newDest = await sort_file(filePath, duplicatesDir, exifData)
-          console.log("Exists in image date cache", newDest);
+          job.log("Exists in image date cache", newDest);
         } else {
           var newDest = await sort_file(filePath, storageDir, exifData);
           var relativeDest = path.relative(storageDir, newDest);
+          job.log('Importing', relativeDest);
           await queueWorkers(relativeDest, date.getTime());
           importLog.push(date.getTime());
-          console.log("Imported: ", relativeDest);
+          job.log("Imported: ", relativeDest);
         }
       } catch (err) {
         console.error("Failed to import", err);
+        job.log("Failed to import", err);
         if (shFiles.exists(filePath)) {
+          let newPath = path.join(unknownDir, path.basename(filePath));
+          console.log('Moving to: ', newPath);
           // Failed to import move to unknown dir
-          shFiles.moveFile(filePath, path.join(unknownDir, path.basename(filePath)));
+          await shFiles.moveFile(filePath, newPath);
         }
       }
       updateProgress();
@@ -71,7 +75,6 @@ var init = function(config, task_queue) {
   }, {removeOnComplete: true});
 
   var queueWorkers = function(relativeDest, timestamp) {
-    console.log('Importing', relativeDest);
     task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
     task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest, id: '' + timestamp });
 
