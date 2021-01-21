@@ -141,7 +141,8 @@ function clearSturebyIndexes(cacheDir) {
     indexes.fileShaIndex(cacheDir),
     indexes.imgFingerIndex(cacheDir),
     indexes.facesIndex(cacheDir),
-    indexes.facesCropIndex(cacheDir)
+    indexes.facesCropIndex(cacheDir),
+    indexes.importedTimesIndex(cacheDir)
   ].map(index => index.clear()));
 }
 
@@ -161,6 +162,7 @@ async function import_meta_to_index(infoDirectory, storageDir, task_queue) {
 // Clear import cache and add all imported media
 async function add_import_cache(infoDirectory, storageDir, cacheDir) {
   var importLog = new ImportLog(cacheDir);
+  const idxImported = indexes.importedTimesIndex(cacheDir, { flushTime: 30000 });
   try {
     await importLog.clear(); 
   } catch(e) {
@@ -180,7 +182,8 @@ async function add_import_cache(infoDirectory, storageDir, cacheDir) {
       continue;
     }
     datesTimes.add(d);
-    if (datesTimes.size % 500 == 0) {
+    idxImported.put(d, relativeDest);
+    if (i % 500 == 0) {
       console.log('Import log: ', Math.round(10000 * (datesTimes.size / items.length))/100, '%');
     }
   }

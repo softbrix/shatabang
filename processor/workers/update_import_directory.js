@@ -4,6 +4,7 @@ var sort_file = require('../modules/sort_file');
 var fileMatcher = require('../modules/file_type_regexp');
 var directory_list = require('../modules/directory_list');
 var ImportLog = require('../common/import_log');
+const indexes = require('../common/indexes');
 var mediaInfo = require('vega-media-info');
 var path = require('path');
 var shIndex = require('stureby-index');
@@ -16,13 +17,12 @@ thumbnail and finger for each item in the import folder.
 **/
 var init = function(config, task_queue) {
   const storageDir = config.storageDir,
-  idx_imported_dir = path.join(config.cacheDir, 'idx_imported'),
   importDir = path.join(storageDir, 'import'),
   unknownDir = path.join(storageDir, 'unknown'),
   duplicatesDir = path.join(storageDir, 'duplicates');
 
   const importLog = new ImportLog(config.cacheDir);
-  const idxImported = shIndex(idx_imported_dir);
+  const idxImported = indexes.importedTimesIndex(config.cacheDir);
 
   shFiles.mkdirsSync(duplicatesDir);
 
@@ -53,6 +53,7 @@ var init = function(config, task_queue) {
           job.log('Importing', relativeDest);
           await queueWorkers(relativeDest, date.getTime());
           importLog.push(date.getTime());
+          idxImported.put(date.getTime(), relativeDest);
           job.log("Imported: ", relativeDest);
         }
       } catch (err) {
