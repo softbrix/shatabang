@@ -253,10 +253,13 @@ const arenaConfig = Arena({
   queues: queueNames.map(name => Object.assign({}, queConf, {name: name})),
 },
 {
-  basePath: baseUrlPath != '/' ? baseUrlPath : undefined,
+  basePath: '/arena',
   disableListen: true // Let express handle the listening.
 });
-app.use('/arena', arenaConfig);
+const arena = express.Router();
+arena.use((req, res, next) => { req.url = `/arena${req.url}`; next(); });
+arena.use(arenaConfig);
+app.use('/arena', arena);
 
 // Bull-board route
 setQueues(queueNames.map(name => new BullAdapter(new Bull(name, { redis: arenaRedisConf, prefix: task_queue.prefix }))));
