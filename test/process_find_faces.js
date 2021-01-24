@@ -11,10 +11,10 @@ describe('Find faces process', function() {
     processTester.initProcess(taskProcess, {
       queueTask : function(name, data) {
         assert.equal(relativeTestFile, data.file);
-        if(name !== 'faces_find') {
-          assert.notStrictEqual(undefined, data.faceInfo);
-          done();
-        }
+        assert.strictEqual(name, 'faces_crop');
+        // console.log(data.faceInfo)
+        assert.notStrictEqual(undefined, data.faceInfo);
+        done();
       },
       registeredFunctionCallback: function(func) {
         var data = {

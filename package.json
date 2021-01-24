@@ -45,11 +45,13 @@
     "idre-array-cache": "0.3.1",
     "node-dir": "0.1.17",
     "redis": "3.0.2",
+    "sha1-file": "2.0.0",
     "sha256": "0.2.0",
     "sharp": "0.25.4",
+    "sharp-phash": "2.0.0",
     "stureby-index": "3.2.1",
     "underscore": "1.9.1",
-    "vega-media-info": "2.7.0",
+    "vega-media-info": "2.8.0",
     "vemdalen-index": "2.0.1"
   },
   "devDependencies": {
