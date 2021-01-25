@@ -24,7 +24,7 @@ if (DEBUG) {
 }
 const log = console.log;
 
-function createQueue(name, jobOptions) {
+function createQueue(name, jobOptions, advancedSettings) {
   let queue = new Queue(name, {
     redis: {
       host: conf.redisHost,
@@ -36,7 +36,8 @@ function createQueue(name, jobOptions) {
       attempts: 2,
       backoff: 1000//,
       // removeOnComplete: true
-    }, jobOptions)
+    }, jobOptions),
+    settings: Object.assign({}, advancedSettings)
   });
 
   queues[name] = queue;
@@ -155,7 +156,7 @@ module.exports = {
   },
   registerProcess : function(name, pathToProcessor, concurrency) {
     log('Register separate processor with promise', name);
-    let queue = createQueue(name);
+    let queue = createQueue(name, {}, { stalledInterval: 0 });
 
     concurrency = concurrency || 1
     queue.process(concurrency, pathToProcessor);
