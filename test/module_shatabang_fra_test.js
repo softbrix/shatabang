@@ -15,10 +15,10 @@ describe('Shatabang Face recognition algorithm', function() {
       function(data) {
         assert.strictEqual(1, data.length);
         var info = data[0];
-        assert.strictEqual(0.3876953125, info.x);
-        assert.strictEqual(0.17715959004392387, info.y);
-        assert.strictEqual(0.2080078125, info.w);
-        assert.strictEqual(0.3118594436310395, info.h);
+        assert.strictEqual(0.38671875, info.x);
+        assert.strictEqual(0.17862371888726208, info.y);
+        assert.strictEqual(0.2109375, info.w);
+        assert.strictEqual(0.3162518301610542, info.h);
       }, assert.fail);
   });
   it('should handle face lookup on an image with no face', function() {

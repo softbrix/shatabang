@@ -18,7 +18,6 @@ module.exports = {
       return cv.imreadAsync(sourceFileName)
             .then(img => img.bgrToGrayAsync())
             .then(function(img) {
-              console.log(img)
         const faces = classifier.detectMultiScale(img).objects;
 
         let [img_height, img_width] = img.sizes;
