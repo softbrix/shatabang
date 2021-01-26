@@ -8,6 +8,7 @@ var faceInfo = require('../common/face_info');
 var fileType = require('../modules/file_type_regexp');
 var path = require('path');
 
+const THRESHOLD = process.env.SH_FACE_THRESHOLD || 7700;
 
 /** Part one of detecting faces in images **/
 var init = function(config, task_queue) {
@@ -29,7 +30,7 @@ var init = function(config, task_queue) {
         return;
       }
       
-      faces.forEach((face) => {
+      faces.filter(face => face.sz > THRESHOLD).forEach((face) => {
         const compressed = faceInfo.compress(face);
         const id = faceInfo.toId(relativeFilePath, face);
         idx.update(id, JSON.stringify(compressed));
@@ -39,7 +40,7 @@ var init = function(config, task_queue) {
       task_queue.queueTask('faces_crop', {
           title: relativeFilePath,
           file: relativeFilePath,
-          faceInfo: faces}, 'low');
+          faceInfo: faces});
       done();
     }, done);
   });
