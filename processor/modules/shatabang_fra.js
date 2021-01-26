@@ -8,7 +8,7 @@ const variance = require('variance');
 
 const face_max_width = 100,
       face_max_height = 162, // Golden ratio
-      classifier = new cv.CascadeClassifier(cv.HAAR_FRONTALFACE_ALT2);
+      classifier = new cv.CascadeClassifier(cv.HAAR_FRONTALFACE_ALT);
 
 module.exports = {
 
@@ -16,8 +16,9 @@ module.exports = {
     return fs.promises.access(sourceFileName, fs.constants.R_OK)
     .then(() => {
       return cv.imreadAsync(sourceFileName)
-            .then(img => img.bgrToGrayAsync(), (err) => { console.error(err) })
+            .then(img => img.bgrToGrayAsync())
             .then(function(img) {
+              console.log(img)
         const faces = classifier.detectMultiScale(img).objects;
 
         let [img_height, img_width] = img.sizes;
