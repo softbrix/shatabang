@@ -32,10 +32,9 @@ function createQueue(name, jobOptions, advancedSettings) {
     },
     prefix: PREFIX,
     defaultJobOptions: Object.assign({
-      priority: getPrio('mid'),
       attempts: 2,
-      backoff: 1000//,
-      // removeOnComplete: true
+      backoff: 5000,
+      lifo: true
     }, jobOptions),
     settings: Object.assign({}, advancedSettings)
   });
@@ -111,7 +110,7 @@ module.exports = {
     debug('connect config', config);
     conf = config;
   },
-  queueTask : function(name, params, priority, createIfMissing) {
+  queueTask : function(name, params, priority, createIfMissing, jobOpts) {
     debug('Adding job', name);
     let queue = queues[name];
     if (queue === undefined || queue.add === undefined) {
@@ -122,10 +121,10 @@ module.exports = {
       }
     }
     // queue.getJobCounts().then(debug, debug);
-    return queue.add(params, {
+    return queue.add(params, Object.assign({
       priority: getPrio(priority),
       jobId: new Date().toISOString() + '_' + jobcnt++
-    });
+    }, jobOpts));
   },
   registerTaskProcessor : function(name, taskProcessor, jobOptions) {
     log('Register processor', name);
@@ -156,7 +155,7 @@ module.exports = {
   },
   registerProcess : function(name, pathToProcessor, concurrency) {
     log('Register separate processor with promise', name);
-    let queue = createQueue(name, {}, { stalledInterval: 0 });
+    let queue = createQueue(name, {});
 
     concurrency = concurrency || 1
     queue.process(concurrency, pathToProcessor);
@@ -202,7 +201,7 @@ module.exports = {
 };
 
 function getPrio(value) {
-  if (Number.isSafeInteger(value)) {
+  if (value === undefined || Number.isSafeInteger(value)) {
     return value;
   }
   switch(value) {

@@ -9,14 +9,15 @@ let processors = [
     require('./workers/clear_index'),
     require('./workers/create_image_finger'),
     require('./workers/faces_find'),
-    require('./workers/faces_crop'),
+    //require('./workers/faces_crop'),
     require('./workers/import_meta'),
     require('./workers/resize_image'),
-    require('./workers/retry_unknown'),
-    require('./workers/run_task_in_folder'),
-    require('./workers/update_directory_list'),
+    //require('./workers/retry_unknown'),
+    //require('./workers/run_task_in_folder'),
+    //require('./workers/update_directory_list'),
     require('./workers/update_import_directory'),
     require('./workers/upgrade_check'),
+    require('./workers/worker_log'),
   ];
 
 // Initialize the default redis client
@@ -44,7 +45,8 @@ processors.forEach(function(processor) {
 task_queue.registerProcess('encode_video', __dirname + '/workers/encode_video');
 
 function disconnectCallback(err) {
-  console.log( 'Queue shutdown: ', err||'OK' );
+  console.log( 'Queue shutdown: ', err || 'OK' );
+  clearTimeout(timeOut);
   process.exit(0);
 };
 process.on('uncaughtException', function (err) {
@@ -69,11 +71,15 @@ process.once( 'SIGTERM', function () {
   task_queue.disconnect(2000, disconnectCallback);
 });
 
-// task_queue.queueTask('update_directory_list', {}, 'high');
 task_queue.queueTask('upgrade_check', {}, 'high')
   .then(() => {
     console.log("Running task processor...");
-    // queImport();
+    task_queue.queueTask('worker_log', {}, 'high', false, {
+      repeat: {
+        every: 5 * 60 * 1000
+      }
+    });
+    queImport();
   }, disconnectCallback);
 
 var timeOut = 0;
@@ -93,4 +99,3 @@ var queImport = function() {
     }
   }, 3000);
 };
-queImport();

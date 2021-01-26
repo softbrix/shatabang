@@ -77,7 +77,7 @@ var init = function(config, task_queue) {
 
   var queueWorkers = function(relativeDest, timestamp) {
     task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
-    task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest, id: '' + timestamp });
+    task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest, id: '' + timestamp }, 1);
 
     var directory = relativeDest.split(path.sep)[0];
 
@@ -86,11 +86,11 @@ var init = function(config, task_queue) {
     };
 
     // Thumbnail
-    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 300, height: 200})
+    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 300, height: 200}, 2)
     .then(job => job.finished().then(addToImported, addToImported));
-    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true}, 'low')
+    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true})
     .then(job => job.finished().then(() => {
-      task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest}, 'low');
+      task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest});
     }));
 
     if(fileMatcher.isVideo(relativeDest)) {
@@ -103,13 +103,13 @@ var init = function(config, task_queue) {
       };
       data.width = 1920;
       data.height = 1080;
-      task_queue.queueTask('encode_video', data, 'low');
+      task_queue.queueTask('encode_video', data, 10000);
 
       // Create a shallow copy
       data = Object.assign({}, data);
       data.width = 960;
       data.height = 540;
-      task_queue.queueTask('encode_video', data, 'low');
+      task_queue.queueTask('encode_video', data, 5000);
     }
   };
 };

@@ -11,9 +11,8 @@ var init = function(config, task_queue) {
       // thumbnail dir we lose the file type
       //path.join(cacheDir, "300");
 
-  task_queue.registerTaskProcessor('update_directory_list', function(data, job, done) {
-    directory_list.processSubDirectories(searchDir, cacheDir)
-      .then(function(result) { console.log('update_directory_list result', result); done(); }, done);
+  task_queue.registerTaskProcessor('update_directory_list', function() {
+    return directory_list.processSubDirectories(searchDir, cacheDir);
   });
 };
 

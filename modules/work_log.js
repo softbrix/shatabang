@@ -2,21 +2,16 @@ const ArrayCache = require('idre-array-cache');
 const path = require('path');
 
 let lastTimestamp = Date.now();
-class ImportLog {
+class WorkLog {
     constructor(cacheDir) {
-        var importLogPath = path.join(cacheDir, 'importlog');
+        var importLogPath = path.join(cacheDir, 'workLog');
         this._log = new ArrayCache();
         // The open call is async but this should be fine and the ArrayCache is self healing
         this._log.open(importLogPath); // Delay option is default 200ms
-        this._log.on('change', () => {
-            lastTimestamp = Date.now();
-        });
     }
-    push(id) {
-        if (!Number.isInteger(id)) {
-            throw new Error('Expected {id} to be numeric, was: ' + typeof id + '/' + id);
-        }
-        this._log.push(id);
+    push(logPost) {
+        this._log.push(logPost);
+        lastTimestamp = Date.now();
     }
     async clear() {
         await this._log.clear();
@@ -35,4 +30,4 @@ class ImportLog {
     }
 }
 
-module.exports = ImportLog;
+module.exports = WorkLog;

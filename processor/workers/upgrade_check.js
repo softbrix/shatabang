@@ -205,12 +205,12 @@ async function reecode_videos(infoDirectory, storageDir, cacheDir, task_queue) {
     };
 
     task_queue.queueTask('resize_image', Object.assign({ width: 300, height: 200 }, data));
-    task_queue.queueTask('resize_image', Object.assign({ width: 1920, height: 1080, keepAspec: true }, data));
+    task_queue.queueTask('resize_image', Object.assign({ width: 1920, height: 1080, keepAspec: true }, data), 2000);
 
     if(fileMatcher.isVideo(relativeDest)) {
       // TODO: Encode video in multiple formats and sizes, Search for faces etc.
-      task_queue.queueTask('encode_video', Object.assign({ width: 1920, height: 1080 }, data), 'low');
-      task_queue.queueTask('encode_video', Object.assign({ width: 960, height: 540 }, data), 'low');
+      task_queue.queueTask('encode_video', Object.assign({ width: 1920, height: 1080 }, data), 10000);
+      task_queue.queueTask('encode_video', Object.assign({ width: 960, height: 540 }, data), 5000);
     }
   }
 }
