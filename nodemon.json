@@ -1,5 +1,5 @@
 {
-    "watch": ["server/routes", "server/server.js", "processor/task_processor.js", "processor/workers", "modules"],
+    "watch": ["server/routes", "server/server.js", "processor/main.js", "processor/task_processor.js", "processor/modules", "processor/workers", "modules"],
     "ext": "js",
     "ignore": ["*test.js"],
     "delay": "3"

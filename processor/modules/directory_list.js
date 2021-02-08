@@ -42,6 +42,11 @@ var findMediaFiles = function(directory, sourceDir) {
   });
 };
 
+const clearMediaListFiles = function(cacheDir) {
+  const infoDirectory = path.join(cacheDir, 'info');
+  shFiles.rmDirSync(infoDirectory, { recursive: true });
+}
+
 var writeMediaListFile = function(directory, cachedDir, relativeFilesList) {
   return new Promise(function(resolve, reject) {
     var mediaListFile = path.join(cachedDir, 'info', directory, 'media.lst');
@@ -104,6 +109,7 @@ var processSubDirectories = function(directory, cachedDir) {
 }
 
 module.exports = {
+  clearMediaListFiles : clearMediaListFiles,
   findMediaFiles : findMediaFiles,
   processSubDirectories : processSubDirectories,
   processDirectory : processDirectory,

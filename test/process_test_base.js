@@ -18,8 +18,14 @@ module.exports.initProcess = function(taskProcess, opt) {
       assert.ok(name);
       opt.registeredFunctionCallback(func);
     },
+    getJobCounts : opt.getJobCounts || function(name) {
+      return 0;
+    },
+    names : opt.names || function() {
+      return [];
+    },
     queueTask : opt.queueTask || function(name, data) {
-      console.log('Queue task', name, data);
+      // console.log('Queue task', name, data);
     }
   };
 

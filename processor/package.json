@@ -32,7 +32,7 @@
     "node"
   ],
   "dependencies": {
-    "bull": "3.10.0",
+    "bull": "3.20.1",
     "fluent-ffmpeg": "2.1.2",
     "fs-extra": "8.1.0",
     "idre-array-cache": "0.3.1",

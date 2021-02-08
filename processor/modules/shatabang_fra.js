@@ -50,13 +50,16 @@ module.exports = {
   cropFace: function(sourceFileName, face) {
     // Expand the face area
     // TODO: Explore the optimal way for eigenfaces or other tool
-    var dw = face.w/10, // This could be a value between 0 and 1
-        dh = face.h/10;
+    const width = face.w || face.width;
+    const height = face.h || face.height;
+
+    var dw = width/10, // This could be a value between 0 and 1
+        dh = height/10;
     var ext = {
         left: face.x - dw,
         top: face.y - dh,
-        width: face.w + 2 * dw,
-        height: face.h + 2 * dh
+        width: width + 2 * dw,
+        height: height + 2 * dh
       };
 
     ext.left = ext.left > 0 ? ext.left : 0;

@@ -3,6 +3,7 @@ const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
 const fs = require('fs-extra');
 const os = require('os');
+const shFiles = require('../common/shatabang_files');
 
 // Old video formats needs to be reencoded to be supported by the browsers
 // So we do this for all the videos
@@ -25,6 +26,11 @@ module.exports = function(job, done) {
 
   job.log('Source: '+ sourceFileName);
   job.log('Dest: ' + outputFileName);
+
+  if (!data.forceUpdate && shFiles.exists(outputFileName)) {
+    _job.log('Already exists: ' + outputFileName)
+    return done();
+  }
 
   ffmpeg(sourceFileName, { logger: console })
     .videoCodec('libx264')

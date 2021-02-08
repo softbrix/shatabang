@@ -82,9 +82,9 @@ function createQueue(name, jobOptions, advancedSettings) {
     debug('QUEUE paused', name);
   })
   
-  queue.on('resumed', function(job){
+  queue.on('resumed', function(){
     // The queue has been resumed.
-    debug('QUEUE resumed', name, job.id);
+    debug('QUEUE resumed', name);
   })
   
   queue.on('cleaned', function(jobs, type) {
@@ -102,6 +102,7 @@ function createQueue(name, jobOptions, advancedSettings) {
     // A job successfully removed.
     debug('QUEUE removed', name, job.id);
   });
+
   return queue;
 }
 
@@ -110,28 +111,66 @@ module.exports = {
     debug('connect config', config);
     conf = config;
   },
-  queueTask : function(name, params, priority, createIfMissing, jobOpts) {
+  clearQueue: function(queueName, status) {
+    let queue = queues[queueName];
+    if (queue === undefined || queue.clean === undefined) {
+        return Promise.reject('Missing queue with name: ' + queueName);
+    }
+    var clean = queue.clean.bind(queue, 0);
+
+    if (status !== undefined) {
+      return queue.pause()
+          .then(clean(status))
+          .then(() => {
+            queue.resume()
+          })
+    }
+
+    return queue.pause()
+     .then(clean('completed'))
+     .then(clean('active'))
+     .then(clean('delayed'))
+     .then(clean('failed'))
+     .then(() => {
+        return queue.empty();
+     })
+     .then(() => {
+       return queue.getRepeatableJobs()
+     })
+     .then((repeatJobs) => {
+       repeatJobs.forEach((job) => {
+         queue.removeRepeatableByKey(job.key);
+       })
+     })
+     .then(() => {
+       queue.resume()
+     });
+  },
+  queueTask : function(name, params, priority, jobOpts) {
     debug('Adding job', name);
     let queue = queues[name];
     if (queue === undefined || queue.add === undefined) {
-      if (createIfMissing) {
+      if (conf.createIfMissing) {
         queue = createQueue(name);
       } else {
         return Promise.reject('Missing queue with name: ' + name);
       }
     }
-    // queue.getJobCounts().then(debug, debug);
-    return queue.add(params, Object.assign({
+
+    let jobid = (params || {}).file ? params.file + (params.width || '') : new Date().toISOString() + '_' + jobcnt++;
+    params = params || {};
+    let options = Object.assign({
       priority: getPrio(priority),
-      jobId: new Date().toISOString() + '_' + jobcnt++
-    }, jobOpts));
+      jobId:  jobid
+    }, jobOpts);
+    return queue.add(params, options);
   },
   registerTaskProcessor : function(name, taskProcessor, jobOptions) {
     log('Register processor', name);
     let queue = createQueue(name, jobOptions);
     queue.process(async (job, done) => {
       if ((jobOptions || {}).removeOnComplete !== true) {
-        log('Running job: ', name, job.data.title);
+        log('Running job: ', name, job.data.title || job.data.file);
       }
       try {
         await taskProcessor(job.data, job, done);

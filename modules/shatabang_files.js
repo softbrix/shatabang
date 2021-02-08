@@ -111,6 +111,7 @@ module.exports = {
     });
   },
   readFile : fs.readFile,
+  rmDirSync: fs.rmdirSync,
   mkdirsSync : function(dirPath) {
     return fs.mkdirsSync(dirPath);
   },
@@ -138,13 +139,13 @@ module.exports = {
     });
   },
   deleteFile : function(source) {
-  return new Promise(function(resolve, reject) {
-    fs.unlink(source, function(err) {
-      if(err) {
-        reject(err);
-      }
-      resolve();
+    return new Promise(function(resolve, reject) {
+      fs.unlink(source, function(err) {
+        if(err) {
+          reject(err);
+        }
+        resolve();
+      });
     });
-  });
   }
 };

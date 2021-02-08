@@ -137,7 +137,7 @@ module.exports = {
         .then(function(newSource) {
           return generateFinger(newSource).then(function(b85) {
             // Cleanup before callback
-            fs.unlink(tmpOutputImage, console.log);
+            fs.unlink(tmpOutputImage);
             return b85;
           });
       });

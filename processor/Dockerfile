@@ -13,7 +13,7 @@ COPY processor/workers ./workers
 RUN npm install --only=production 
 
 # Create empty config
-RUN echo '{}' > config_server.json 
+RUN echo '{"mongoHost":"mongo"}' > config_server.json 
 
 # USER node
 

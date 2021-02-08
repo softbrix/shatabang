@@ -4,7 +4,7 @@ var assert = require('assert');
 var fs = require('fs');
 var shFra = require('../processor/modules/shatabang_fra');
 
-var relativeTestFile = "./test/test_data/1920/faces.jpg";
+var relativeTestFile = "./test/test_data/faces.jpg";
 var noFaceFile = "./test/test_data/1920/no_face.jpg";
 var expectedFileInfo = "./test/test_data/face_out.png.bs64";
 
@@ -46,7 +46,7 @@ describe('Shatabang Face recognition algorithm', function() {
 
   // This can be used as a debug example to extract the faces in an image
 
-  var relativeCropFile = "./test/test_data/1920/faces.jpg";
+  var relativeCropFile = "./test/test_data/faces.jpg";
   it('crop found faces', function() {
     this.timeout(60000);
     return shFra.findFaces(relativeCropFile).then(function(data) {

@@ -49,7 +49,7 @@ config.redisClient = redis.createClient({
   host: config.redisHost,
   port: config.redisPort
 });
-task_queue.connect(config);
+task_queue.connect(Object.assign(config, { createIfMissing: true }));
 
 // Check that directories exists
 [ 

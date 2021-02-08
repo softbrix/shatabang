@@ -15,7 +15,7 @@ var init = function(config, task_queue) {
     if(shFiles.exists(sourceFile)) {
       Promise.all([sha1File(sourceFile), thumbnailer.create_image_finger(sourceFile)])
       .then(([fileSha1, imgB85]) => {
-        console.log('Adding: ', data.file, fileSha1, imgB85);
+        job.log('Adding: ', data.file, fileSha1, imgB85);
         fileShaIndex.put(fileSha1, data.file);
         imgFingerIndex.put(imgB85, data.file);
       })

@@ -3,15 +3,15 @@
 /*jslint node: true, nomen: true*/
 var WorkLog = require('../common/work_log');
 
-/** Part one of detecting faces in images **/
+/** worker_log task stores the current status of the worker queues to a log, used to  **/
 var init = function(config, task_queue) {
   var workLog = new WorkLog(config.cacheDir);
 
-  task_queue.registerTaskProcessor('worker_log', function() {
+  task_queue.registerTaskProcessor('worker_log', async function(data, job, done) {
     let queueNames = task_queue.names();
     let now = Date.now();
 
-    return Promise.all(queueNames.map(qName => task_queue.getJobCounts(qName)))
+    await Promise.all(queueNames.map(qName => task_queue.getJobCounts(qName)))
       .then(stats => {
         let mappedStatus = queueNames.reduce(function(result, field, index) {
           let stat = stats[index];
@@ -19,7 +19,8 @@ var init = function(config, task_queue) {
           return result;
         }, []);
         workLog.push(JSON.stringify({t:now,s:mappedStatus}));
-      });
+      })
+      done();
   });
 };
 

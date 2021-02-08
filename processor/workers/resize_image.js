@@ -1,17 +1,25 @@
 "use strict"
-var thumbnailer = require('../modules/thumbnailer');
-var path = require('path');
+const thumbnailer = require('../modules/thumbnailer');
+const shFiles = require('../common/shatabang_files');
+const path = require('path');
 
 var init = function(config, task_queue) {
   var storageDir = config.storageDir, cacheDir = config.cacheDir;
 
-  task_queue.registerTaskProcessor('resize_image', function(data) {
+  task_queue.registerTaskProcessor('resize_image', async function(data, _job, done) {
     var width = data.width, relativeFilePath = data.file;
     var outputFileName = path.join(cacheDir, '' + width, relativeFilePath),
         sourceFileName = path.join(storageDir, relativeFilePath);
 
-    return thumbnailer
-      .generateThumbnail(sourceFileName, outputFileName, width, data.height, data.keepAspec);
+    if (!data.forceUpdate && shFiles.exists(outputFileName)) {
+      console.log('Already exists: ' + outputFileName);
+      _job.log('Already exists: ' + outputFileName);
+      return done();
+    }
+
+    thumbnailer
+      .generateThumbnail(sourceFileName, outputFileName, width, data.height, data.keepAspec)
+      .then(() => { done() }, done);
   });
 };
 

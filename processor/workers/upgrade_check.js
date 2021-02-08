@@ -19,7 +19,7 @@ var init = function(config, task_queue) {
   var infoDirectory = path.join(config.cacheDir, 'info');
   var storageDir = config.storageDir;
   var versionKey = 'shatabangVersion';
-  var latestVersion = '202013';
+  var latestVersion = '202101';
 
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
     function logger () {
@@ -44,7 +44,7 @@ var init = function(config, task_queue) {
           }
         });
       }
-      if(version < latestVersion) {
+      if(version < '202013') {
         await updateMediaLists(storageDir, config.cacheDir);
         logger('Updated media lists');
         await add_import_cache(infoDirectory, storageDir, config.cacheDir);
@@ -53,13 +53,24 @@ var init = function(config, task_queue) {
         logger('Cleared Vemdalen indexes');
         await clearSturebyIndexes(config.cacheDir);
         logger('Cleared stureby indexes');
-        await import_meta_to_index(infoDirectory, config.storageDir, task_queue);
+        await import_meta_to_index(infoDirectory, storageDir, task_queue);
         logger('Queued import meta to index tasks');
-        await upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
-        logger('Queued upgraded faces index tasks');
         await reecode_videos(infoDirectory, storageDir, config.cacheDir, task_queue);
         logger('Queued reencode videos tasks');
       }
+
+      if(version <= latestVersion) {
+        let job = await task_queue.queueTask('update_directory_list');
+        await job.finished();
+        logger('Updated directory list');
+        // await addImageSize(infoDirectory, task_queue, { width: 960, height: 540, keepAspec: true });
+        // logger('Queued new image size');
+        await upgrade_faces_index(infoDirectory, storageDir, config.cacheDir, task_queue);
+        logger('Queued upgraded faces index tasks');
+      }
+
+      // Clean memory
+      timestamps = {};
 
       if (version !== latestVersion) {
         task_queue.queueTask('retry_unknown', {}, 'low');
@@ -116,14 +127,24 @@ var upgrade_v1 = function(infoDirectory, storageDir, cb) {
 };
 
 /** Re run all face recognitions so we add the cropped information to the index **/
-async function upgrade_faces_index(infoDirectory, cacheDir, task_queue) {
+async function upgrade_faces_index(infoDirectory, storageDir, cacheDir, task_queue) {
   indexes.facesIndex(cacheDir).clear();
   indexes.facesCropIndex(cacheDir).clear();
 
-  const items = await allMedia(infoDirectory);
-  items.filter(FileType.isImage).forEach((relativeDest) => {
-    task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest}, 'low');
-  });
+  await task_queue.clearQueue('faces_find');
+  await task_queue.clearQueue('faces_crop');
+  await task_queue.clearQueue('resize_image', 'failed');
+
+  const items = (await allMedia(infoDirectory)).filter(FileType.isImage);
+  for (var i in items) {
+    var relativeDest = items[i];
+    const data = { title: relativeDest, file: relativeDest};
+    const job = await task_queue.queueTask('resize_image', Object.assign(data, { width: 960, height: 540, keepAspec: true }));
+    const timestampPromise = getTimestamp(relativeDest, storageDir);
+    Promise.all([timestampPromise, job.finished()]).then((timestamp) => {
+      task_queue.queueTask('faces_find', Object.assign(data, { id: timestamp }), 20000);
+    })
+  }
 }
 
 /** Clear all indexes stored in redis **/
@@ -151,11 +172,9 @@ async function import_meta_to_index(infoDirectory, storageDir, task_queue) {
   const items = await allMedia(infoDirectory);
   for (var i in items) {
     var relativeDest = items[i];
-    var filePath = path.join(storageDir, relativeDest);
-    const exifData = await mediaInfo.readMediaInfo(filePath, true);
-    const timestamp = new Date(exifData.CreateDate || exifData.ModifyDate).getTime();
-    task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest, id: '' + timestamp }, 'low');
-    task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
+    const timestamp = getTimestamp(relativeDest, storageDir);
+    task_queue.queueTask('import_meta', { file: relativeDest, id: '' + timestamp }, 'low', );
+    task_queue.queueTask('create_image_finger', { file: relativeDest}, 50);
   }
 }
 
@@ -193,6 +212,18 @@ async function add_import_cache(infoDirectory, storageDir, cacheDir) {
   importLog.close();
 }
 
+async function addImageSize(infoDirectory, task_queue, size) {
+  const items = await allMedia(infoDirectory);
+  for (var i in items) {
+    var relativeDest = items[i];
+    var data = { 
+      title: relativeDest, 
+      file: relativeDest,
+    };
+    task_queue.queueTask('resize_image', Object.assign(size, data), 100);
+  }
+}
+
 async function reecode_videos(infoDirectory, storageDir, cacheDir, task_queue) {
   const items = await allMedia(infoDirectory);
   for (var i in items) {
@@ -205,6 +236,7 @@ async function reecode_videos(infoDirectory, storageDir, cacheDir, task_queue) {
     };
 
     task_queue.queueTask('resize_image', Object.assign({ width: 300, height: 200 }, data));
+    task_queue.queueTask('resize_image', Object.assign({ width: 960, height: 540, keepAspec: true }, data), 1000);
     task_queue.queueTask('resize_image', Object.assign({ width: 1920, height: 1080, keepAspec: true }, data), 2000);
 
     if(fileMatcher.isVideo(relativeDest)) {
@@ -244,6 +276,21 @@ async function allMedia(infoDirectory) {
     });
   });
   return result;
+}
+
+let timestamps = {};
+
+async function getTimestamp(relativeDest, storageDir) {
+  if (!timestamps[relativeDest]) {
+    const filePath = path.join(storageDir, relativeDest);
+    const exifData = await mediaInfo.readMediaInfo(filePath, true);
+    if (exifData === undefined || (exifData.CreateDate || exifData.ModifyDate) === undefined) {
+      console.log("Failed to read exif data from " + filePath);
+      return;
+    }
+    timestamps[relativeDest] = new Date(exifData.CreateDate || exifData.ModifyDate).getTime();
+  }
+  return timestamps[relativeDest];
 }
 
 module.exports = {

@@ -15,6 +15,7 @@ web:
     - './data/sorted/:/mnt/sorted'
   links:
     - "redis:redis"
+    - "mongo:mongo"
 processor:
   image: 'softbrix/shatabang-processor'
   restart: unless-stopped
@@ -23,10 +24,15 @@ processor:
     - './data/sorted/:/mnt/sorted'
   links:
     - "redis:redis"
+    - "mongo:mongo"
 redis:
   image: redis
 #  volumes:
 #    - './data/redis:/data'
+mongo:
+  image: mongo
+  volumes:
+    - ./data/mongodb:/data/db
 webdav:
   image: softbrix/webdav
   ports:
