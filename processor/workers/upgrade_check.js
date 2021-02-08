@@ -59,7 +59,7 @@ var init = function(config, task_queue) {
         logger('Queued reencode videos tasks');
       }
 
-      if(version <= latestVersion) {
+      if(version < latestVersion) {
         let job = await task_queue.queueTask('update_directory_list');
         await job.finished();
         logger('Updated directory list');

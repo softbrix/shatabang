@@ -29,10 +29,6 @@ redis:
   image: redis
 #  volumes:
 #    - './data/redis:/data'
-mongo:
-  image: mongo
-  volumes:
-    - ./data/mongodb:/data/db
 webdav:
   image: softbrix/webdav
   ports:
