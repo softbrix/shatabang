@@ -193,17 +193,21 @@ async function add_import_cache(infoDirectory, storageDir, cacheDir) {
     var relativeDest = items[i];
     var filePath = path.join(storageDir, relativeDest);
     console.log(i, relativeDest);
-    var exifData = await mediaInfo.readMediaInfo(filePath, process.env.EXIF_TOOL || true);
-    var dateStr = exifData.CreateDate || exifData.ModifyDate;
-    var d = new Date(dateStr).getTime();
-    if (!Number.isInteger(d)) {
-      console.log('Import log, date is not a number, failed to add', filePath, dateStr)
-      continue;
-    }
-    datesTimes.add(d);
-    idxImported.put(d, relativeDest);
-    if (i % 500 == 0) {
-      console.log('Import log: ', Math.round(10000 * (datesTimes.size / items.length))/100, '%');
+    try {
+      var exifData = await mediaInfo.readMediaInfo(filePath, process.env.EXIF_TOOL || true);
+      var dateStr = exifData.CreateDate || exifData.ModifyDate;
+      var d = new Date(dateStr).getTime();
+      if (!Number.isInteger(d)) {
+        console.log('Import log, date is not a number, failed to add', filePath, dateStr)
+        continue;
+      }
+      datesTimes.add(d);
+      idxImported.put(d, relativeDest);
+      if (i % 500 == 0) {
+        console.log('Import log: ', Math.round(10000 * (datesTimes.size / items.length))/100, '%');
+      }
+    } catch(e) {
+      console.error('Failed to import: ', filePath, i);
     }
   }
   console.log('Import log: 100%');
