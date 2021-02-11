@@ -28,7 +28,7 @@ module.exports = function(job, done) {
   job.log('Dest: ' + outputFileName);
 
   if (!data.forceUpdate && shFiles.exists(outputFileName)) {
-    _job.log('Already exists: ' + outputFileName)
+    job.log('Video already exists: ' + outputFileName)
     return done();
   }
 

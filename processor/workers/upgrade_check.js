@@ -44,19 +44,35 @@ var init = function(config, task_queue) {
           }
         });
       }
-      if(version < '202013') {
+      if(version < latestVersion) {
         await updateMediaLists(storageDir, config.cacheDir);
         logger('Updated media lists');
+        redis.set(versionKey, '202013');
+      }
+      if(version < '202014') {
         await add_import_cache(infoDirectory, storageDir, config.cacheDir);
         logger('Added import cache');
+        redis.set(versionKey, '202014');
+      }
+      if(version < '202015') {
         await clearVemdalenIndexes(redis);
         logger('Cleared Vemdalen indexes');
+        redis.set(versionKey, '202015');
+      }
+      if(version < '202016') {
         await clearSturebyIndexes(config.cacheDir);
         logger('Cleared stureby indexes');
+        redis.set(versionKey, '202016');
+      }
+      if(version < '202017') {
         await import_meta_to_index(infoDirectory, storageDir, task_queue);
         logger('Queued import meta to index tasks');
+        redis.set(versionKey, '202017');
+      }
+      if(version < '202018') {
         await reecode_videos(infoDirectory, storageDir, config.cacheDir, task_queue);
         logger('Queued reencode videos tasks');
+        redis.set(versionKey, '202018');
       }
 
       if(version < latestVersion) {
@@ -229,6 +245,8 @@ async function addImageSize(infoDirectory, task_queue, size) {
 }
 
 async function reecode_videos(infoDirectory, storageDir, cacheDir, task_queue) {
+  await task_queue.clearQueue('encode_video');
+  await task_queue.clearQueue('resize_image');
   const items = await allMedia(infoDirectory);
   for (var i in items) {
     var relativeDest = items[i];

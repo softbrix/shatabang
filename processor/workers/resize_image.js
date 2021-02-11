@@ -6,14 +6,14 @@ const path = require('path');
 var init = function(config, task_queue) {
   var storageDir = config.storageDir, cacheDir = config.cacheDir;
 
-  task_queue.registerTaskProcessor('resize_image', async function(data, _job, done) {
+  task_queue.registerTaskProcessor('resize_image', async function(data, job, done) {
     var width = data.width, relativeFilePath = data.file;
     var outputFileName = path.join(cacheDir, '' + width, relativeFilePath),
         sourceFileName = path.join(storageDir, relativeFilePath);
 
     if (!data.forceUpdate && shFiles.exists(outputFileName)) {
       console.log('Already exists: ' + outputFileName);
-      _job.log('Already exists: ' + outputFileName);
+      job.log('Already exists: ' + outputFileName);
       return done();
     }
 
