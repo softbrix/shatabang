@@ -32,7 +32,7 @@ describe('Worker log process', function() {
         },
         registeredFunctionCallback: function(func) {
           // 1
-          func({}, processTester.job).then(async () => {
+          func({}, processTester.job, processTester.doneOk).then(async () => {
             // 5
             await new Promise((resolve) => setTimeout(resolve, 300));
             assert.ok(statSync(worklogFilePath));

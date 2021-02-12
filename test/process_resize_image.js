@@ -20,8 +20,8 @@ describe('Import meta process', function() {
             keepAspec: true,
             file: relativeTestFile
           };
-          func(data, processTester.job).then(resolve, reject);
-          func(Object.assign(data, { width: 1920, height: 1080 }), processTester.job);
+          func(data, processTester.job, processTester.doneOk).then(resolve, reject);
+          func(Object.assign(data, { width: 1920, height: 1080 }), processTester.job, processTester.doneOk);
         }
       });
     });

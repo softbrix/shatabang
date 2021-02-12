@@ -157,7 +157,7 @@ async function upgrade_faces_index(infoDirectory, storageDir, cacheDir, task_que
     const data = { title: relativeDest, file: relativeDest};
     const job = await task_queue.queueTask('resize_image', Object.assign(data, { width: 960, height: 540, keepAspec: true }));
     const timestampPromise = getTimestamp(relativeDest, storageDir);
-    Promise.all([timestampPromise, job.finished()]).then((timestamp) => {
+    Promise.all([timestampPromise, job.finished()]).then(([timestamp, _ignore]) => {
       task_queue.queueTask('faces_find', Object.assign(data, { id: timestamp }), 20000);
     })
   }
