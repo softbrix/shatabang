@@ -34,7 +34,9 @@ var init = function(config, task_queue) {
     .then(shFra.imageBlurValue)
     .then(function(sharpness) {
       return Face.findByIdAndUpdate(face.id, { "sharpness": sharpness });
-    }).then(done, done);
+    })
+    .then((arg) => { job.log(arg); done() })
+    .catch((arg) => { job.log(arg); done(arg) });
   });
 };
 

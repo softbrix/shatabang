@@ -19,7 +19,8 @@ var init = function(config, task_queue) {
         fileShaIndex.put(fileSha1, data.file);
         imgFingerIndex.put(imgB85, data.file);
       })
-      .then(done, done);
+      .then((arg) => { job.log(arg); done() })
+      .catch((arg) => { job.log(arg); done(arg) });
     } else {
       done('File not found: ' + sourceFile);
     }

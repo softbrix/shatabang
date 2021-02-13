@@ -48,8 +48,10 @@ var init = function(config, task_queue) {
         });
       });
 
-      return Promise.all(promises).then(() => {});
-    }).then(done, done);
+      return Promise.all(promises);
+    })
+    .then((arg) => { job.log(arg); done() })
+    .catch((arg) => { job.log(arg); done(arg) });
   });
 };
 
