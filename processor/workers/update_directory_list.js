@@ -8,9 +8,13 @@ var init = function(config, task_queue) {
       // having a thumbnail
       searchDir = config.storageDir;
 
-  task_queue.registerTaskProcessor('update_directory_list', async function(_data, _job, done) {
-    directory_list.clearMediaListFiles(cacheDir);
-    await directory_list.processSubDirectories(searchDir, cacheDir);
+  task_queue.registerTaskProcessor('update_directory_list', async function(data, _job, done) {
+    if (data.dir) {
+      await directory_list.processDirectory(data.dir, searchDir, cacheDir);
+    } else {
+      directory_list.clearMediaListFiles(cacheDir);
+      await directory_list.processSubDirectories(searchDir, cacheDir);
+    }
     done();
   });
 };

@@ -36,6 +36,7 @@ config.redisClient = redis.createClient({
   port: config.redisPort,
   retry_strategy: function(options) {
     if (options.attempt > 50) {
+      console.error("Retry task processor redis connection failed");
       return undefined; // End reconnecting with built in error
     }
     if (options.error && options.error.code === "ECONNREFUSED") {
@@ -43,7 +44,7 @@ config.redisClient = redis.createClient({
       console.error("The redis server refused the connection");
     }
     // reconnect after
-    return Math.min(options.attempt, 10) * 1000;
+    return Math.min(options.attempt*4, 100) * 100;
   },
 });
 task_queue.connect(config);
@@ -85,7 +86,6 @@ process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
   console.dir('Stack: ', reason.stack);
 });
-
 
 task_queue.queueTask('upgrade_check', {}, 'high')
   .then(async () => {

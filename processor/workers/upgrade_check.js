@@ -19,7 +19,7 @@ var init = function(config, task_queue) {
   var infoDirectory = path.join(config.cacheDir, 'info');
   var storageDir = config.storageDir;
   var versionKey = 'shatabangVersion';
-  var latestVersion = '202101';
+  var latestVersion = '202102';
 
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
     function logger () {
@@ -45,10 +45,11 @@ var init = function(config, task_queue) {
         });
       }
       if(version < latestVersion) {
-        await updateMediaLists(storageDir, config.cacheDir);
-        logger('Updated media lists');
-        redis.set(versionKey, '202013');
+        let job = await task_queue.queueTask('update_directory_list');
+        await job.finished();
+        logger('Updated directory list');
       }
+
       if(version < '202014') {
         await add_import_cache(infoDirectory, storageDir, config.cacheDir);
         logger('Added import cache');
@@ -74,15 +75,19 @@ var init = function(config, task_queue) {
         logger('Queued reencode videos tasks');
         redis.set(versionKey, '202018');
       }
-
-      if(version < latestVersion) {
+      if(version < '202101') {
+        await upgrade_faces_index(infoDirectory, storageDir, config.cacheDir, task_queue);
+        logger('Queued upgraded faces index tasks');
+        redis.set(versionKey, '202101');
+      }
+      if(version < '202102') {
+        task_queue.clearQueue('upgrade_check');
+        await move_v_tmp_files_to_cache(infoDirectory, storageDir, config.cacheDir);
+        logger('Moved video cache files');
         let job = await task_queue.queueTask('update_directory_list');
         await job.finished();
         logger('Updated directory list');
-        // await addImageSize(infoDirectory, task_queue, { width: 960, height: 540, keepAspec: true });
-        // logger('Queued new image size');
-        await upgrade_faces_index(infoDirectory, storageDir, config.cacheDir, task_queue);
-        logger('Queued upgraded faces index tasks');
+        redis.set(versionKey, '202102');
       }
 
       // Clean memory
@@ -102,6 +107,9 @@ var init = function(config, task_queue) {
         return;
       }
     });
+  }, {
+    removeOnComplete: 1, 
+    removeOnFail: 1
   });
 };
 
@@ -192,6 +200,27 @@ async function import_meta_to_index(infoDirectory, storageDir, task_queue) {
     task_queue.queueTask('import_meta', { file: relativeDest, id: '' + timestamp }, 'low', );
     task_queue.queueTask('create_image_finger', { file: relativeDest}, 50);
   }
+}
+
+/* Move vhhmmss.jpg to cache so we dont clutter the sorted folder with generated files */
+async function move_v_tmp_files_to_cache(infoDirectory, storageDir, cacheDir) {
+  const items = await allMedia(infoDirectory);
+  let cnt = 0;
+  for (var i in items) {
+    var relativeDest = items[i];
+    let fileName = shFiles.basename(relativeDest);
+    if (fileName.startsWith('v')) {
+      try {
+        const from = path.join(storageDir, relativeDest),
+        to = path.join(cacheDir, '1920', relativeDest);
+        await shFiles.moveFile(from, to);
+        ++cnt;
+      } catch(e) {
+        console.log('Failed to move', relativeDest, e);
+      }
+    }
+  }
+  console.log('Moved', cnt, 'files');
 }
 
 // Clear import cache and add all imported media

@@ -16,7 +16,7 @@ const PREFIX = 'shTasks';
 const queues = {};
 var conf;
 var jobcnt = 0;
-const DEBUG = false;
+const DEBUG = true;
 
 var debug = () => {}
 if (DEBUG) {
@@ -157,7 +157,7 @@ module.exports = {
       }
     }
 
-    let jobid = (params || {}).file ? params.file + (params.width || '') : new Date().toISOString() + '_' + jobcnt++;
+    let jobid = ((params || {}).file ? params.file + (params.width || '') : new Date().toISOString()) + '_' + jobcnt++;
     params = params || {};
     let options = Object.assign({
       priority: getPrio(priority),
@@ -169,7 +169,7 @@ module.exports = {
     log('Register processor', name);
     let queue = createQueue(name, jobOptions);
     queue.process(async (job, done) => {
-      if ((jobOptions || {}).removeOnComplete !== true) {
+      if (name !== 'update_import_directory') {
         log('Running job: ', name, job.data.title || job.data.file);
       }
       try {
@@ -234,7 +234,7 @@ module.exports = {
     'update_directory_list',
     'upgrade_check',
 // Keep the update import loop on the side
-//    'update_import_directory'
+    'update_import_directory'
   ],
   prefix: PREFIX
 };

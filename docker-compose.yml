@@ -20,6 +20,9 @@ web:
 processor:
   image: 'softbrix/shatabang-processor'
   restart: unless-stopped
+  environment: 
+    - _SHARP_FAIL_ON_ERROR=true
+    - _IGNORE_DUPLICATES=false
   volumes:
     - './data/cache:/mnt/cache'
     - './data/sorted/:/mnt/sorted'

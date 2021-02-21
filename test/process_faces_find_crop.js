@@ -38,7 +38,7 @@ describe('Find faces process', function() {
           assert.fail('Didnt expect another task to be queued: ' + name);
         },
         registeredFunctionCallback: function(func) {
-          func(faceData, processTester.job).then(resolve, reject);
+          func(faceData, processTester.job, processTester.doneOk).then(resolve, reject);
         }
       });
     });

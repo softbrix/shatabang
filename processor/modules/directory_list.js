@@ -103,7 +103,7 @@ var processSubDirectories = function(directory, cachedDir) {
       let qs = dirs.map(dir => {
         return processDirectory(dir, directory, cachedDir);
       });
-      Promise.resolve(qs).then(resolve, reject);
+      Promise.all(qs).then(resolve, reject);
     })
   });
 }

@@ -253,20 +253,24 @@ const arenaConfig = Arena({
   queues: queueNames.map(name => Object.assign({}, queConf, {name: name})),
 },
 {
-  basePath: '/arena',
+  basePath: '/',
   disableListen: true // Let express handle the listening.
 });
 const arena = express.Router();
-arena.use((req, res, next) => { req.url = `/arena${req.url}`; next(); });
 arena.use(arenaConfig);
-app.use('/arena', arena);
+app.use('/arena', (req, res, next) => { 
+  if (baseUrlPath != '/' ) {
+    req.url = baseUrlPath + `/arena${req.url}`; 
+  }
+  console.log('get arena', req.url);
+  next(); 
+}, arena);
 
 // Bull-board route
 setQueues(queueNames.map(name => new BullAdapter(new Bull(name, { redis: arenaRedisConf, prefix: task_queue.prefix }))));
 app.use('/admin/queuestat', (req, res, next) => {
   if (baseUrlPath != '/' ) {
     req.proxyUrl = baseUrlPath + '/admin/queuestat';
-    console.log(req.proxyUrl);
   }
   next();
 }, bullBoardRouter);

@@ -28,6 +28,7 @@ var init = function(config, task_queue) {
 
   task_queue.registerTaskProcessor('update_import_directory', async (data, job, done) => {
     let mediaFiles = await shFiles.listMediaFiles(importDir);
+    job.log = console.log;
     
     return syncLoop(mediaFiles, async (filePath, i) => {
       job.log("Processing", i, filePath);
@@ -44,8 +45,9 @@ var init = function(config, task_queue) {
         var date = new Date(exifData.CreateDate || exifData.ModifyDate);
         var items = idxImported.get(date.getTime());
         // This needs to run synchronolusly. Add to cache after each update.
-        if(items.length > 0) {
-          var newDest = await sort_file(filePath, duplicatesDir, exifData)
+        if(!process.env.IGNORE_DUPLICATES && items.length > 0) {
+          var newDest = await sort_file(filePath, duplicatesDir, exifData);
+          console.log('Duplicate', filePath, newDest);
           job.log("Exists in image date cache", newDest);
         } else {
           var newDest = await sort_file(filePath, storageDir, exifData);
@@ -73,10 +75,9 @@ var init = function(config, task_queue) {
       }
       done();
     }, done);
-  }, {removeOnComplete: true});
+  }, {removeOnComplete: 1,removeOnFail: 5});
 
   var queueWorkers = function(relativeDest, timestamp) {
-    task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
     task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest, id: '' + timestamp }, 1);
 
     var directory = relativeDest.split(path.sep)[0];
@@ -92,7 +93,11 @@ var init = function(config, task_queue) {
     .then(job => job.finished().then(() => {
       task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest, id: timestamp }, 2000);
     }));
-    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true});
+    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true})
+    .then(job => job.finished().then(() => {
+      task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
+    }));
+
 
     if(fileMatcher.isVideo(relativeDest)) {
       // TODO: Encode video in multiple formats and sizes, Search for faces etc.
@@ -124,7 +129,10 @@ function syncLoop(list, method) {
     var next = function() {
       //console.log('nextloop', i);
       if(i < list.length) {
-        method(list[i], i).then(next, next);
+        method(list[i], i).then(next, (e) => {
+          console.error(e);
+          next();
+        });
       } else {
         resolve(i);
       }
