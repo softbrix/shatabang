@@ -10,6 +10,7 @@ var fileEditFallback = function(fileHandlingMethod, source, newDestination, reso
 
   return function(error) {
     if (error) {
+      // Cross device move
       if (error.code === 'EXDEV') {
         exec(command, function(error/*, stdout, stderr*/) {
           if (error) {
@@ -126,6 +127,7 @@ module.exports = {
     }
   },
   rename: fs.rename,
+  move: fs.move,
   moveFile : function(source, destination) {
     return new Promise(function(resolve, reject) {
       findAvaliableFileName(destination).then(function(newDestination) {
