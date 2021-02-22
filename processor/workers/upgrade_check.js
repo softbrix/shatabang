@@ -213,7 +213,8 @@ async function move_v_tmp_files_to_cache(infoDirectory, storageDir, cacheDir) {
       try {
         const from = path.join(storageDir, relativeDest),
         to = path.join(cacheDir, '1920', relativeDest);
-        await shFiles.moveFile(from, to);
+        await shFiles.mkdirs(path.dirname(to));
+        await shFiles.rename(from, to);
         ++cnt;
       } catch(e) {
         console.log('Failed to move', relativeDest, e);

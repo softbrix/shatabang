@@ -18,6 +18,7 @@ var init = function(config, task_queue) {
     var sourceFileName = path.resolve(path.join(cacheDir, "960", relativeFilePath));
 
     if(!shFiles.exists(sourceFileName)) {
+      job.log('Missing file:' + sourceFileName)
       return done('Missing file:' + sourceFileName);
     }
 
@@ -50,8 +51,8 @@ var init = function(config, task_queue) {
 
       return Promise.all(promises);
     })
-    .then((arg) => { job.log(arg); done() })
-    .catch((arg) => { job.log(arg); done(arg) });
+    .then((arg) => { job.log('result', arg); done() })
+    .catch((arg) => { job.log('error', arg); done(arg) });
   });
 };
 

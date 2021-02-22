@@ -6,7 +6,7 @@ var exec = require('child_process').exec;
 var fs = require('fs-extra');
 
 var fileEditFallback = function(fileHandlingMethod, source, newDestination, resolve, reject) {
-  var command = fileHandlingMethod + '"' + source + '"' + ' "' + newDestination + '"';
+  var command = fileHandlingMethod + ' "' + source + '"' + ' "' + newDestination + '"';
 
   return function(error) {
     if (error) {
@@ -115,9 +115,8 @@ module.exports = {
   },
   readFile : fs.readFile,
   rmDirSync: fs.rmdirSync,
-  mkdirsSync : function(dirPath) {
-    return fs.mkdirsSync(dirPath);
-  },
+  mkdirs: fs.mkdirs,
+  mkdirsSync : fs.mkdirsSync,
   exists : function(path) {
     try {
       fs.statSync(path);
@@ -126,6 +125,7 @@ module.exports = {
       return false;
     }
   },
+  rename: fs.rename,
   moveFile : function(source, destination) {
     return new Promise(function(resolve, reject) {
       findAvaliableFileName(destination).then(function(newDestination) {
@@ -134,6 +134,7 @@ module.exports = {
       });
     });
   },
+  copy: fs.copy,
   copyFile : function(source, destination) {
     return new Promise(function(resolve, reject) {
       findAvaliableFileName(destination).then(function(newDestination) {
