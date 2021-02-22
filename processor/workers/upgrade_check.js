@@ -26,7 +26,7 @@ var init = function(config, task_queue) {
       job.log.apply(job, arguments);
       console.log.apply(console, arguments);
     }
-    logger('Running upgrade')
+    logger('Running upgrade to ', latestVersion)
 
     var redis = config.redisClient;
     // Check version in redisStore
