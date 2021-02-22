@@ -21,6 +21,7 @@ processor:
   image: 'softbrix/shatabang-processor'
   restart: unless-stopped
   environment:
+    - _DB_VERSION=202102
     - _DEBUG_TASK_PROCESSOR=false
     - _SHARP_FAIL_ON_ERROR=true
     - _IGNORE_DUPLICATES=false

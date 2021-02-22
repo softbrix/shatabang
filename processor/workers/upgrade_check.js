@@ -35,7 +35,12 @@ var init = function(config, task_queue) {
         logger('Error while retrieving versionKey', err);
         return;
       }
-      logger('Index version', version);
+      if (process.env.DB_VERSION != undefined) {
+        version = process.env.DB_VERSION;
+        logger('Force db-version', version);
+      } else {
+        logger('Index version', version);
+      }
       if(!version) {
         version = 0;
         upgrade_v1(infoDirectory, storageDir, (error) => {
