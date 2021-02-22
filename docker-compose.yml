@@ -20,7 +20,8 @@ web:
 processor:
   image: 'softbrix/shatabang-processor'
   restart: unless-stopped
-  environment: 
+  environment:
+    - _DEBUG_TASK_PROCESSOR=false
     - _SHARP_FAIL_ON_ERROR=true
     - _IGNORE_DUPLICATES=false
   volumes:

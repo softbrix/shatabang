@@ -16,7 +16,7 @@ const PREFIX = 'shTasks';
 const queues = {};
 var conf;
 var jobcnt = 0;
-const DEBUG = true;
+const DEBUG = process.env.DEBUG_TASK_PROCESSOR;
 
 var debug = () => {}
 if (DEBUG) {
