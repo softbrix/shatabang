@@ -3,16 +3,18 @@
 const path = require('path');
 const express = require('express');
 const router = express.Router();
+const indexes = require('../common/indexes')
 const shFiles = require('../common/shatabang_files');
 const task_queue = require('../common/task_queue');
 
 const request = require('request-promise');
 
-var sourceDir, cacheDir, deletedDir, apiEndpoint;
+var sourceDir, cacheDir, deletedDir, timesIndex, apiEndpoint;
 router.initialize = function(config) {
   sourceDir = config.storageDir;
   cacheDir = config.cacheDir;
   deletedDir = config.deletedDir;
+  timesIndex = indexes.importedTimesIndex(config.cacheDir);
   apiEndpoint = 'https://photoslibrary.googleapis.com';
 };
 
@@ -35,8 +37,13 @@ router.post('/delete',function(req,res){
       shFiles.deleteFile(cache300);
       shFiles.deleteFile(cache1920);
 
+      let elem = Object.entries(timesIndex.toJSON()).find(([key, value]) => value && value.indexOf && value.indexOf(reference) > -1);
+      if (elem != undefined) {
+        timesIndex.delete(elem[0]);
+      }
+
       var directory = reference.split(path.sep)[0];
-      task_queue.queueTask('update_directory_list', { title: directory, dir: directory}, 'high', true);
+      task_queue.queueTask('update_directory_list', { title: directory, dir: directory}, 'high');
     });
 
     res.send("OK").status(200);

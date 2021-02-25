@@ -8,10 +8,12 @@
     "module-name": ""
   },
   "scripts": {
-    "dev": "npm-run-all --parallel start_redis server processor",
+    "dev": "npm-run-all --parallel start_redis start_mongo server processor",
+    "dev-processor": "npm-run-all --parallel start_redis start_mongo processor",
     "test": "mocha",
     "start": "node --preserve-symlinks server/server.js",
     "start_redis": "redis-server",
+    "start_mongo": "mongod --dbpath ./data/db",
     "processor": "nodemon processor/main.js",
     "server": "nodemon",
     "build_client": "cd client && ember build --environment='production'",
@@ -37,26 +39,30 @@
     "ember",
     "node"
   ],
-  "dependencies": {
-    "bull": "3.10.0",
+  "devDependencies": {
+    "async": "^3.2.0",
+    "bull": "3.20.1",
     "connect-redis": "3.4.2",
+    "fakeredis": "2.0.0",
     "fs-extra": "8.1.0",
     "idre-array-cache": "0.3.1",
-    "node-dir": "0.1.17",
-    "redis": "3.0.2",
-    "sha256": "0.2.0",
-    "sharp": "0.25.4",
-    "stureby-index": "3.2.0",
-    "underscore": "1.9.1",
-    "vega-media-info": "2.6.0",
-    "vemdalen-index": "2.0.1"
-  },
-  "devDependencies": {
-    "fakeredis": "2.0.0",
     "mocha": "^8.0.1",
+    "mock-mongoose": "^8.0.1-a",
+    "mongodb-memory-server": "^6.9.3",
+    "mongoose": "5.11.15",
+    "node-dir": "0.1.17",
     "nodemon": "^2.0.4",
     "npm-run-all": "4.1.5",
-    "progress": "^2.0.3"
+    "progress": "^2.0.3",
+    "redis": "3.0.2",
+    "sha1-file": "2.0.0",
+    "sha256": "0.2.0",
+    "sharp": "0.25.4",
+    "sharp-phash": "2.0.0",
+    "stureby-index": "3.2.1",
+    "underscore": "1.9.1",
+    "vega-media-info": "2.8.0",
+    "vemdalen-index": "2.0.1"
   },
   "preferGlobal": true,
   "private": true,

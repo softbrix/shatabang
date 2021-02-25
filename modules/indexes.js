@@ -31,6 +31,7 @@ module.exports = {
   }),
   fileShaIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_file_sha')),
   imgFingerIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_finger')),
+  importedTimesIndex: (cacheDir, options) => shIndex(path.join(cacheDir, 'idx_imported'), options),
   facesIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_faces')),
   facesCropIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_faces_crop')),
   ratingIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_rating')),

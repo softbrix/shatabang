@@ -31,7 +31,7 @@ var init = function(config, task_queue) {
           var params = data.param || {};
           params.file = file;
 
-          task_queue.queueTask(data.task_name, params, data.priority || 'low');
+          task_queue.queueTask(data.task_name, params, data.priority);
         });
         done();
       });

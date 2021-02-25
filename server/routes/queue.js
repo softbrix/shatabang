@@ -41,7 +41,7 @@ router.post('/add/:name/:priority/',function(req,res){
   var params = req.body || {};
 
   res.end("id: " + id + ", priority: " + priority);
-  task_queue.queueTask(id, params, priority, true);
+  task_queue.queueTask(id, params, priority);
 });
 
 router.post('/addFolder/:folder/:name/:priority/',function(req,res){
@@ -57,7 +57,7 @@ router.post('/addFolder/:folder/:name/:priority/',function(req,res){
   console.log('The id: ' + id);
   res.end("id: " + id + ", priority: " + priority);
 
-  task_queue.queueTask('run_task_in_folder', params, priority, true);
+  task_queue.queueTask('run_task_in_folder', params, priority);
 });
 
 module.exports = router;

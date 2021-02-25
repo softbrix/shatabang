@@ -2,7 +2,7 @@
 *
 
 # Whitelist src-code
-!modules/*.js
+!modules/*
 !processor/*
 !server/*
 !client/*

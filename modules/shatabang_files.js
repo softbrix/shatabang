@@ -6,10 +6,11 @@ var exec = require('child_process').exec;
 var fs = require('fs-extra');
 
 var fileEditFallback = function(fileHandlingMethod, source, newDestination, resolve, reject) {
-  var command = fileHandlingMethod + '"' + source + '"' + ' "' + newDestination + '"';
+  var command = fileHandlingMethod + ' "' + source + '"' + ' "' + newDestination + '"';
 
   return function(error) {
     if (error) {
+      // Cross device move
       if (error.code === 'EXDEV') {
         exec(command, function(error/*, stdout, stderr*/) {
           if (error) {
@@ -53,6 +54,9 @@ var findAvaliableFileName = function(destination, retryCnt) {
 };
 
 module.exports = {
+  basename: path.basename,
+  diname: path.dirname,
+  extname: path.extname,
   listMediaFiles : function(sourceDir, callback) {
     return new Promise((resolve, reject) => {
       if (callback === undefined) {
@@ -111,9 +115,9 @@ module.exports = {
     });
   },
   readFile : fs.readFile,
-  mkdirsSync : function(dirPath) {
-    return fs.mkdirsSync(dirPath);
-  },
+  rmDirSync: fs.rmdirSync,
+  mkdirs: fs.mkdirs,
+  mkdirsSync : fs.mkdirsSync,
   exists : function(path) {
     try {
       fs.statSync(path);
@@ -122,6 +126,8 @@ module.exports = {
       return false;
     }
   },
+  rename: fs.rename,
+  move: fs.move,
   moveFile : function(source, destination) {
     return new Promise(function(resolve, reject) {
       findAvaliableFileName(destination).then(function(newDestination) {
@@ -130,6 +136,7 @@ module.exports = {
       });
     });
   },
+  copy: fs.copy,
   copyFile : function(source, destination) {
     return new Promise(function(resolve, reject) {
       findAvaliableFileName(destination).then(function(newDestination) {
@@ -138,13 +145,13 @@ module.exports = {
     });
   },
   deleteFile : function(source) {
-  return new Promise(function(resolve, reject) {
-    fs.unlink(source, function(err) {
-      if(err) {
-        reject(err);
-      }
-      resolve();
+    return new Promise(function(resolve, reject) {
+      fs.unlink(source, function(err) {
+        if(err) {
+          reject(err);
+        }
+        resolve();
+      });
     });
-  });
   }
 };

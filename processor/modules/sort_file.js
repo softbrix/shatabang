@@ -12,7 +12,7 @@ var sort_file = function(sourceFile, destDir, exifData) {
 
   var dateStr = exifData.CreateDate || exifData.ModifyDate;
   if(dateStr === undefined) {
-    console.debug('exifData', exifData);
+    // console.debug('exifData', exifData);
     return handleError("Failed to parse the date in the exif information, '" + dateStr + "'");
   }
   var date = new Date(dateStr);
