@@ -35,7 +35,7 @@
     "bull-arena": "3.7.0",
     "bull-board": "1.2.0",
     "compression": "1.7.4",
-    "connect-redis": "3.4.2",
+    "connect-redis": "5.2.0",
     "express": "4.17.1",
     "express-session": "1.16.2",
     "fs-extra": "8.1.0",

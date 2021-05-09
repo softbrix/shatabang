@@ -39,7 +39,7 @@
   ],
   "dependencies": {
     "bull": "3.10.0",
-    "connect-redis": "3.4.2",
+    "connect-redis": "5.2.0",
     "fs-extra": "8.1.0",
     "idre-array-cache": "0.3.1",
     "node-dir": "0.1.17",
