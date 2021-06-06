@@ -41,7 +41,7 @@
     "opencv4nodejs": "5.6.0",
     "redis": "3.0.2",
     "sha1-file": "1.0.4",
-    "sharp": "0.25.4",
+    "sharp": "0.28.3",
     "sharp-phash": "1.1.0",
     "stureby-index": "3.2.0",
     "underscore": "1.9.1",
