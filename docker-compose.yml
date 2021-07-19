@@ -1,53 +1,67 @@
-web:
-  image: 'softbrix/shatabang-server'
-  restart: unless-stopped
-  hostname: 'shatabang'
-  environment:
-   - _BASE_URL=http://localhost:3000/
-   - _GOOGLE_AUTH=
-   - _GOOGLE_AUTH_ALLOW=
-   - _ADMIN_HASH=
-   - _SERVER_SALT=
-  ports:
-    - '3000:3000'
-  volumes:
-    - './data/cache:/mnt/cache'
-    - './data/sorted/:/mnt/sorted'
-  links:
-    - "redis:redis"
-    - "mongo:mongo"
-    
-processor:
-  image: 'softbrix/shatabang-processor'
-  restart: unless-stopped
-  environment:
-    - _DB_VERSION=202102
-    - _DEBUG_TASK_PROCESSOR=false
-    - _SHARP_FAIL_ON_ERROR=true
-    - _IGNORE_DUPLICATES=false
-  volumes:
-    - './data/cache:/mnt/cache'
-    - './data/sorted/:/mnt/sorted'
-  links:
-    - "redis:redis"
-    - "mongo:mongo"
+version: "3"
 
-redis:
-  image: redis
-  volumes:
-    - './data/redis:/data'
+services:
+  web:
+    image: 'softbrix/shatabang-server:build'
+    build: 
+      context: .
+      dockerfile: ./server/Dockerfile
+    restart: unless-stopped
+    hostname: 'h.sehr.se/shatabang/'
+    environment:
+      - BASE_URL=https://h.sehr.se/shatabang/
+      - GOOGLE_AUTH=776511805470-gsro2qfr1q5cjq8a5n4l7f59k99ujlsd.apps.googleusercontent.com:XkRp9FNJwkXfGNRcnEaB2XTv
+      - GOOGLE_AUTH_ALLOW=sehr.andreas@gmail.com,josefin.elin.carlsson@gmail.com 
+      - SERVER_SALT=aa61544324cec1ef6cf5422bcb991e625dffbb59
+      - ADMIN_HASH=57588f5d3544dd9737c2a0e6457cd6f2e190bfa0127fa713b0bfa8c12a30810b
+    ports:
+      - '3001:3000'
+    volumes:
+      - './data/cache:/mnt/cache'
+      - './data/sorted/:/mnt/sorted'
+    depends_on:
+      - "redis"
+      - "mongo"
 
-mongo:
-  image: mongo
-  volumes:
-    - ./data/mongodb:/data/db
+  processor:
+    image: 'softbrix/shatabang-processor:build'
+    build:
+      context: .
+      dockerfile: ./processor/Dockerfile
+    restart: unless-stopped
+    command: node --inspect=0.0.0.0:9229 main.js
+    mem_limit: 6g
+    environment:
+      - _DB_VERSION=202101
+      - _DEBUG_TASK_PROCESSOR=false
+      - _SHARP_FAIL_ON_ERROR=true
+      - _IGNORE_DUPLICATES=false
+    ports:
+      - '9229:9229'
+    volumes:
+      - './data/cache:/mnt/cache'
+      - './data/sorted/:/mnt/sorted'
+    depends_on:
+      - "redis"
+      - "mongo"
 
-webdav:
-  image: softbrix/webdav
-  ports:
-    - "3012:80"
-  volumes:
-    - ./data/sorted/import:/webdav
-  environment:
-    - READWRITE=true
-    - HTPASSWD=webdav:kK1eUy0t2agv6
+  redis:
+    image: redis
+    restart: always
+    volumes:
+      - './data/cache/redis:/data' 
+
+  mongo:
+    image: mongo
+    volumes:
+      - ./data/mongodb:/data/db
+
+  webdav:
+    image: softbrix/webdav
+    ports:
+      - "3012:80"
+    volumes:
+      - ./data/sorted/import:/webdav
+    environment:
+      - READWRITE=true
+      - HTPASSWD=webdav:kK1eUy0t2agv6

@@ -13,8 +13,8 @@ COPY processor/modules ./modules
 COPY processor/common ./common
 COPY processor/workers ./workers
 
-# Create empty config
-RUN echo '{"mongoHost":"mongo"}' > config_server.json 
+# Create config
+RUN echo '{"mongoHost":"mongo","redisHost":"redis"}' > config_server.json 
 
 # USER node
 
