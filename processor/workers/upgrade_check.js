@@ -21,6 +21,8 @@ var init = function(config, task_queue) {
   var versionKey = 'shatabangVersion';
   var latestVersion = '202102';
 
+  shFiles.mkdirsSync(infoDirectory);
+
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
     function logger () {
       job.log.apply(job, arguments);
