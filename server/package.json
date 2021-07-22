@@ -47,7 +47,7 @@
     "passport-local": "1.0.0",
     "redis": "3.0.2",
     "request": "2.88.0",
-    "request-promise": "4.2.4",
+    "request-promise": "4.2.6",
     "sha256": "0.2.0",
     "stureby-index": "3.2.1",
     "vemdalen-index": "2.0.1"
