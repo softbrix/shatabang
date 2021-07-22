@@ -8,7 +8,7 @@ const variance = require('variance');
 
 const face_max_width = 100,
       face_max_height = 162, // Golden ratio
-      classifier = new cv.CascadeClassifier(cv.HAAR_FRONTALFACE_ALT2);
+      classifier = new cv.CascadeClassifier(cv.HAAR_FRONTALFACE_ALT);
 
 module.exports = {
 
@@ -16,7 +16,7 @@ module.exports = {
     return fs.promises.access(sourceFileName, fs.constants.R_OK)
     .then(() => {
       return cv.imreadAsync(sourceFileName)
-            .then(img => img.bgrToGrayAsync(), (err) => { console.error(err) })
+            .then(img => img.bgrToGrayAsync())
             .then(function(img) {
         const faces = classifier.detectMultiScale(img).objects;
 
@@ -50,13 +50,16 @@ module.exports = {
   cropFace: function(sourceFileName, face) {
     // Expand the face area
     // TODO: Explore the optimal way for eigenfaces or other tool
-    var dw = face.w/10, // This could be a value between 0 and 1
-        dh = face.h/10;
+    const width = face.w || face.width;
+    const height = face.h || face.height;
+
+    var dw = width/10, // This could be a value between 0 and 1
+        dh = height/10;
     var ext = {
         left: face.x - dw,
         top: face.y - dh,
-        width: face.w + 2 * dw,
-        height: face.h + 2 * dh
+        width: width + 2 * dw,
+        height: height + 2 * dh
       };
 
     ext.left = ext.left > 0 ? ext.left : 0;

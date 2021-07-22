@@ -4,6 +4,7 @@ var sort_file = require('../modules/sort_file');
 var fileMatcher = require('../modules/file_type_regexp');
 var directory_list = require('../modules/directory_list');
 var ImportLog = require('../common/import_log');
+const indexes = require('../common/indexes');
 var mediaInfo = require('vega-media-info');
 var path = require('path');
 var shIndex = require('stureby-index');
@@ -16,21 +17,21 @@ thumbnail and finger for each item in the import folder.
 **/
 var init = function(config, task_queue) {
   const storageDir = config.storageDir,
-  idx_imported_dir = path.join(config.cacheDir, 'idx_imported'),
   importDir = path.join(storageDir, 'import'),
   unknownDir = path.join(storageDir, 'unknown'),
   duplicatesDir = path.join(storageDir, 'duplicates');
 
   const importLog = new ImportLog(config.cacheDir);
-  const idxImported = shIndex(idx_imported_dir);
+  const idxImported = indexes.importedTimesIndex(config.cacheDir);
 
   shFiles.mkdirsSync(duplicatesDir);
 
   task_queue.registerTaskProcessor('update_import_directory', async (data, job, done) => {
     let mediaFiles = await shFiles.listMediaFiles(importDir);
+    job.log = console.log;
     
     return syncLoop(mediaFiles, async (filePath, i) => {
-      console.log("Processing", i, filePath);
+      job.log("Processing", i, filePath);
 
       var updateProgress = function() {
         job.progress(100 * i / mediaFiles.length);
@@ -38,27 +39,33 @@ var init = function(config, task_queue) {
 
       try {
         var exifData = await mediaInfo.readMediaInfo(filePath, useExifToolFallback);
-        if (exifData === undefined) {
+        if (exifData === undefined || (exifData.CreateDate || exifData.ModifyDate) === undefined) {
           throw Error("Failed to read exif data from " + filePath);
         }
         var date = new Date(exifData.CreateDate || exifData.ModifyDate);
         var items = idxImported.get(date.getTime());
         // This needs to run synchronolusly. Add to cache after each update.
-        if(items.length > 0) {
-          var newDest = await sort_file(filePath, duplicatesDir, exifData)
-          console.log("Exists in image date cache", newDest);
+        if(!process.env.IGNORE_DUPLICATES && items.length > 0) {
+          var newDest = await sort_file(filePath, duplicatesDir, exifData);
+          console.log('Duplicate', filePath, newDest);
+          job.log("Exists in image date cache", newDest);
         } else {
           var newDest = await sort_file(filePath, storageDir, exifData);
           var relativeDest = path.relative(storageDir, newDest);
+          job.log('Importing', relativeDest);
           await queueWorkers(relativeDest, date.getTime());
           importLog.push(date.getTime());
-          console.log("Imported: ", relativeDest);
+          idxImported.put(date.getTime(), relativeDest);
+          job.log("Imported: ", relativeDest);
         }
       } catch (err) {
         console.error("Failed to import", err);
+        job.log("Failed to import", err);
         if (shFiles.exists(filePath)) {
+          let newPath = path.join(unknownDir, path.basename(filePath));
+          console.log('Moving to: ', newPath);
           // Failed to import move to unknown dir
-          shFiles.moveFile(filePath, path.join(unknownDir, path.basename(filePath)));
+          await shFiles.moveFile(filePath, newPath);
         }
       }
       updateProgress();
@@ -68,12 +75,10 @@ var init = function(config, task_queue) {
       }
       done();
     }, done);
-  }, {removeOnComplete: true});
+  }, {removeOnComplete: 1,removeOnFail: 5, logStartStop: false});
 
   var queueWorkers = function(relativeDest, timestamp) {
-    console.log('Importing', relativeDest);
-    task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
-    task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest, id: '' + timestamp });
+    task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest, id: '' + timestamp }, 1);
 
     var directory = relativeDest.split(path.sep)[0];
 
@@ -82,12 +87,17 @@ var init = function(config, task_queue) {
     };
 
     // Thumbnail
-    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 300, height: 200})
+    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 300, height: 200}, 2)
     .then(job => job.finished().then(addToImported, addToImported));
-    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true}, 'low')
+    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 960, height: 540, keepAspec: true})
     .then(job => job.finished().then(() => {
-      task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest}, 'low');
+      task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest, id: timestamp }, 2000);
     }));
+    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true})
+    .then(job => job.finished().then(() => {
+      task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
+    }));
+
 
     if(fileMatcher.isVideo(relativeDest)) {
       // TODO: Encode video in multiple formats and sizes, Search for faces etc.
@@ -99,13 +109,13 @@ var init = function(config, task_queue) {
       };
       data.width = 1920;
       data.height = 1080;
-      task_queue.queueTask('encode_video', data, 'low');
+      task_queue.queueTask('encode_video', data, 10000);
 
       // Create a shallow copy
       data = Object.assign({}, data);
       data.width = 960;
       data.height = 540;
-      task_queue.queueTask('encode_video', data, 'low');
+      task_queue.queueTask('encode_video', data, 5000);
     }
   };
 };
@@ -119,7 +129,10 @@ function syncLoop(list, method) {
     var next = function() {
       //console.log('nextloop', i);
       if(i < list.length) {
-        method(list[i], i).then(next, next);
+        method(list[i], i).then(next, (e) => {
+          console.error(e);
+          next();
+        });
       } else {
         resolve(i);
       }

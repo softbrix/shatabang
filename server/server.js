@@ -5,7 +5,7 @@ const config       = require('./common/config.js'),
     task_queue     = require('./common/task_queue'),
     Bull           = require('bull'),
     Arena          = require('bull-arena'),
-    { setQueues, BullAdapter, router } = require('bull-board'),
+    { setQueues, BullAdapter, router: bullBoardRouter } = require('bull-board'),
     express        = require("express"),
     bodyParser     = require('body-parser'),
     compression    = require('compression'),
@@ -36,18 +36,20 @@ if (process.env.GOOGLE_AUTH) {
 
 console.log('Starting the server with the following configuration', config);
 
-var storageDir = config.storageDir;
-var cacheDir = config.cacheDir;
-var deleteDir = config.deletedDir = path.join(storageDir, 'deleted');
-var uploadDir = config.uploadDir = path.join(storageDir, 'upload');
-var importDir = config.importDir = path.join(storageDir, 'import');
+
+const baseUrlPath = url.parse(config.baseUrl, true).pathname;
+const storageDir = config.storageDir;
+const cacheDir = config.cacheDir;
+const deleteDir = config.deletedDir = path.join(storageDir, 'deleted');
+const uploadDir = config.uploadDir = path.join(storageDir, 'upload');
+const importDir = config.importDir = path.join(storageDir, 'import');
 
 // Initialize the default redis client
 config.redisClient = redis.createClient({
   host: config.redisHost,
   port: config.redisPort
 });
-task_queue.connect(config);
+task_queue.connect(Object.assign(config, { createIfMissing: true }));
 
 // Check that directories exists
 [ 
@@ -178,21 +180,39 @@ app.get('/login', sendIndex);
 //   the request is authenticated (typically via a persistent login session),
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
-function requireAuthentication(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
+function requireAuthentication(redirectUrl) {
+  return (req, res, next) => {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    if (redirectUrl !== undefined) {
+      res.redirect(url);
+    } else {
+      res.send().status(401);
+    }
   }
-  res.send().status(401);
 }
 
 /// End Authentication
 
 // Secure the api and images path
-app.all('/images/*', requireAuthentication);
-app.all('/media/*', requireAuthentication);
-app.all('/video/*', requireAuthentication);
-app.all('/arena/*', requireAuthentication);
-app.all('/queuestat/*', requireAuthentication);
+app.all('/images/*', requireAuthentication());
+app.all('/media/*', requireAuthentication());
+app.all('/video/*', requireAuthentication());
+app.all('/arena/*', requireAuthentication(baseUrlPath + '/login'));
+app.all('/admin/*', requireAuthentication(baseUrlPath + '/login'));
+
+// Map the routes
+routes.forEach(function(route) {
+  var path = '/api/' + route.path;
+  if(route.public !== true) {
+    app.all(path + '/*', requireAuthentication());
+  }
+  // initialize the route
+  route.route.initialize(config);
+  // connect the route
+  app.use(path, route.route);
+});
 
 // Images is the route to the cached (resized) images
 app.use('/images', express.static(cacheDir));
@@ -216,18 +236,6 @@ app.use('/video', function(req, res, next) {
   next();
 }, express.static(storageDir));
 
-// Map the routes
-routes.forEach(function(route) {
-  var path = '/api/' + route.path;
-  if(route.public !== true) {
-    app.all(path + '/*', requireAuthentication);
-  }
-  // initialize the route
-  route.route.initialize(config);
-  // connect the route
-  app.use(path, route.route);
-});
-
 const arenaRedisConf = {
   port: config.redisPort,
   host: config.redisHost,
@@ -236,24 +244,36 @@ const arenaRedisConf = {
 const queueNames =  task_queue.names();
 const queConf = {
   hostId: "shatabang",
-  prefix: 'shTasks',
+  prefix: task_queue.prefix,
   redis: arenaRedisConf,
 };
 
-const baseUrlPath = url.parse(config.baseUrl, true).pathname;
 const arenaConfig = Arena({
   Bull, 
   queues: queueNames.map(name => Object.assign({}, queConf, {name: name})),
 },
 {
-  basePath: baseUrlPath != '/' ? baseUrlPath : undefined,
+  basePath: '/',
   disableListen: true // Let express handle the listening.
 });
-app.use('/arena', arenaConfig);
+const arena = express.Router();
+arena.use(arenaConfig);
+app.use('/arena', (req, res, next) => { 
+  if (baseUrlPath != '/' ) {
+    req.url = baseUrlPath + `/arena${req.url}`; 
+  }
+  console.log('get arena', req.url);
+  next(); 
+}, arena);
 
 // Bull-board route
-setQueues(queueNames.map(name => new BullAdapter(new Bull(name, { redis: arenaRedisConf, prefix: 'shTasks', }))));
-app.use('/queuestat', router);
+setQueues(queueNames.map(name => new BullAdapter(new Bull(name, { redis: arenaRedisConf, prefix: task_queue.prefix }))));
+app.use('/admin/queuestat', (req, res, next) => {
+  if (baseUrlPath != '/' ) {
+    req.proxyUrl = baseUrlPath + '/admin/queuestat';
+  }
+  next();
+}, bullBoardRouter);
 
 app.use('/', express.static(__dirname + "/client/dist/"));
 

@@ -1,8 +1,8 @@
 "use strict";
-var bodyParser = require('body-parser');
-var express = require('express');
-var router  = express.Router();
-const indexes = require('../common/indexes')
+const bodyParser = require('body-parser');
+const express = require('express');
+const router  = express.Router();
+const indexes = require('../common/indexes');
 
 router.initialize = function(config) {
   router.get('/sha/keys', getKeys(indexes.fileShaIndex(config.cacheDir)));

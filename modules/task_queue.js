@@ -12,10 +12,11 @@ var disconnect = function disconnect(timeout, cb) {
   }
 };
 
+const PREFIX = 'shTasks';
 const queues = {};
 var conf;
 var jobcnt = 0;
-const DEBUG = false;
+const DEBUG = process.env.DEBUG_TASK_PROCESSOR;
 
 var debug = () => {}
 if (DEBUG) {
@@ -23,19 +24,19 @@ if (DEBUG) {
 }
 const log = console.log;
 
-function createQueue(name, jobOptions) {
+function createQueue(name, jobOptions, advancedSettings) {
   let queue = new Queue(name, {
     redis: {
       host: conf.redisHost,
       port: conf.redisPort
     },
-    prefix: 'shTasks',
+    prefix: PREFIX,
     defaultJobOptions: Object.assign({
-      priority: getPrio('mid'),
       attempts: 2,
-      backoff: 1000//,
-      // removeOnComplete: true
-    }, jobOptions)
+      backoff: 5000,
+      lifo: true
+    }, jobOptions),
+    settings: Object.assign({}, advancedSettings)
   });
 
   queues[name] = queue;
@@ -81,9 +82,9 @@ function createQueue(name, jobOptions) {
     debug('QUEUE paused', name);
   })
   
-  queue.on('resumed', function(job){
+  queue.on('resumed', function(){
     // The queue has been resumed.
-    debug('QUEUE resumed', name, job.id);
+    debug('QUEUE resumed', name);
   })
   
   queue.on('cleaned', function(jobs, type) {
@@ -101,6 +102,7 @@ function createQueue(name, jobOptions) {
     // A job successfully removed.
     debug('QUEUE removed', name, job.id);
   });
+
   return queue;
 }
 
@@ -109,28 +111,68 @@ module.exports = {
     debug('connect config', config);
     conf = config;
   },
-  queueTask : function(name, params, priority, createIfMissing) {
+  clearQueue: function(queueName, status) {
+    let queue = queues[queueName];
+    if (queue === undefined || queue.clean === undefined) {
+        return Promise.reject('Missing queue with name: ' + queueName);
+    }
+    var clean = queue.clean.bind(queue, 0);
+
+    if (status !== undefined) {
+      return queue.pause()
+          .then(clean(status))
+          .then(() => {
+            queue.resume()
+          })
+    }
+
+    return queue.pause()
+     .then(clean('completed'))
+     .then(clean('active'))
+     .then(clean('delayed'))
+     .then(clean('failed'))
+     .then(() => {
+        return queue.empty();
+     })
+     .then(() => {
+       return queue.getRepeatableJobs()
+     })
+     .then((repeatJobs) => {
+       repeatJobs.forEach((job) => {
+         queue.removeRepeatableByKey(job.key);
+       })
+     })
+     .then(() => {
+       queue.resume()
+     });
+  },
+  queueTask : function(name, params, priority, jobOpts) {
     debug('Adding job', name);
     let queue = queues[name];
     if (queue === undefined || queue.add === undefined) {
-      if (createIfMissing) {
+      if (conf.createIfMissing) {
         queue = createQueue(name);
       } else {
         return Promise.reject('Missing queue with name: ' + name);
       }
     }
-    // queue.getJobCounts().then(debug, debug);
-    return queue.add(params, {
+
+    let jobid = ((params || {}).file ? params.file + (params.width || '') : new Date().toISOString()) + '_' + jobcnt++;
+    params = params || {};
+    let options = Object.assign({
       priority: getPrio(priority),
-      jobId: new Date().toISOString() + '_' + jobcnt++
-    });
+      jobId:  jobid
+    }, jobOpts);
+    return queue.add(params, options);
   },
   registerTaskProcessor : function(name, taskProcessor, jobOptions) {
     log('Register processor', name);
+    jobOptions = jobOptions || {};
+    jobOptions.logStartStop = jobOptions.hasOwnProperty('logStartStop') ? jobOptions.logStartStop : true;
     let queue = createQueue(name, jobOptions);
     queue.process(async (job, done) => {
-      if ((jobOptions || {}).removeOnComplete !== true) {
-        log('Running job: ', name, job.data.title);
+      if (jobOptions.logStartStop) {
+        log('Running job: ', name, job.data.title || job.data.file);
       }
       try {
         await taskProcessor(job.data, job, done);
@@ -154,7 +196,7 @@ module.exports = {
   },
   registerProcess : function(name, pathToProcessor, concurrency) {
     log('Register separate processor with promise', name);
-    let queue = createQueue(name);
+    let queue = createQueue(name, {});
 
     concurrency = concurrency || 1
     queue.process(concurrency, pathToProcessor);
@@ -194,12 +236,13 @@ module.exports = {
     'update_directory_list',
     'upgrade_check',
 // Keep the update import loop on the side
-//    'update_import_directory'
-  ]
+    'update_import_directory'
+  ],
+  prefix: PREFIX
 };
 
 function getPrio(value) {
-  if (Number.isSafeInteger(value)) {
+  if (value === undefined || Number.isSafeInteger(value)) {
     return value;
   }
   switch(value) {

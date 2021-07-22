@@ -19,51 +19,104 @@ var init = function(config, task_queue) {
   var infoDirectory = path.join(config.cacheDir, 'info');
   var storageDir = config.storageDir;
   var versionKey = 'shatabangVersion';
-  var latestVersion = 202012;
+  var latestVersion = '202102';
+
+  shFiles.mkdirsSync(infoDirectory);
 
   task_queue.registerTaskProcessor('upgrade_check', function(data, job, done) {
-    console.log('Running upgrade')
+    function logger () {
+      job.log.apply(job, arguments);
+      console.log.apply(console, arguments);
+    }
+    logger('Running upgrade to ', latestVersion)
 
     var redis = config.redisClient;
     // Check version in redisStore
     redis.get(versionKey, async function (err, version) {
       if(err) {
-        console.log('Error while retrieving versionKey', err);
+        logger('Error while retrieving versionKey', err);
         return;
       }
-      console.log('Index version', version);
+      if (process.env.DB_VERSION != undefined) {
+        version = process.env.DB_VERSION;
+        logger('Force db-version', version);
+      } else {
+        logger('Index version', version);
+      }
       if(!version) {
         version = 0;
         upgrade_v1(infoDirectory, storageDir, (error) => {
           if(error) {
-            console.log(error);
+            logger(error);
           }
         });
       }
-      if(version < 202012) {
-        await updateMediaLists(storageDir, config.cacheDir);
-        await add_import_cache(infoDirectory, storageDir, config.cacheDir);
-        await clearVemdalenIndexes(redis);
-        await clearSturebyIndexes(config.cacheDir);
-        import_meta_to_index(infoDirectory, config.storageDir, task_queue);
-        upgrade_faces_index(infoDirectory, config.cacheDir, task_queue);
-        reecode_videos(infoDirectory, storageDir, config.cacheDir, task_queue);
+      if(version < latestVersion) {
+        let job = await task_queue.queueTask('update_directory_list');
+        await job.finished();
+        logger('Updated directory list');
       }
+
+      if(version < '202014') {
+        await add_import_cache(infoDirectory, storageDir, config.cacheDir);
+        logger('Added import cache');
+        redis.set(versionKey, '202014');
+      }
+      if(version < '202015') {
+        await clearVemdalenIndexes(redis);
+        logger('Cleared Vemdalen indexes');
+        redis.set(versionKey, '202015');
+      }
+      if(version < '202016') {
+        await clearSturebyIndexes(config.cacheDir);
+        logger('Cleared stureby indexes');
+        redis.set(versionKey, '202016');
+      }
+      if(version < '202017') {
+        await import_meta_to_index(infoDirectory, storageDir, task_queue);
+        logger('Queued import meta to index tasks');
+        redis.set(versionKey, '202017');
+      }
+      if(version < '202018') {
+        await reecode_videos(infoDirectory, storageDir, config.cacheDir, task_queue);
+        logger('Queued reencode videos tasks');
+        redis.set(versionKey, '202018');
+      }
+      if(version < '202101') {
+        await upgrade_faces_index(infoDirectory, storageDir, config.cacheDir, task_queue);
+        logger('Queued upgraded faces index tasks');
+        redis.set(versionKey, '202101');
+      }
+      if(version < '202102') {
+        task_queue.clearQueue('upgrade_check');
+        await move_v_tmp_files_to_cache(infoDirectory, storageDir, config.cacheDir);
+        logger('Moved video cache files');
+        let job = await task_queue.queueTask('update_directory_list');
+        await job.finished();
+        logger('Updated directory list');
+        redis.set(versionKey, '202102');
+      }
+
+      // Clean memory
+      timestamps = {};
 
       if (version !== latestVersion) {
         task_queue.queueTask('retry_unknown', {}, 'low');
         task_queue.retryFailed();
 
-        console.log('Successfully upgraded index to', 'v'+latestVersion);
+        logger('Successfully upgraded index to', 'v'+latestVersion);
         redis.set(versionKey, latestVersion, function() {
           done();
         });
       } else {
-        console.log('All done');
+        logger('All done');
         done();
         return;
       }
     });
+  }, {
+    removeOnComplete: 1, 
+    removeOnFail: 1
   });
 };
 
@@ -105,14 +158,24 @@ var upgrade_v1 = function(infoDirectory, storageDir, cb) {
 };
 
 /** Re run all face recognitions so we add the cropped information to the index **/
-async function upgrade_faces_index(infoDirectory, cacheDir, task_queue) {
+async function upgrade_faces_index(infoDirectory, storageDir, cacheDir, task_queue) {
   indexes.facesIndex(cacheDir).clear();
   indexes.facesCropIndex(cacheDir).clear();
 
-  const items = await allMedia(infoDirectory);
-  items.filter(FileType.isImage).forEach((relativeDest) => {
-    task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest}, 'low');
-  });
+  await task_queue.clearQueue('faces_find');
+  await task_queue.clearQueue('faces_crop');
+  await task_queue.clearQueue('resize_image', 'failed');
+
+  const items = (await allMedia(infoDirectory)).filter(FileType.isImage);
+  for (var i in items) {
+    var relativeDest = items[i];
+    const data = { title: relativeDest, file: relativeDest};
+    const job = await task_queue.queueTask('resize_image', Object.assign(data, { width: 960, height: 540, keepAspec: true }));
+    const timestampPromise = getTimestamp(relativeDest, storageDir);
+    Promise.all([timestampPromise, job.finished()]).then(([timestamp, _ignore]) => {
+      task_queue.queueTask('faces_find', Object.assign(data, { id: timestamp }), 20000);
+    })
+  }
 }
 
 /** Clear all indexes stored in redis **/
@@ -130,25 +193,54 @@ function clearSturebyIndexes(cacheDir) {
     indexes.fileShaIndex(cacheDir),
     indexes.imgFingerIndex(cacheDir),
     indexes.facesIndex(cacheDir),
-    indexes.facesCropIndex(cacheDir)
+    indexes.facesCropIndex(cacheDir),
+    indexes.importedTimesIndex(cacheDir)
   ].map(index => index.clear()));
 }
 
 /** Re run all face recognitions so we add the cropped information to the index **/
 async function import_meta_to_index(infoDirectory, storageDir, task_queue) {
   const items = await allMedia(infoDirectory);
-  items.forEach(async (relativeDest) => {
-    var filePath = path.join(storageDir, relativeDest);
-    const exifData = await mediaInfo.readMediaInfo(filePath, true);
-    const timestamp = new Date(exifData.CreateDate || exifData.ModifyDate).getTime();
-    task_queue.queueTask('import_meta', { title: relativeDest, file: relativeDest, id: '' + timestamp }, 'low');
-    task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
-  });
+  for (var i in items) {
+    var relativeDest = items[i];
+    const timestamp = getTimestamp(relativeDest, storageDir);
+    task_queue.queueTask('import_meta', { file: relativeDest, id: '' + timestamp }, 'low', );
+    task_queue.queueTask('create_image_finger', { file: relativeDest}, 50);
+  }
+}
+
+/* Move vhhmmss.jpg to cache so we dont clutter the sorted folder with generated files */
+async function move_v_tmp_files_to_cache(infoDirectory, storageDir, cacheDir) {
+  const items = await allMedia(infoDirectory);
+  let cnt = 0;
+  for (var i in items) {
+    var relativeDest = items[i];
+    let fileName = shFiles.basename(relativeDest);
+    if (fileName.startsWith('v')) {
+      try {
+        const from = path.join(storageDir, relativeDest),
+        to = path.join(cacheDir, '1920', relativeDest);
+        await shFiles.mkdirs(path.dirname(to));
+        await shFiles.move(from, to, { overwrite: true });
+        ++cnt;
+      } catch(e) {
+        console.log('Failed to move', relativeDest, e);
+        try {
+          // Fallback and do a cleanup
+          await shFiles.deleteFile(from);
+        } catch(ee) {
+          console.log('Failed to delete', from, ee);
+        }
+      }
+    }
+  }
+  console.log('Moved', cnt, 'files');
 }
 
 // Clear import cache and add all imported media
 async function add_import_cache(infoDirectory, storageDir, cacheDir) {
   var importLog = new ImportLog(cacheDir);
+  const idxImported = indexes.importedTimesIndex(cacheDir, { flushTime: 30000 });
   try {
     await importLog.clear(); 
   } catch(e) {
@@ -159,21 +251,45 @@ async function add_import_cache(infoDirectory, storageDir, cacheDir) {
   for (var i in items) {
     var relativeDest = items[i];
     var filePath = path.join(storageDir, relativeDest);
-    var exifData = await mediaInfo.readMediaInfo(filePath, process.env.EXIF_TOOL || true);
-    var dateStr = exifData.CreateDate || exifData.ModifyDate;
-    var d = new Date(dateStr).getTime();
-    if (!Number.isInteger(d)) {
-      console.log('Import log, date is not a number, failed to add', filePath, dateStr)
-      continue;
+    console.log(i, relativeDest);
+    try {
+      var exifData = await mediaInfo.readMediaInfo(filePath, process.env.EXIF_TOOL || true);
+      var dateStr = exifData.CreateDate || exifData.ModifyDate;
+      var d = new Date(dateStr).getTime();
+      if (!Number.isInteger(d)) {
+        console.log('Import log, date is not a number, failed to add', filePath, dateStr)
+        continue;
+      }
+      datesTimes.add(d);
+      idxImported.put(d, relativeDest);
+      if (i % 500 == 0) {
+        console.log('Import log: ', Math.round(10000 * (datesTimes.size / items.length))/100, '%');
+      }
+    } catch(e) {
+      console.error('Failed to import: ', filePath, i);
     }
-    datesTimes.add(d);
   }
+  console.log('Import log: 100%');
   console.log('Adding to import log', datesTimes.size, 'items');
   datesTimes.forEach(d => importLog.push(d));
   importLog.close();
 }
 
+async function addImageSize(infoDirectory, task_queue, size) {
+  const items = await allMedia(infoDirectory);
+  for (var i in items) {
+    var relativeDest = items[i];
+    var data = { 
+      title: relativeDest, 
+      file: relativeDest,
+    };
+    task_queue.queueTask('resize_image', Object.assign(size, data), 100);
+  }
+}
+
 async function reecode_videos(infoDirectory, storageDir, cacheDir, task_queue) {
+  await task_queue.clearQueue('encode_video');
+  await task_queue.clearQueue('resize_image');
   const items = await allMedia(infoDirectory);
   for (var i in items) {
     var relativeDest = items[i];
@@ -185,12 +301,13 @@ async function reecode_videos(infoDirectory, storageDir, cacheDir, task_queue) {
     };
 
     task_queue.queueTask('resize_image', Object.assign({ width: 300, height: 200 }, data));
-    task_queue.queueTask('resize_image', Object.assign({ width: 1920, height: 1080, keepAspec: true }, data));
+    task_queue.queueTask('resize_image', Object.assign({ width: 960, height: 540, keepAspec: true }, data), 1000);
+    task_queue.queueTask('resize_image', Object.assign({ width: 1920, height: 1080, keepAspec: true }, data), 2000);
 
     if(fileMatcher.isVideo(relativeDest)) {
       // TODO: Encode video in multiple formats and sizes, Search for faces etc.
-      task_queue.queueTask('encode_video', Object.assign({ width: 1920, height: 1080 }, data), 'low');
-      task_queue.queueTask('encode_video', Object.assign({ width: 960, height: 540 }, data), 'low');
+      task_queue.queueTask('encode_video', Object.assign({ width: 1920, height: 1080 }, data), 10000);
+      task_queue.queueTask('encode_video', Object.assign({ width: 960, height: 540 }, data), 5000);
     }
   }
 }
@@ -198,13 +315,14 @@ async function reecode_videos(infoDirectory, storageDir, cacheDir, task_queue) {
 async function updateMediaLists(storageDir, cacheDir) {
   let dirs = await shFiles.listSubDirsAsync(storageDir);
 
-  dirs.forEach((dir) => {
+  return Promise.all(dirs.map((dir) => {
     if(!isNumber(dir)) {
-      return;
+      return Promise.resolve();
     }
-    DirectoryList.processDirectory(dir, storageDir, cacheDir);
+    return DirectoryList.processDirectory(dir, storageDir, cacheDir);
+  })).then(() => {
+    console.log('Updated media lists');
   });
-  console.log('Updated media lists');
 }
 
 /** Function which returns all media files ordered in a single array with all items. */
@@ -223,6 +341,21 @@ async function allMedia(infoDirectory) {
     });
   });
   return result;
+}
+
+let timestamps = {};
+
+async function getTimestamp(relativeDest, storageDir) {
+  if (!timestamps[relativeDest]) {
+    const filePath = path.join(storageDir, relativeDest);
+    const exifData = await mediaInfo.readMediaInfo(filePath, true);
+    if (exifData === undefined || (exifData.CreateDate || exifData.ModifyDate) === undefined) {
+      console.log("Failed to read exif data from " + filePath);
+      return;
+    }
+    timestamps[relativeDest] = new Date(exifData.CreateDate || exifData.ModifyDate).getTime();
+  }
+  return timestamps[relativeDest];
 }
 
 module.exports = {

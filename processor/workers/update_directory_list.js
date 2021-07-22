@@ -7,13 +7,15 @@ var init = function(config, task_queue) {
       // Drawback is that we list files which has not been processed, thus not
       // having a thumbnail
       searchDir = config.storageDir;
-      // Should update the file list in a better way. When searching the
-      // thumbnail dir we lose the file type
-      //path.join(cacheDir, "300");
 
-  task_queue.registerTaskProcessor('update_directory_list', function(data, job, done) {
-    directory_list.processSubDirectories(searchDir, cacheDir)
-      .then(function(result) { console.log('update_directory_list result', result); done(); }, done);
+  task_queue.registerTaskProcessor('update_directory_list', async function(data, _job, done) {
+    if (data.dir) {
+      await directory_list.processDirectory(data.dir, searchDir, cacheDir);
+    } else {
+      directory_list.clearMediaListFiles(cacheDir);
+      await directory_list.processSubDirectories(searchDir, cacheDir);
+    }
+    done();
   });
 };
 

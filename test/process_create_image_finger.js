@@ -1,20 +1,16 @@
 "use strict"
 var assert = require('assert');
 
-var taskProcess = require('../processor/workers/faces_find');
+var taskProcess = require('../processor/workers/create_image_finger');
 var processTester = require('./process_test_base');
 
-var relativeTestFile = "./faces.jpg";
+var relativeTestFile = "./1920/faces.jpg";
 
-describe('Find faces process', function() {
-  it('should handle init method', function(done) {
+describe('Create image finger process', function() {
+  it('should create image and file hash', function(done) {
     processTester.initProcess(taskProcess, {
       queueTask : function(name, data) {
-        assert.equal(relativeTestFile, data.file);
-        if(name !== 'faces_find') {
-          assert.notStrictEqual(undefined, data.faceInfo);
-          done();
-        }
+        assert.fail('Didnt expect another task to be queued');
       },
       registeredFunctionCallback: function(func) {
         var data = {
@@ -22,6 +18,7 @@ describe('Find faces process', function() {
         };
         func(data, processTester.job, (args) => {
             processTester.doneOk(args);
+            done();
         });
       }
     });

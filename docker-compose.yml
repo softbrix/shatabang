@@ -1,38 +1,67 @@
-web:
-  image: 'softbrix/shatabang-server'
-  restart: unless-stopped
-  hostname: 'shatabang'
-  environment:
-   - _BASE_URL=http://localhost:3000/
-   - _GOOGLE_AUTH=
-   - _GOOGLE_AUTH_ALLOW=
-   - _ADMIN_HASH=
-   - _SERVER_SALT=
-  ports:
-    - '3000:3000'
-  volumes:
-    - './data/cache:/mnt/cache'
-    - './data/sorted/:/mnt/sorted'
-  links:
-    - "redis:redis"
-processor:
-  image: 'softbrix/shatabang-processor'
-  restart: unless-stopped
-  volumes:
-    - './data/cache:/mnt/cache'
-    - './data/sorted/:/mnt/sorted'
-  links:
-    - "redis:redis"
-redis:
-  image: redis
-#  volumes:
-#    - './data/redis:/data'
-webdav:
-  image: softbrix/webdav
-  ports:
-    - "3012:80"
-  volumes:
-    - ./data/sorted/import:/webdav
-  environment:
-    - READWRITE=true
-    - HTPASSWD=webdav:kK1eUy0t2agv6
+version: "3"
+
+services:
+  web:
+    image: 'softbrix/shatabang-server:build'
+    build: 
+      context: .
+      dockerfile: ./server/Dockerfile
+    restart: unless-stopped
+    hostname: 'h.sehr.se/shatabang/'
+    environment:
+      - _BASE_URL=<url>
+      - _GOOGLE_AUTH=<google oauth2 code>
+      - _GOOGLE_AUTH_ALLOW=<list of emails/usernames>
+      - _SERVER_SALT=<salt>
+      - _ADMIN_HASH=<hashed admin password>
+    ports:
+      - '3001:3000'
+    volumes:
+      - './data/cache:/mnt/cache'
+      - './data/sorted/:/mnt/sorted'
+    depends_on:
+      - "redis"
+      - "mongo"
+
+  processor:
+    image: 'softbrix/shatabang-processor:build'
+    build:
+      context: .
+      dockerfile: ./processor/Dockerfile
+    restart: unless-stopped
+    command: node --inspect=0.0.0.0:9229 main.js
+    mem_limit: 6g
+    environment:
+      - _DB_VERSION=202101
+      - _DEBUG_TASK_PROCESSOR=false
+      - _SHARP_FAIL_ON_ERROR=true
+      - _IGNORE_DUPLICATES=false
+    ports:
+      - '9229:9229'
+    volumes:
+      - './data/cache:/mnt/cache'
+      - './data/sorted/:/mnt/sorted'
+    depends_on:
+      - "redis"
+      - "mongo"
+
+  redis:
+    image: redis
+    restart: always
+    volumes:
+      - './data/cache/redis:/data' 
+
+  mongo:
+    image: mongo
+    volumes:
+      - ./data/mongodb:/data/db
+
+  webdav:
+    image: softbrix/webdav
+    ports:
+      - "3012:80"
+    volumes:
+      - ./data/sorted/import:/webdav
+    environment:
+      - READWRITE=true
+      - HTPASSWD=webdav:kK1eUy0t2agv6

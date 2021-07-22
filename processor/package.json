@@ -32,21 +32,22 @@
     "node"
   ],
   "dependencies": {
-    "bull": "3.10.0",
+    "bull": "3.20.1",
     "fluent-ffmpeg": "2.1.2",
     "fs-extra": "8.1.0",
     "idre-array-cache": "0.3.1",
+    "mongoose": "5.11.15",
     "node-dir": "0.1.17",
     "obj-flatten": "2.0.4",
     "opencv4nodejs": "5.6.0",
     "redis": "3.0.2",
-    "sha1-file": "1.0.4",
+    "sha1-file": "2.0.0",
     "sharp": "0.25.4",
-    "sharp-phash": "1.1.0",
-    "stureby-index": "3.2.0",
+    "sharp-phash": "2.0.0",
+    "stureby-index": "3.2.1",
     "underscore": "1.9.1",
     "variance": "0.0.1",
-    "vega-media-info": "2.6.0",
+    "vega-media-info": "2.8.0",
     "vemdalen-index": "2.0.1"
   },
   "devDependencies": {

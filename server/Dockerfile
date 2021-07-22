@@ -26,8 +26,8 @@ COPY server/docker_start.sh .
 
 # Install app dependencies
 RUN npm ci && \
-# Create empty config
-  echo '{}' > config_server.json && \
+# Create config
+  echo '{"redisHost":"redis"}' > config_server.json && \
   chmod +x docker_start.sh 
 
 # Copy the application and client

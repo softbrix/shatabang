@@ -22,78 +22,63 @@ function hexToBinary(binary) {
 
 module.exports = {
   generateThumbnail : function(sourceFileName, outputFileName, width, height, isMaxSize) {
-    return new Promise(function(resolve, reject) {
-      fs.mkdirs(path.dirname(outputFileName), function(error) {
-        if (error) {
-          reject('mkdirs:' + error);
-          return;
-        }
-        var handleImageResize = function(imageSrc) {
-          outputFileName = FileTypeRegexp.toImageFileName(outputFileName);
-          var image = sharp(imageSrc);
-          // Do resize is used later
-          var doResize = function() {
-            return image.rotate()
-            .resize(width, height)
-            .toFile(outputFileName, function(err) {
-              if(err) {
-                reject('sharp: ' + err);
-              }
-              resolve(outputFileName);
-            });
-          }
-          if(isMaxSize) {
-            image
-              .metadata()
-              .then(function(metadata) {
-                var imgAspect = metadata.width / metadata.height;
-                if(imgAspect > 1) {
-                  // Image is wider
-                  height = undefined;
-                } else {
-                  width = undefined;
-                }
+    return new Promise(async function(resolve, reject) {
+      if(FileTypeRegexp.isVideo(path.basename(sourceFileName))) {
+        return reject('Source file is a video, need to extract screenshots');
+      }
+      let error = await fs.mkdirs(path.dirname(outputFileName));
+      if (error) {
+        return reject(error);
+      }
 
-                doResize();
-              }, reject);
+      try {
+        var image = sharp(sourceFileName, { failOnError: process.env.SHARP_FAIL_ON_ERROR });
+        if(isMaxSize) {
+          let metadata = await image.metadata();
+          var imgAspect = metadata.width / metadata.height;
+          if(imgAspect > 1) {
+            // Image is wider
+            height = undefined;
           } else {
-            doResize();
+            width = undefined;
           }
-        };
-
-        if(FileTypeRegexp.isVideo(path.basename(sourceFileName))) {
-          const PREFIX = 'v';
-          var videoOutPath = path.dirname(outputFileName);
-          var videoImageOutFileName = PREFIX + FileTypeRegexp.toImageFileName(path.basename(sourceFileName));
-          const videoOutFullPath = path.join(videoOutPath, videoImageOutFileName);
-          
-          if (fs.existsSync(videoOutFullPath)) {
-            // TODO: Allow force update?
-            handleImageResize(videoOutFullPath);
-          } else {
-            try {
-              console.log('Creating video thumb: ', sourceFileName, videoOutFullPath);
-              ffmpeg(sourceFileName)
-                .on('error', function(err) {
-                  reject(err);
-                })
-                .on('end', function() {
-                  handleImageResize(videoOutFullPath);
-                })
-                .screenshots({
-                  timestamps: ['10%'],
-                  filename: videoImageOutFileName,
-                  folder: videoOutPath
-                });
-            } catch(err) {
-              console.log('catched', err);
-              reject(sourceFileName + ':' + err);
-            }
-          }
-        } else {
-          handleImageResize(sourceFileName);
         }
-      });
+        await image.rotate()
+          .resize(width, height)
+          .toFile(outputFileName);
+        resolve(outputFileName);
+      } catch(e) {
+        console.log('Failed to resize', e);
+        reject(e)
+      }
+    });
+  },
+  screenshots: function(sourceFile, destFile, timestamps) {
+    timestamps = timestamps || ['10%'];
+    
+    return new Promise(async function(resolve, reject) {
+      try {
+        let destFolder = path.dirname(destFile),
+            destFileName = path.basename(destFile);
+
+        await fs.mkdirs(destFolder);
+        // console.log('Creating video thumb: ', sourceFile, destFile);
+        ffmpeg(sourceFile)
+          .on('error', function(err) {
+            reject(err);
+          })
+          .on('end', function() {
+            resolve(destFileName);
+          })
+          .screenshots({
+            timestamps: timestamps,
+            filename: destFileName,
+            folder: destFolder
+          });
+      } catch(err) {
+        console.log('catched', sourceFile, err);
+        reject(err);
+      }
     });
   },
   thumbnailNeedsUpdate : function thumbnailNeedsUpdate(sourceFileName, destFileName) {
@@ -113,8 +98,12 @@ module.exports = {
   	//console.log(destFileEdited.getTime(),' < ', srcFileEdited.getTime());
   	return destFileEdited.getTime() < srcFileEdited.getTime();
   },
-  create_image_finger : function create_image_finger(sourceFile) {
-    var generateFinger = function(sourceFile) {
+  create_image_finger : async function create_image_finger(sourceFile) {
+    // Is this a supported movie file?
+    let sourceFileName = path.basename(sourceFile);
+    if(FileTypeRegexp.isVideo(sourceFileName)) {
+      return Promise.reject('Source file is a video, need to extract screenshots');
+    } else {
       try {
         fs.statSync(sourceFile);
       } catch (e) {
@@ -124,25 +113,6 @@ module.exports = {
         .then(function(bitString) {
           return binaryToHex(bitString);
         });
-    };
-
-    // Is this a supported movie file?
-    let sourceFileName = path.basename(sourceFile);
-    if(FileTypeRegexp.isVideo(sourceFileName)) {
-      var tmpOutputImage = sourceFile + '.png';
-      var width = 1920;
-      var height = 1080;
-      var isMaxSize = true;
-      return this.generateThumbnail(sourceFile, tmpOutputImage, width, height, isMaxSize)
-        .then(function(newSource) {
-          return generateFinger(newSource).then(function(b85) {
-            // Cleanup before callback
-            fs.unlink(tmpOutputImage, console.log);
-            return b85;
-          });
-      });
-    } else {
-      return generateFinger(sourceFile);
     }
   }
 };
