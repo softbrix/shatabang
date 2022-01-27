@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   rm -rf /var/lib/apt/lists/* 
 RUN npm init -y && \
   # Build
+  npm install --save opencv-build && \
   npm install --save opencv4nodejs@$NODE_OPENCV_VERSION
 RUN find / -name "libopencv_core*"  
   # Cleaning up (saves over 1Gb)
