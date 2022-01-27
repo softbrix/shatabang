@@ -40,7 +40,8 @@ console.log('Starting the server with the following configuration', config);
 const baseUrlPath = url.parse(config.baseUrl, true).pathname;
 const storageDir = config.storageDir;
 const cacheDir = config.cacheDir;
-const deleteDir = config.deletedDir = path.join(storageDir, 'deleted');
+const filteredDir = path.join(storageDir, 'filtered');
+const deleteDir = config.deletedDir = path.join(filteredDir, 'deleted');
 const uploadDir = config.uploadDir = path.join(storageDir, 'upload');
 const importDir = config.importDir = path.join(storageDir, 'import');
 
@@ -53,11 +54,13 @@ task_queue.connect(Object.assign(config, { createIfMissing: true }));
 
 // Check that directories exists
 [ 
-  deleteDir,
-  importDir, 
-  uploadDir,  
+  importDir,
+  uploadDir,
   path.join(cacheDir, 'info'),
-  path.join(storageDir, 'unknown')
+  filteredDir,
+  deleteDir,
+  path.join(filteredDir, 'duplicates'),
+  path.join(filteredDir, 'unknown')
 ].forEach(function(directory) {
   if(!shFiles.exists(directory)) {
     console.log("Directory dir does not exists. Trying to create it.", directory);
