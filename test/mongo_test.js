@@ -1,7 +1,6 @@
 "use strict";
 
 const assert = require('assert');
-const shFra = require('../processor/modules/shatabang_fra');
 const Face = require('../modules/models/face');
 
 const mongoose = require('mongoose');
@@ -30,30 +29,18 @@ describe('Mongo Test', function() {
 
   it('should someting', function() {
     this.timeout(60000);
-    return shFra.findFaces(relativeTestFile).then((faces) => {
-      var promises = faces.map(function(face) {
-        return shFra.cropFace(relativeTestFile, face).then(function(buffer) {
-          // Save the buffer and store the new index to the face info
-          // console.log(face);
-          const newFace = new Face();
-          
-          newFace.x = face.x;
-          newFace.y = face.y;
-          newFace.size = face.sz;
-          newFace.height = face.h;
-          newFace.width = face.w;
-          newFace.buffer = buffer;
-          newFace.imageId = 1238719287398172;
+    // Save the buffer and store the new index to the face info
+    const newFace = new Face();
+    
+    newFace.x = 10;
+    newFace.y = 15;
+    newFace.size = 25;
+    newFace.height = 36;
+    newFace.width = 48;
+    newFace.buffer = Buffer.from("abababababababa");
+    newFace.imageId = 1238719287398172;
 
-          //idx_crop.update(newId, bs64);
-          return shFra.imageBlurValue(buffer).then(function(val) {
-            newFace.sharpness = val;
-            return newFace.save();
-          }, newFace.save);
-        });
-      });
-      return Promise.all(promises);
-    });
+    return newFace.save();
   });
 
   it('Sort find all', async () => {

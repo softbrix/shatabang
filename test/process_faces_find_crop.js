@@ -11,7 +11,7 @@ var processTester = require('./process_test_base');
 
 var relativeTestFile = "./faces.jpg";
 
-describe('Find faces process', function() {
+xdescribe('Find faces process', function() {
   let faceData;
   it('should handle find method', function(done) {
     processTester.initProcess(faceFind, {

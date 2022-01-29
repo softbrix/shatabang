@@ -1,6 +1,6 @@
 "use strict"
 var assert = require('assert');
-const { statSync, unlinkSync, readFileSync } = require('fs');
+const { existsSync, unlinkSync, readFileSync } = require('fs');
 
 var taskProcess = require('../processor/workers/worker_log');
 var processTester = require('./process_test_base');
@@ -9,7 +9,7 @@ const worklogFilePath = './test/test_data/workLog';
 
 describe('Worker log process', function() {
   it('should handle init method', function() {
-    if (statSync(worklogFilePath)) {
+    if (existsSync(worklogFilePath)) {
       unlinkSync(worklogFilePath);
     }
     const QUEUES = {
@@ -34,8 +34,8 @@ describe('Worker log process', function() {
           // 1
           func({}, processTester.job, processTester.doneOk).then(async () => {
             // 5
-            await new Promise((resolve) => setTimeout(resolve, 300));
-            assert.ok(statSync(worklogFilePath));
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            assert.ok(existsSync(worklogFilePath));
             assert.strictEqual(15, readFileSync(worklogFilePath, {encoding: 'utf8'}).split(',').length);
             resolve();
           }, reject);
