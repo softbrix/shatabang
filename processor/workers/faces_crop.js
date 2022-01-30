@@ -17,8 +17,6 @@ var init = function(config, task_queue) {
     var relativeFilePath = data.file;
     var sourceFileName = path.resolve(path.join(cacheDir, "1920", relativeFilePath));
 
-    console.log('Faces crop', sourceFileName);
-
     if(!shFiles.exists(sourceFileName)) {
       return done('Missing file:' + sourceFileName);
     }

@@ -7,11 +7,12 @@ const shFra = require('../modules/shatabang_fra');
 const fileType = require('../modules/file_type_regexp');
 const path = require('path');
 
-const THRESHOLD = process.env.SH_FACE_THRESHOLD || 38000;
+const THRESHOLD = process.env.SH_FACE_THRESHOLD || 34000;
 
 /** Part one of detecting faces in images **/
-var init = function(config, task_queue) {
+var init = async function(config, task_queue) {
   var cacheDir = config.cacheDir;
+  await shFra.initModel();
 
   task_queue.registerTaskProcessor('faces_find', function(data, job, done) {
     var relativeFilePath = fileType.toImageFileName(data.file);

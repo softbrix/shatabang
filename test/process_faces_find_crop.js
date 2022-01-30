@@ -11,14 +11,14 @@ var processTester = require('./process_test_base');
 
 var relativeTestFile = "./faces.jpg";
 
-xdescribe('Find faces process', function() {
+describe('Find faces process', function() {
   let faceData;
   it('should handle find method', function(done) {
     processTester.initProcess(faceFind, {
       queueTask : function(name, data) {
         assert.equal(relativeTestFile, data.file);
         assert.strictEqual(name, 'faces_crop');
-        // console.log(data)
+
         faceData = data;
         assert.notStrictEqual(undefined, data.faceInfo);
         done();
