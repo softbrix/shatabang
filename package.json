@@ -57,7 +57,7 @@
     "redis": "3.0.2",
     "sha1-file": "2.0.0",
     "sha256": "0.2.0",
-    "sharp": "0.25.4",
+    "sharp": "0.30.5",
     "sharp-phash": "2.0.0",
     "stureby-index": "3.2.1",
     "underscore": "1.9.1",
