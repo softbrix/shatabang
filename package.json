@@ -46,7 +46,7 @@
     "fakeredis": "2.0.0",
     "fs-extra": "8.1.0",
     "idre-array-cache": "0.3.1",
-    "mocha": "^8.0.1",
+    "mocha": "^8.4.0",
     "mock-mongoose": "^8.0.1-a",
     "mongodb-memory-server": "^6.9.3",
     "mongoose": "5.11.15",
