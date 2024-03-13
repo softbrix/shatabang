@@ -166,8 +166,6 @@ function clearSturebyIndexes(cacheDir) {
   return Promise.all([
     indexes.fileShaIndex(cacheDir),
     indexes.imgFingerIndex(cacheDir),
-    indexes.facesIndex(cacheDir),
-    indexes.facesCropIndex(cacheDir),
     indexes.importedTimesIndex(cacheDir)
   ].map(index => index.clear()));
 }
