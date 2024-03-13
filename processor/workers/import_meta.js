@@ -5,10 +5,6 @@ const shFiles = require('../common/shatabang_files');
 const mediaInfo = require('vega-media-info');
 const indexes = require("../common/indexes");
 
-function notUndefined(val) {
-  return val !== undefined;
-}
-
 function filterKeyWords(meta) {
   return Object.entries(flatten(meta.Raw))
       .filter(([key, val]) => key.toLowerCase().indexOf('error') < 0)
@@ -43,14 +39,11 @@ var init = function(config, task_queue) {
   const metaCache = indexes.metaIndex(config.redisClient);
 
   task_queue.registerTaskProcessor('import_meta', function(data, job, done) {
-    // Hack: Due to a temporary bug in importer, should be ok to remove
-    // data.file = data.file.replace(new RegExp(storageDir, 'g'), '');
-
     var sourceFilePath = path.join(storageDir, data.file);
 
     const id = data.id;
 
-    mediaInfo.readMediaInfo(sourceFilePath, true).then((info) => {
+    mediaInfo.readMediaInfo(sourceFilePath, process.env.EXIF_TOOL).then((info) => {
 
       // Store keywords
       let filteredMeta = filterKeyWords(info);
@@ -70,7 +63,6 @@ var init = function(config, task_queue) {
             console.error(err)
             return;
           }
-          console.log('Thumb saved: ' + thumbnailFile, info.Thumbnail.buffer.length)
         });
       } else {
         console.log('No thumnail')
