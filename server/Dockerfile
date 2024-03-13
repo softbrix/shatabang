@@ -1,5 +1,5 @@
 # Builder
-FROM node:lts as builder
+FROM node:14 as client-builder
 LABEL author="Andreas Sehr"
 ENV BUILD_BASE_URL /replacemeurl/
 WORKDIR /usr/src/
@@ -34,7 +34,7 @@ RUN npm ci && \
 COPY server/*.js ./
 COPY server/routes routes/
 COPY modules common/
-COPY --from=builder /usr/src/dist client/dist
+COPY --from=client-builder /usr/src/dist client/dist
 
 EXPOSE 3000
 CMD ./docker_start.sh && sh
