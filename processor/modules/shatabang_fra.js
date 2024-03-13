@@ -1,51 +1,17 @@
 "use strict";
 
 /* Shatabang Face recognition algorithm */
-const cv = require('opencv4nodejs');
 const fs = require('fs');
 const sharp = require('sharp');
 const variance = require('variance');
 
 const face_max_width = 100,
-      face_max_height = 162, // Golden ratio
-      classifier = new cv.CascadeClassifier(cv.HAAR_FRONTALFACE_ALT);
+      face_max_height = 162; // Golden ratio
 
 module.exports = {
 
   findFaces: function(sourceFileName) {
-    return fs.promises.access(sourceFileName, fs.constants.R_OK)
-    .then(() => {
-      return cv.imreadAsync(sourceFileName)
-            .then(img => img.bgrToGrayAsync())
-            .then(function(img) {
-        const faces = classifier.detectMultiScale(img).objects;
-
-        let [img_height, img_width] = img.sizes;
-        var newFaces = faces.map(function (face) {
-          // Info will contain position and sizes as fractions
-          var info = {
-            x: face.x / img_width,
-            y: face.y / img_height,
-            w: face.width / img_width, // Width
-            h: face.height / img_height, // Height
-            sz: face.width * face.height
-            /*
-            Aditional but ignored data
-            mouth: [],
-            nose: [],
-            eyeLeft: [],
-            eyeRight: []
-            */
-          };
-
-          return info;
-        });
-        return newFaces;
-      }).catch(err => {
-        console.error(err);
-        return [];
-      });
-    });
+    // noop
   },
   cropFace: function(sourceFileName, face) {
     // Expand the face area
@@ -85,34 +51,6 @@ module.exports = {
         });
   },
   imageBlurValue: function(source) {
-    // Inspired from https://www.pyimagesearch.com/2015/09/07/blur-detection-with-opencv/
-    var imgPromise;
-    const sType = typeof source;
-    if(sType === "string") {
-      imgPromise = cv.imreadAsync(source);
-    } else if(Buffer.isBuffer(source)) {
-      imgPromise = cv.imdecodeAsync(source);
-    } else {
-      return Promise.reject("Unknown source: " + sType);
-    }
-
-    return imgPromise.then(function(img) {
-      if(img.sizes[0] < 1 || img.sizes[1] < 1) {
-        return Promise.reject("Unknown image size: " + img.sizes[0] + ':' + img.sizes[1]);
-      }
-
-      return img.bgrToGrayAsync()
-        .then(grayImg => grayImg.laplacian(cv.CV_64F))
-        .then(lapImg => lapImg.getDataAsArray())
-        .then(dataMatrix => flattenMatrix(dataMatrix))
-        .then(dataArray => variance(dataArray));
-    });
+    // noop
   }
 };
-
-/**
-This function will concat all array elements in the matrix into a singel array
-*/
-function flattenMatrix(matrix) {
-  return [].concat.apply([], matrix);
-}
