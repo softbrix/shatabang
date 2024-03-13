@@ -12,7 +12,6 @@ chronological order, and include the following features:
  - Resize to web optimal size
  - Download the original file from the server
  - Detect and block import of image duplicates
- - Face detection
  - Authentication with basic or Google
  - Infinite image scroll in web client
  - Responsive web interface which suits desktop, pads as well as mobile screens.
@@ -23,7 +22,6 @@ The following features are under development:
   - the date
   - the location
  - Add/Edit/delete meta information on single and multiple images  
- - Face identification with Eigen-faces or similar
  - Manage the trash bin
  - Create public gallery
  - Group similar images

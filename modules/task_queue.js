@@ -228,7 +228,6 @@ module.exports = {
     'create_image_finger',
     'encode_video',
     'faces_crop',
-    'faces_find',
     'import_meta',
     'resize_image',
     'retry_unknown',

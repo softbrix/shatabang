@@ -16,9 +16,6 @@ config.cacheDir = process.env.CACHE_DIR || config.cacheDir;
 // The following configuration has hard coded default values
 config.redisHost = process.env.REDIS_HOST || config.redisHost || '127.0.0.1';
 config.redisPort = process.env.REDIS_PORT || config.redisPort || 6379;
-config.mongoHost = process.env.MONGO_HOST || config.mongoHost || '127.0.0.1';
-config.mongoPort = process.env.MONGO_PORT || config.mongoPort || 27017;
-config.mongoDB = process.env.MONGO_DB || config.mongoDB || 'shatabang';
 config.baseUrl = process.env.BASE_URL || config.baseUrl || '/';
 config.port = process.env.PORT || config.port || 3000;
 
