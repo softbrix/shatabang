@@ -6,7 +6,7 @@ var taskQueMock = {
     var done = function() {
       console.log('All set');
     };
-    var job = 1;
+    var job = {};
     func('data', job, done);
   },
   queueTask : function(name, data) {
