@@ -1,7 +1,6 @@
 "use strict"
 const path = require('path');
 const flatten = require('obj-flatten');
-const faceInfo = require('../common/face_info');
 const shFiles = require('../common/shatabang_files');
 const mediaInfo = require('vega-media-info');
 const indexes = require("../common/indexes");
