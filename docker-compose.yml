@@ -15,7 +15,7 @@ services:
       - _SERVER_SALT=<salt>
       - _ADMIN_HASH=<hashed admin password>
     ports:
-      - '3001:3000'
+      - '3000:3000'
     volumes:
       - './data/cache:/mnt/cache'
       - './data/sorted/:/mnt/sorted'
@@ -46,6 +46,8 @@ services:
   redis:
     image: redis
     restart: always
+    ports:
+      - '6379:6379'
     volumes:
       - './data/cache/redis:/data' 
 
