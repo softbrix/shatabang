@@ -9,10 +9,6 @@ const face_max_width = 100,
       face_max_height = 162; // Golden ratio
 
 module.exports = {
-
-  findFaces: function(sourceFileName) {
-    // noop
-  },
   cropFace: function(sourceFileName, face) {
     // Expand the face area
     // TODO: Explore the optimal way for eigenfaces or other tool
