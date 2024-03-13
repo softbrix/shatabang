@@ -33,7 +33,7 @@ COPY processor/common ./common
 COPY processor/workers ./workers
 
 # Create config
-RUN echo '{"mongoHost":"mongo","redisHost":"redis"}' > config_server.json 
+RUN echo '{"redisHost":"redis"}' > config_server.json 
 
 # USER node
 

@@ -21,7 +21,6 @@ services:
       - './data/sorted/:/mnt/sorted'
     depends_on:
       - "redis"
-      - "mongo"
 
   processor:
     image: 'softbrix/shatabang-processor:build'
@@ -43,18 +42,12 @@ services:
       - './data/sorted/:/mnt/sorted'
     depends_on:
       - "redis"
-      - "mongo"
 
   redis:
     image: redis
     restart: always
     volumes:
       - './data/cache/redis:/data' 
-
-  mongo:
-    image: mongo
-    volumes:
-      - ./data/mongodb:/data/db
 
   webdav:
     image: softbrix/webdav
