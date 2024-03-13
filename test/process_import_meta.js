@@ -1,6 +1,4 @@
 "use strict"
-var assert = require('assert');
-
 var taskProcess = require('../processor/workers/import_meta');
 var processTester = require('./process_test_base');
 

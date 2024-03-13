@@ -7,7 +7,6 @@ var ImportLog = require('../common/import_log');
 const indexes = require('../common/indexes');
 var mediaInfo = require('vega-media-info');
 var path = require('path');
-var shIndex = require('stureby-index');
 var path = require('path');
 
 const useExifToolFallback = process.env.EXIF_TOOL || true;
