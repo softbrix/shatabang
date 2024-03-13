@@ -170,7 +170,7 @@ function clearSturebyIndexes(cacheDir) {
   ].map(index => index.clear()));
 }
 
-/** Re run all face recognitions so we add the cropped information to the index **/
+/** Rerun all meta and image finger import **/
 async function import_meta_to_index(infoDirectory, storageDir, task_queue) {
   const items = await allMedia(infoDirectory);
   for (var i in items) {
