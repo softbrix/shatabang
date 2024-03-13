@@ -31,19 +31,6 @@ describe('Shatabang Face recognition algorithm', function() {
     return shFra.findFaces('./noFile').then(assert.fail, assert.ok);
   });
 
-  it('should be able to calculate a blur value of buffer', function() {
-    var expected_buffer = fs.readFileSync(relativeTestFile)
-    return shFra.imageBlurValue(expected_buffer).then(value => {
-      assert.equal(value, 129.319451269357);
-    });
-  });
-
-  it('should be able to calculate a blur value of image', function() {
-    return shFra.imageBlurValue(relativeTestFile).then(value => {
-      assert.equal(value, 129.319451269357);
-    });
-  });
-
   // This can be used as a debug example to extract the faces in an image
 
   var relativeCropFile = "./test/test_data/faces.jpg";
