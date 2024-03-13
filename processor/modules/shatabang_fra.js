@@ -49,8 +49,5 @@ module.exports = {
             .png()
             .toBuffer();
         });
-  },
-  imageBlurValue: function(source) {
-    // noop
-  }
+  } 
 };

@@ -31,10 +31,6 @@ var init = function(config, task_queue) {
       await Face.findByIdAndUpdate(face.id, { "buffer": buffer })
       return buffer;
     })
-    .then(shFra.imageBlurValue)
-    .then(function(sharpness) {
-      return Face.findByIdAndUpdate(face.id, { "sharpness": sharpness });
-    })
     .then((arg) => { job.log(arg); done() })
     .catch((arg) => { job.log(arg); done(arg) });
   });

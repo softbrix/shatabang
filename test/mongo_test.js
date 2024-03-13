@@ -34,7 +34,6 @@ describe('Mongo Test', function() {
       var promises = faces.map(function(face) {
         return shFra.cropFace(relativeTestFile, face).then(function(buffer) {
           // Save the buffer and store the new index to the face info
-          // console.log(face);
           const newFace = new Face();
           
           newFace.x = face.x;
@@ -44,12 +43,6 @@ describe('Mongo Test', function() {
           newFace.width = face.w;
           newFace.buffer = buffer;
           newFace.imageId = 1238719287398172;
-
-          //idx_crop.update(newId, bs64);
-          return shFra.imageBlurValue(buffer).then(function(val) {
-            newFace.sharpness = val;
-            return newFace.save();
-          }, newFace.save);
         });
       });
       return Promise.all(promises);
