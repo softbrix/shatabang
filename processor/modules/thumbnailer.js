@@ -26,12 +26,9 @@ module.exports = {
       if(FileTypeRegexp.isVideo(path.basename(sourceFileName))) {
         return reject('Source file is a video, need to extract screenshots');
       }
-      let error = await fs.mkdirs(path.dirname(outputFileName));
-      if (error) {
-        return reject(error);
-      }
 
       try {
+        await fs.ensureDir(path.dirname(outputFileName));
         var image = sharp(sourceFileName, { failOnError: process.env.SHARP_FAIL_ON_ERROR });
         if(isMaxSize) {
           let metadata = await image.metadata();
