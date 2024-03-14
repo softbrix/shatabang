@@ -4,7 +4,7 @@ var assert = require('assert');
 var taskProcess = require('../processor/workers/create_image_finger');
 var processTester = require('./process_test_base');
 
-var relativeTestFile = "./1920/faces.jpg";
+var relativeTestFile = "./faces.jpg";
 
 describe('Create image finger process', function() {
   it('should create image and file hash', function(done) {
