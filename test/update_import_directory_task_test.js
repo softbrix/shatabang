@@ -6,7 +6,7 @@ var taskQueMock = {
     var done = function() {
       console.log('All set');
     };
-    var job = 1;
+    var job = {};
     func('data', job, done);
   },
   queueTask : function(name, data) {
@@ -19,5 +19,5 @@ var taskQueMock = {
 var config = {
   importDir : './test_data/',
   cacheDir : './cache',
-  storageDir : './data/sorted'};
+  storageDir : './test/test_data/'};
 taskProcess.init(config, taskQueMock);

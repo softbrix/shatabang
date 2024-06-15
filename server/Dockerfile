@@ -4,9 +4,9 @@ LABEL author="Andreas Sehr"
 ENV BUILD_BASE_URL /replacemeurl/
 WORKDIR /usr/src/
 COPY client ./
-RUN npm config set spin false
-RUN npm ci
-RUN node_modules/ember-cli/bin/ember build --environment='production'
+
+RUN npm ci && \
+    node_modules/ember-cli/bin/ember build --environment='production'
 
 # server
 FROM node:lts

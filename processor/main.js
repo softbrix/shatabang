@@ -1,6 +1,5 @@
 "use strict";
 
-const mongoose = require('mongoose');
 const redis = require('redis');
 
 const config = require('./common/config.js');
@@ -10,8 +9,6 @@ const worker_log = require('./workers/worker_log.js');
 let processors = [
     require('./workers/clear_index'),
     require('./workers/create_image_finger'),
-    require('./workers/faces_find'),
-    require('./workers/faces_crop'),
     require('./workers/import_meta'),
     require('./workers/resize_image'),
     require('./workers/retry_unknown'),
@@ -21,14 +18,6 @@ let processors = [
     require('./workers/upgrade_check'),
     require('./workers/worker_log'),
   ];
-
-// Connect mongose to mongo database
-const mongoUri = process.env.MONGO_URI || `mongodb://${config.mongoHost}:${config.mongoPort}/${config.mongoDB}`;
-mongoose.connect(mongoUri, { 
-  useNewUrlParser: true, 
-  useUnifiedTopology: true,
-  useFindAndModify: false  
-});
 
 // Initialize the default redis client
 config.redisClient = redis.createClient({

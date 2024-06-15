@@ -16,23 +16,8 @@ module.exports = {
     indexType: 'object',
     client: redisClient
   }),
-
-  personIndex: (redisClient) => vemdalenIndex('persons:', {
-    indexType: 'object',
-    client: redisClient
-  }),
-  personNameIndex: (redisClient) => vemdalenIndex('personNames:', {
-    indexType: 'string',
-    client: redisClient
-  }),
-  personFacesIndex: (redisClient) => vemdalenIndex('personFaces:', {
-    indexType: 'strings_unique',
-    client: redisClient
-  }),
   fileShaIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_file_sha')),
   imgFingerIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_finger')),
   importedTimesIndex: (cacheDir, options) => shIndex(path.join(cacheDir, 'idx_imported'), options),
-  facesIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_faces')),
-  facesCropIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_faces_crop')),
   ratingIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_rating')),
 }

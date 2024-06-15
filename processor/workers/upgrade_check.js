@@ -82,11 +82,6 @@ var init = function(config, task_queue) {
         logger('Queued reencode videos tasks');
         redis.set(versionKey, '202018');
       }
-      if(version < '202101') {
-        await upgrade_faces_index(infoDirectory, storageDir, config.cacheDir, task_queue);
-        logger('Queued upgraded faces index tasks');
-        redis.set(versionKey, '202101');
-      }
       if(version < '202102') {
         task_queue.clearQueue('upgrade_check');
         await move_v_tmp_files_to_cache(infoDirectory, storageDir, config.cacheDir);
@@ -157,27 +152,6 @@ var upgrade_v1 = function(infoDirectory, storageDir, cb) {
   });
 };
 
-/** Re run all face recognitions so we add the cropped information to the index **/
-async function upgrade_faces_index(infoDirectory, storageDir, cacheDir, task_queue) {
-  indexes.facesIndex(cacheDir).clear();
-  indexes.facesCropIndex(cacheDir).clear();
-
-  await task_queue.clearQueue('faces_find');
-  await task_queue.clearQueue('faces_crop');
-  await task_queue.clearQueue('resize_image', 'failed');
-
-  const items = (await allMedia(infoDirectory)).filter(FileType.isImage);
-  for (var i in items) {
-    var relativeDest = items[i];
-    const data = { title: relativeDest, file: relativeDest};
-    const job = await task_queue.queueTask('resize_image', Object.assign(data, { width: 960, height: 540, keepAspec: true }));
-    const timestampPromise = getTimestamp(relativeDest, storageDir);
-    Promise.all([timestampPromise, job.finished()]).then(([timestamp, _ignore]) => {
-      task_queue.queueTask('faces_find', Object.assign(data, { id: timestamp }), 20000);
-    })
-  }
-}
-
 /** Clear all indexes stored in redis **/
 function clearVemdalenIndexes(redisClient) {
   return Promise.all([
@@ -187,18 +161,16 @@ function clearVemdalenIndexes(redisClient) {
   ].map(index => index.clear()));
 }
 
-/* Clear all indexes stored on disk, rerun meta import and upgrade_faces_index */
+/* Clear all indexes stored on disk, rerun meta import */
 function clearSturebyIndexes(cacheDir) {
   return Promise.all([
     indexes.fileShaIndex(cacheDir),
     indexes.imgFingerIndex(cacheDir),
-    indexes.facesIndex(cacheDir),
-    indexes.facesCropIndex(cacheDir),
     indexes.importedTimesIndex(cacheDir)
   ].map(index => index.clear()));
 }
 
-/** Re run all face recognitions so we add the cropped information to the index **/
+/** Rerun all meta and image finger import **/
 async function import_meta_to_index(infoDirectory, storageDir, task_queue) {
   const items = await allMedia(infoDirectory);
   for (var i in items) {

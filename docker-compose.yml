@@ -15,13 +15,12 @@ services:
       - _SERVER_SALT=<salt>
       - _ADMIN_HASH=<hashed admin password>
     ports:
-      - '3001:3000'
+      - '3000:3000'
     volumes:
       - './data/cache:/mnt/cache'
       - './data/sorted/:/mnt/sorted'
     depends_on:
       - "redis"
-      - "mongo"
 
   processor:
     image: 'softbrix/shatabang-processor:build'
@@ -43,18 +42,14 @@ services:
       - './data/sorted/:/mnt/sorted'
     depends_on:
       - "redis"
-      - "mongo"
 
   redis:
     image: redis
     restart: always
+    ports:
+      - '6379:6379'
     volumes:
       - './data/cache/redis:/data' 
-
-  mongo:
-    image: mongo
-    volumes:
-      - ./data/mongodb:/data/db
 
   webdav:
     image: softbrix/webdav

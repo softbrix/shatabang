@@ -1,10 +1,8 @@
 "use strict"
-var assert = require('assert');
-
 var taskProcess = require('../processor/workers/import_meta');
 var processTester = require('./process_test_base');
 
-var relativeTestFile = "./1920/faces.jpg";
+var relativeTestFile = "./faces.jpg";
 
 describe('Import meta process', function() {
   it('should handle init method', function() {

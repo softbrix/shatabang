@@ -7,7 +7,6 @@ var ImportLog = require('../common/import_log');
 const indexes = require('../common/indexes');
 var mediaInfo = require('vega-media-info');
 var path = require('path');
-var shIndex = require('stureby-index');
 var path = require('path');
 
 const useExifToolFallback = process.env.EXIF_TOOL || true;
@@ -88,10 +87,7 @@ var init = function(config, task_queue) {
     // Thumbnail
     task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 300, height: 200}, 2)
     .then(job => job.finished().then(addToImported, addToImported));
-    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 960, height: 540, keepAspec: true})
-    .then(job => job.finished().then(() => {
-      task_queue.queueTask('faces_find', { title: relativeDest, file: relativeDest, id: timestamp }, 2000);
-    }));
+    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 960, height: 540, keepAspec: true});
     task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true})
     .then(job => job.finished().then(() => {
       task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});

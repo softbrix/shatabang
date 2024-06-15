@@ -12,7 +12,6 @@ chronological order, and include the following features:
  - Resize to web optimal size
  - Download the original file from the server
  - Detect and block import of image duplicates
- - Face detection
  - Authentication with basic or Google
  - Infinite image scroll in web client
  - Responsive web interface which suits desktop, pads as well as mobile screens.
@@ -23,7 +22,6 @@ The following features are under development:
   - the date
   - the location
  - Add/Edit/delete meta information on single and multiple images  
- - Face identification with Eigen-faces or similar
  - Manage the trash bin
  - Create public gallery
  - Group similar images
@@ -64,13 +62,12 @@ A key-value in memory NoSQL database used by the session and task processor.
 ## Mac OS X:
 
 brew tap homebrew/science
-brew install exiftool redis opencv@3
-brew link --force opencv
+brew install exiftool redis
 
 ## Debian ( >= 9):
 
 sudo apt-get update  
-sudo apt-get install git libimage-exiftool-perl libvips-dev build-essential ffmpeg redis-server libopencv-dev -y  
+sudo apt-get install git libimage-exiftool-perl libvips-dev build-essential ffmpeg redis-server -y  
 
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -  
 sudo apt-get install -y nodejs
@@ -87,17 +84,12 @@ libav-tools will install avprobe, need to create a symbolic link so it can be us
 ln -s /usr/bin/avprobe /usr/bin/ffprobe  
 ln -s /usr/bin/avconv /usr/bin/ffmpeg  
 
-### Opencv 3 on linux
-
-Compile the source code for opencv version 3
-
-https://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
 
 
 # Docker image
 I've added a docker image to package the application with all the necessary
 dependencies in one single container. This docker image is based on a base image 
-including opencv and all the other necessary tools listed above. The base image is called
+including all the necessary tools listed above. The base image is called
 shatabang-base and can be found here https://cloud.docker.com/repository/docker/softbrix/shatabang-base/
 
 
