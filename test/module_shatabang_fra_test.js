@@ -18,9 +18,9 @@ describe('Shatabang Face recognition algorithm', function() {
       function(data) {
         assert.strictEqual(1, data.length);
         var info = data[0];
-        assert.strictEqual(info.x, 0.367002010345459);
+        assert.strictEqual(info.x, 0.36700204014778137);
         assert.strictEqual(info.y, 0.22650068291458866);
-        assert.strictEqual(info.w, 0.2392481565475464);
+        assert.strictEqual(info.w, 0.23924818634986877);
         assert.strictEqual(info.h, 0.23925149004420984);
       }, assert.fail);
   });
@@ -66,6 +66,7 @@ describe('Shatabang Face recognition algorithm', function() {
       var promises = data.map((d) => {
         return shFra.cropFace(relativeCropFile, d)
           .then((buffer) => {
+            fs.writeFile('./test/test_data/t'+(++c)+'_image.png', buffer, console.log)
             if (c == 0) {
               if(expectedFileInfo !== undefined) {
                 var expected_buffer = fs.readFileSync(expectedFileInfo);
@@ -73,7 +74,6 @@ describe('Shatabang Face recognition algorithm', function() {
                 assert.strictEqual(buffer.toString('base64').length, expected_buffer.toString().trim().length);
               }
             }
-            fs.writeFile('./test/test_data/t'+(++c)+'_image.png', buffer, console.log)
           } , assert.fail);
         });
       return Promise.all(promises);

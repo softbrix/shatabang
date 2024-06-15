@@ -3,6 +3,7 @@
 /* Shatabang Face recognition algorithm */
 const fs = require('fs');
 const sharp = require('sharp');
+const variance = require('variance');
 
 const face_max_width = 100,
       face_max_height = 162; // Golden ratio
