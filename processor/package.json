@@ -4,9 +4,6 @@
   "description": "Picture library managing tools",
   "author": "Andreas Sehr <andreas@softbrix.se>",
   "contributors": [],
-  "bin": {
-    "module-name": ""
-  },
   "scripts": {
     "dev": "npm-run-all --parallel start_redis start",
     "test": "mocha",
@@ -16,7 +13,7 @@
   "main": "main.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/softbrix/shatabang"
+    "url": "git+https://github.com/softbrix/shatabang.git"
   },
   "bugs": {
     "url": "https://github.com/softbrix/shatabang/issues"
@@ -62,5 +59,6 @@
   "private": true,
   "subdomain": "shatabang",
   "analyze": true,
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/softbrix/shatabang#readme"
 }

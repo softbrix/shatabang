@@ -54,14 +54,18 @@
     "sha256": "0.2.0",
     "sharp": "0.33.2",
     "sharp-phash": "2.1.0",
-    "stureby-index": "3.2.1",
+    "stureby-index": "^3.3.0",
     "underscore": "1.9.1",
     "vega-media-info": "2.8.0",
-    "vemdalen-index": "2.0.1"
+    "vemdalen-index": "^2.0.2"
   },
   "preferGlobal": true,
   "private": true,
   "subdomain": "shatabang",
   "analyze": true,
-  "license": "MIT"
+  "license": "MIT",
+  "workspaces": [
+    "server",
+    "processor"
+  ]
 }

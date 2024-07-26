@@ -4,9 +4,6 @@
   "description": "Server script for the Shatabang Picture library managing tools",
   "author": "Andreas Sehr <andreas@sehr.se>",
   "contributors": [],
-  "bin": {
-    "module-name": ""
-  },
   "scripts": {
     "dev": "npm-run-all --parallel start_redis server",
     "test": "mocha",
@@ -16,7 +13,7 @@
   "main": "server.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/softbrix/shatabang"
+    "url": "git+https://github.com/softbrix/shatabang.git"
   },
   "bugs": {
     "url": "https://github.com/softbrix/shatabang/issues"
@@ -56,5 +53,7 @@
   "private": true,
   "subdomain": "shatabang",
   "analyze": true,
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {},
+  "homepage": "https://github.com/softbrix/shatabang#readme"
 }
