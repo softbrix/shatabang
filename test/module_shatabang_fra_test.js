@@ -9,11 +9,11 @@ var noFaceFile = "./test/test_data/1920/no_face.jpg";
 var expectedFileInfo = "./test/test_data/face_out.png.bs64";
 
 describe('Shatabang Face recognition algorithm', function() {
+  this.timeout(60000);
   this.beforeAll(() => {
     return shFra.initModel();
   });
   it('should handle face lookup', function() {
-    this.timeout(60000);
     return shFra.findFaces(relativeTestFile).then(
       function(data) {
         assert.strictEqual(1, data.length);
@@ -25,7 +25,6 @@ describe('Shatabang Face recognition algorithm', function() {
       }, assert.fail);
   });
   it('should handle face lookup on an image with no face', function() {
-    this.timeout(60000);
     return shFra.findFaces(noFaceFile).then(function(data) {
       assert.deepEqual([], data);
     }, assert.fail);
@@ -59,7 +58,6 @@ describe('Shatabang Face recognition algorithm', function() {
 
   var relativeCropFile = "./test/test_data/faces.jpg";
   it('crop found faces', function() {
-    this.timeout(60000);
     return shFra.findFaces(relativeCropFile).then(function(data) {
       //console.log('face count: ', data.length);
       var c = 0;
