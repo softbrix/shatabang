@@ -240,7 +240,8 @@ app.use('/video', function(req, res, next) {
 const arenaRedisConf = {
   port: config.redisPort,
   host: config.redisHost,
-  /*password: /* Your redis password ,*/
+  maxRetriesPerRequest: null, 
+  enableReadyCheck: false
 };
 const queueNames =  task_queue.names();
 const queConf = {

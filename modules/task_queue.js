@@ -28,7 +28,9 @@ function createQueue(name, jobOptions, advancedSettings) {
   let queue = new Queue(name, {
     redis: {
       host: conf.redisHost,
-      port: conf.redisPort
+      port: conf.redisPort,
+      maxRetriesPerRequest: null, 
+      enableReadyCheck: false
     },
     prefix: PREFIX,
     defaultJobOptions: Object.assign({
