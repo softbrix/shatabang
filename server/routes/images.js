@@ -7,8 +7,6 @@ const indexes = require('../common/indexes')
 const shFiles = require('../common/shatabang_files');
 const task_queue = require('../common/task_queue');
 
-const request = require('request-promise');
-
 var sourceDir, cacheDir, deletedDir, timesIndex, apiEndpoint;
 router.initialize = function(config) {
   sourceDir = config.storageDir;
@@ -65,9 +63,10 @@ router.get('/listgoo', async (req, res) => {
 
   // Make a POST request to search the library or album
   const result =
-      await request.post(apiEndpoint + '/v1/mediaItems:search', {
+      await fetch(apiEndpoint + '/v1/mediaItems:search', {
+        method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        json: parameters,
+        body: JSON.stringify(parameters),
         auth: {'bearer': req.user.token},
       });
 

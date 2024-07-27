@@ -27,14 +27,14 @@
     "node"
   ],
   "dependencies": {
-    "body-parser": "1.19.0",
+    "body-parser": "^1.20.2",
     "bull": "^4.15.1",
     "bull-arena": "3.9.0",
     "bull-board": "1.4.1",
     "compression": "1.7.4",
     "connect-redis": "3.4.2",
-    "express": "4.17.1",
-    "express-session": "1.16.2",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
     "fs-extra": "8.1.0",
     "idre-array-cache": "0.3.1",
     "multer": "1.4.1",
@@ -43,8 +43,6 @@
     "passport-google-oauth20": "1.0.0",
     "passport-local": "1.0.0",
     "redis": "3.0.2",
-    "request": "2.88.0",
-    "request-promise": "4.2.4",
     "sha256": "0.2.0",
     "stureby-index": "^3.3.0",
     "vemdalen-index": "^2.0.2"
