@@ -5,7 +5,10 @@ const config       = require('./common/config.js'),
     task_queue     = require('./common/task_queue'),
     Bull           = require('bull'),
     Arena          = require('bull-arena'),
-    { setQueues, BullAdapter, router: bullBoardRouter } = require('bull-board'),
+    { createBullBoard } = require('@bull-board/api'),
+    { BullAdapter }     = require('@bull-board/api/bullAdapter'),
+    { BullMQAdapter }   = require('@bull-board/api/bullMQAdapter'),
+    { ExpressAdapter }  = require('@bull-board/express'),
     express        = require("express"),
     bodyParser     = require('body-parser'),
     compression    = require('compression'),
@@ -269,13 +272,21 @@ app.use('/arena', (req, res, next) => {
 }, arena);
 
 // Bull-board route
+const serverAdapter = new ExpressAdapter();
+serverAdapter.setBasePath('/admin/queuestat');
+
+const { addQueue, removeQueue, setQueues, replaceQueues } = createBullBoard({
+  queues: [],
+  serverAdapter: serverAdapter,
+});
 setQueues(queueNames.map(name => new BullAdapter(new Bull(name, { redis: arenaRedisConf, prefix: task_queue.prefix }))));
+
 app.use('/admin/queuestat', (req, res, next) => {
   if (baseUrlPath != '/' ) {
     req.proxyUrl = baseUrlPath + '/admin/queuestat';
   }
   next();
-}, bullBoardRouter);
+}, serverAdapter.getRouter());
 
 app.use('/', express.static(__dirname + "/client/dist/"));
 

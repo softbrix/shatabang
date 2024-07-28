@@ -11,6 +11,7 @@
     "start_redis": "redis-server"
   },
   "main": "server.js",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/softbrix/shatabang.git"
@@ -27,10 +28,11 @@
     "node"
   ],
   "dependencies": {
+    "@bull-board/express": "^5.21.1",
     "body-parser": "^1.20.2",
     "bull": "^4.15.1",
-    "bull-arena": "3.9.0",
-    "bull-board": "1.4.1",
+    "bull-arena": "^4.4.2",
+    "bull-board": "^2.1.3",
     "compression": "1.7.4",
     "connect-redis": "3.4.2",
     "express": "^4.19.2",
@@ -52,5 +54,10 @@
   "subdomain": "shatabang",
   "analyze": true,
   "license": "MIT",
-  "homepage": "https://github.com/softbrix/shatabang#readme"
+  "homepage": "https://github.com/softbrix/shatabang#readme",
+  "devDependencies": {
+    "chai": "^5.1.1",
+    "chai-http": "^5.0.0",
+    "mocha": "^10.7.0"
+  }
 }
