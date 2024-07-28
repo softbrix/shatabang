@@ -81,7 +81,7 @@ routes.push({path: 'queue', route: require('./routes/queue')});
 routes.push({path: 'keywords', route: require('./routes/keywords')});
 routes.push({path: 'auth', route: require('./routes/auth'), public: true});
 routes.push({path: 'users', route: require('./routes/users'), public: true});
-routes.push({path: 'version', route: require('./routes/version')});
+routes.push({path: 'version', route: require('./routes/version'), public: true});
 
 passport.serializeUser(function(user, done) {
   // console.log('serializeUser', user.displayName);
@@ -89,7 +89,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(obj, done) {
-  // console.log('deserializeUser', obj);
+  console.log('deserializeUser', obj);
   done(null, obj);
 });
 
@@ -192,7 +192,7 @@ function requireAuthentication(redirectUrl) {
     if (redirectUrl !== undefined) {
       res.redirect(url);
     } else {
-      res.send().status(401);
+      res.status(401).send('Unauthorized');
     }
   }
 }

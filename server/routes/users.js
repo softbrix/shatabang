@@ -25,7 +25,7 @@ router.get('/me', function(req, res) {
   var sess = req.session;
   if(sess === undefined || req.user === undefined) {
     // The client is missing a session, return unauthorized response
-    res.send().status(401);
+    res.status(401).send('Unauthorized');
     return false;
   }
   if (!sess.views) {
