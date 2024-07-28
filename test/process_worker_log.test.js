@@ -7,8 +7,8 @@ var processTester = require('./process_test_base');
 
 const worklogFilePath = './test/test_data/workLog'; 
 
-describe('Worker log process', function() {
-  it('should handle init method', function() {
+describe('Worker log process', () => {
+  it('should handle init method', () => {
     if (existsSync(worklogFilePath)) {
       unlinkSync(worklogFilePath);
     }
