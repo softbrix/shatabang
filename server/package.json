@@ -6,12 +6,11 @@
   "contributors": [],
   "scripts": {
     "dev": "npm-run-all --parallel start_redis server",
-    "test": "mocha",
+    "test": "jest",
     "start": "node --preserve-symlinks server.js",
     "start_redis": "redis-server"
   },
   "main": "server.js",
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/softbrix/shatabang.git"
@@ -56,8 +55,6 @@
   "license": "MIT",
   "homepage": "https://github.com/softbrix/shatabang#readme",
   "devDependencies": {
-    "chai": "^5.1.1",
-    "chai-http": "^5.0.0",
-    "mocha": "^10.7.0"
+    "supertest": "^7.0.0"
   }
 }
