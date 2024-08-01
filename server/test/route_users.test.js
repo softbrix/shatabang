@@ -1,13 +1,18 @@
 "use strict"
-const request = require("supertest")
-const baseURL = "http://localhost:3000"
+const request = require("supertest");
+const express = require('express');
+const versionRouter = require('../routes/version');
+
+const app = express();
+
+app.use('/api/version', versionRouter);
 
 // Todo: start server before running tests
-xdescribe('GET /api/version', function() {
+describe('GET /api/version', function() {
     it('Should return OK', async () => {
-        const response = await request(baseURL).get("/api/version");
+        const response = await request(app).get("/api/version");
         expect(response.statusCode).toBe(200);
-        expect(response.body).not.toBe(null);
-        console.log(response.body);
+        expect(response.text).not.toBe(null);
+        console.log('Body:', response.text);
     });
 });
