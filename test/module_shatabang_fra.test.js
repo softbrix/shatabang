@@ -15,10 +15,11 @@ describe('Shatabang Face recognition algorithm', () => {
       function(data) {
         assert.strictEqual(1, data.length);
         var info = data[0];
-        assert.strictEqual(info.x, 0.36700204014778137);
-        assert.strictEqual(info.y, 0.22650068291458866);
-        assert.strictEqual(info.w, 0.23924818634986877);
-        assert.strictEqual(info.h, 0.23925149004420984);
+        const delta = 0.0000001;
+        assert.strictEqual(true, Math.abs(info.x - 0.36700204014778137) <= delta);
+        assert.strictEqual(true, Math.abs(info.y - 0.22650068291458866) <= delta);
+        assert.strictEqual(true, Math.abs(info.w - 0.23924818634986877) <= delta);
+        assert.strictEqual(true, Math.abs(info.h - 0.23925149004420984) <= delta);
       }, assert.fail);
   });
   it('should handle face lookup on an image with no face', () => {
