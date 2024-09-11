@@ -1,6 +1,5 @@
 "use strict";
 
-var _ = require('underscore');
 var express = require('express');
 var router  = express.Router();
 

@@ -89,7 +89,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(obj, done) {
-  console.log('deserializeUser', obj);
+  // console.log('deserializeUser', obj);
   done(null, obj);
 });
 
