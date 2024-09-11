@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "npm-run-all --parallel start_redis server processor",
     "dev-processor": "npm-run-all --parallel start_redis processor",
-    "test": "mocha",
+    "test": "jest",
     "start": "node --preserve-symlinks server/server.js",
     "start_redis": "redis-server",
     "processor": "nodemon processor/main.js",
@@ -39,29 +39,26 @@
   ],
   "devDependencies": {
     "async": "^3.2.0",
-    "bull": "3.20.1",
-    "connect-redis": "3.4.2",
     "fakeredis": "2.0.0",
-    "fs-extra": "8.1.0",
     "idre-array-cache": "0.3.1",
-    "mocha": "^8.0.1",
+    "jest": "^29.7.0",
     "node-dir": "0.1.17",
-    "nodemon": "^2.0.4",
+    "nodemon": "^3.1.4",
     "npm-run-all": "4.1.5",
     "progress": "^2.0.3",
-    "redis": "3.0.2",
-    "sha1-file": "2.0.0",
     "sha256": "0.2.0",
-    "sharp": "0.33.2",
     "sharp-phash": "2.1.0",
-    "stureby-index": "3.2.1",
-    "underscore": "1.9.1",
+    "stureby-index": "^3.3.0",
     "vega-media-info": "2.8.0",
-    "vemdalen-index": "2.0.1"
+    "vemdalen-index": "^2.0.2"
   },
   "preferGlobal": true,
   "private": true,
   "subdomain": "shatabang",
   "analyze": true,
-  "license": "MIT"
+  "license": "MIT",
+  "workspaces": [
+    "server",
+    "processor"
+  ]
 }

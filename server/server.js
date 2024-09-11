@@ -5,7 +5,10 @@ const config       = require('./common/config.js'),
     task_queue     = require('./common/task_queue'),
     Bull           = require('bull'),
     Arena          = require('bull-arena'),
-    { setQueues, BullAdapter, router: bullBoardRouter } = require('bull-board'),
+    { createBullBoard } = require('@bull-board/api'),
+    { BullAdapter }     = require('@bull-board/api/bullAdapter'),
+    { BullMQAdapter }   = require('@bull-board/api/bullMQAdapter'),
+    { ExpressAdapter }  = require('@bull-board/express'),
     express        = require("express"),
     bodyParser     = require('body-parser'),
     compression    = require('compression'),
@@ -40,7 +43,8 @@ console.log('Starting the server with the following configuration', config);
 const baseUrlPath = url.parse(config.baseUrl, true).pathname;
 const storageDir = config.storageDir;
 const cacheDir = config.cacheDir;
-const deleteDir = config.deletedDir = path.join(storageDir, 'deleted');
+const filteredDir = path.join(storageDir, 'filtered');
+const deleteDir = config.deletedDir = path.join(filteredDir, 'deleted');
 const uploadDir = config.uploadDir = path.join(storageDir, 'upload');
 const importDir = config.importDir = path.join(storageDir, 'import');
 
@@ -53,11 +57,13 @@ task_queue.connect(Object.assign(config, { createIfMissing: true }));
 
 // Check that directories exists
 [ 
-  deleteDir,
-  importDir, 
-  uploadDir,  
+  importDir,
+  uploadDir,
   path.join(cacheDir, 'info'),
-  path.join(storageDir, 'unknown')
+  filteredDir,
+  deleteDir,
+  path.join(filteredDir, 'duplicates'),
+  path.join(filteredDir, 'unknown')
 ].forEach(function(directory) {
   if(!shFiles.exists(directory)) {
     console.log("Directory dir does not exists. Trying to create it.", directory);
@@ -75,7 +81,7 @@ routes.push({path: 'queue', route: require('./routes/queue')});
 routes.push({path: 'keywords', route: require('./routes/keywords')});
 routes.push({path: 'auth', route: require('./routes/auth'), public: true});
 routes.push({path: 'users', route: require('./routes/users'), public: true});
-routes.push({path: 'version', route: require('./routes/version')});
+routes.push({path: 'version', route: require('./routes/version'), public: true});
 
 passport.serializeUser(function(user, done) {
   // console.log('serializeUser', user.displayName);
@@ -186,7 +192,7 @@ function requireAuthentication(redirectUrl) {
     if (redirectUrl !== undefined) {
       res.redirect(url);
     } else {
-      res.send().status(401);
+      res.status(401).send('Unauthorized');
     }
   }
 }
@@ -237,7 +243,8 @@ app.use('/video', function(req, res, next) {
 const arenaRedisConf = {
   port: config.redisPort,
   host: config.redisHost,
-  /*password: /* Your redis password ,*/
+  maxRetriesPerRequest: null, 
+  enableReadyCheck: false
 };
 const queueNames =  task_queue.names();
 const queConf = {
@@ -265,13 +272,21 @@ app.use('/arena', (req, res, next) => {
 }, arena);
 
 // Bull-board route
+const serverAdapter = new ExpressAdapter();
+serverAdapter.setBasePath('/admin/queuestat');
+
+const { addQueue, removeQueue, setQueues, replaceQueues } = createBullBoard({
+  queues: [],
+  serverAdapter: serverAdapter,
+});
 setQueues(queueNames.map(name => new BullAdapter(new Bull(name, { redis: arenaRedisConf, prefix: task_queue.prefix }))));
+
 app.use('/admin/queuestat', (req, res, next) => {
   if (baseUrlPath != '/' ) {
     req.proxyUrl = baseUrlPath + '/admin/queuestat';
   }
   next();
-}, bullBoardRouter);
+}, serverAdapter.getRouter());
 
 app.use('/', express.static(__dirname + "/client/dist/"));
 

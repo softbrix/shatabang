@@ -4,9 +4,6 @@
   "description": "Picture library managing tools",
   "author": "Andreas Sehr <andreas@softbrix.se>",
   "contributors": [],
-  "bin": {
-    "module-name": ""
-  },
   "scripts": {
     "dev": "npm-run-all --parallel start_redis start",
     "test": "mocha",
@@ -16,7 +13,7 @@
   "main": "main.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/softbrix/shatabang"
+    "url": "git+https://github.com/softbrix/shatabang.git"
   },
   "bugs": {
     "url": "https://github.com/softbrix/shatabang/issues"
@@ -31,31 +28,37 @@
     "node"
   ],
   "dependencies": {
-    "bull": "3.20.1",
-    "fluent-ffmpeg": "2.1.2",
-    "fs-extra": "8.1.0",
+    "@tensorflow-models/blazeface": "0.1.0",
+    "@tensorflow/tfjs-converter": "4.21.0",
+    "@tensorflow/tfjs-core": "4.21.0",
+    "@tensorflow/tfjs-node": "4.21.0",
+    "bull": "^4.16.3",
+    "canny-edge-detector": "^1.0.0",
+    "fluent-ffmpeg": "2.1.3",
+    "fs-extra": "11.2.0",
     "idre-array-cache": "0.3.1",
     "node-dir": "0.1.17",
-    "obj-flatten": "2.0.4",
-    "redis": "3.0.2",
+    "obj-flatten": "2.0.6",
+    "redis": "4.7.0",
     "sha1-file": "2.0.0",
-    "sharp": "0.33.2",
+    "sharp": "0.33.5",
     "sharp-phash": "2.1.0",
-    "stureby-index": "3.2.1",
-    "underscore": "1.9.1",
+    "stureby-index": "^3.3.0",
+    "underscore": "^1.13.7",
     "variance": "0.0.1",
     "vega-media-info": "2.8.0",
-    "vemdalen-index": "2.0.1"
+    "vemdalen-index": "^2.0.2"
   },
   "devDependencies": {
     "fakeredis": "2.0.0",
-    "mocha": "^8.0.1",
-    "nodemon": "^2.0.4",
+    "mocha": "^10.7.3",
+    "nodemon": "^3.1.4",
     "npm-run-all": "4.1.5"
   },
   "preferGlobal": true,
   "private": true,
   "subdomain": "shatabang",
   "analyze": true,
-  "license": "MIT"
+  "license": "MIT",
+  "homepage": "https://github.com/softbrix/shatabang#readme"
 }

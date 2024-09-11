@@ -1,9 +1,9 @@
 FROM node:lts
 
-ENV STORAGE_DIR /mnt/sorted/
-ENV CACHE_DIR /mnt/cache/
-ENV SERVER_DIR /app
-ENV CLIENT_DIR /app/client
+ENV STORAGE_DIR=/mnt/sorted/
+ENV CACHE_DIR=/mnt/cache/
+ENV SERVER_DIR=/app
+ENV CLIENT_DIR=/app/client
 
 WORKDIR /app
 
@@ -37,4 +37,4 @@ RUN echo '{"redisHost":"redis"}' > config_server.json
 
 # USER node
 
-CMD node main.js
+CMD ["node", "main.js"]

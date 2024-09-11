@@ -6,8 +6,8 @@ var processTester = require('./process_test_base');
 
 var relativeTestFile = "./faces.jpg";
 
-describe('Resize image process', function() {
-  it('should handle init method', function() {
+describe('Resize image process', () => {
+  it('should handle init method', () => {
     return new Promise((resolve, reject) => {
       processTester.initProcess(taskProcess, {
         queueTask : function(name, data) {

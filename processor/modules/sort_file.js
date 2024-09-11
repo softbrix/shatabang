@@ -45,7 +45,7 @@ var moveFile = function(sourceFile, destinationDir, fileName) {
     shFiles.mkdirsSync(destinationDir);
   }
 
-  var destination = path.join(destinationDir, fileName);
+  var destination = path.join(destinationDir, fileName).toLowerCase();
 
   return shFiles.moveFile(sourceFile, destination);
 };

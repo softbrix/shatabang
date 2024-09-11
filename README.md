@@ -162,6 +162,33 @@ Add the following environment variables
 - GOOGLE_AUTH_CALLBACK with the url a successful authentication should return to.
 - GOOGLE_AUTH_ALLOW with a comma separated list of either user id's or emails.
 
+# Directory Structure
+
+The directory and file structure is all lower case to simplify moving between case sensetive and case insensitive file systems.
+
+```
+ .
+├── storage
+│   ├── import
+│   ├── filtered
+│   │     ├── deleted
+│   │     ├── duplicates
+│   │     └── unknown
+│   ├── sorted
+│   │     └── <YYYY>
+│   │         └── <MM>
+│   │             └── <DD>
+│   │                 └── <HHmmSSnnn.ext>
+│   └── upload
+└── cache 
+    ├── 320
+    │      └── <YYYY>
+    │          └── <MM>
+    │              └── <DD>
+    │                  └── <HHmmSSnnn.ext>
+
+```
+
 # Index information
 
 The following properties are indexed for each media file.

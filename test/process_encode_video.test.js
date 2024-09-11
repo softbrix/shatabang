@@ -6,7 +6,7 @@ var encoderJob = require('../processor/workers/encode_video');
 const DIR = './test/test_data/'
 const TEST_FILE = 'video.mp4';
 
-describe('Encode video process', function() {
+describe('Encode video process', () => {
   xit('encode a simple video.mp4 with progress', function(done) {
     this.timeout(60000);
     const job = {

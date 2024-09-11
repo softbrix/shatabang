@@ -7,3 +7,6 @@ dump.rdb
 
 .DS_Store
 test/test_data
+
+# jest coverage report
+coverage

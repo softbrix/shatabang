@@ -27,7 +27,6 @@ var init = function(config, task_queue) {
 
   task_queue.registerTaskProcessor('update_import_directory', async (data, job, done) => {
     let mediaFiles = await shFiles.listMediaFiles(importDir);
-    job.log = console.log;
     
     return syncLoop(mediaFiles, async (filePath, i) => {
       job.log("Processing", i, filePath);

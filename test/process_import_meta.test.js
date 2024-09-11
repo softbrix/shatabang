@@ -4,8 +4,8 @@ var processTester = require('./process_test_base');
 
 var relativeTestFile = "./faces.jpg";
 
-describe('Import meta process', function() {
-  it('should handle init method', function() {
+describe('Import meta process', () => {
+  it('should handle init method', () => {
     return new Promise((resolve, reject) => {
       processTester.initProcess(taskProcess, {
         registeredFunctionCallback: function(func) {

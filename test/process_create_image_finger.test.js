@@ -6,8 +6,8 @@ var processTester = require('./process_test_base');
 
 var relativeTestFile = "./faces.jpg";
 
-describe('Create image finger process', function() {
-  it('should create image and file hash', function(done) {
+describe('Create image finger process', () => {
+  it('should create image and file hash', done => {
     processTester.initProcess(taskProcess, {
       queueTask : function(name, data) {
         assert.fail('Didnt expect another task to be queued');
