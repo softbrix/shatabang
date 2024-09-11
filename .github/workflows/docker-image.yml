@@ -14,5 +14,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with: 
+        submodules: true
     - name: Build the Docker image
-      run: ./build_docker.sh ${{ matrix.module }}
+      run: ./build_docker.sh server
