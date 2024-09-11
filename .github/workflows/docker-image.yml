@@ -17,4 +17,4 @@ jobs:
       with: 
         submodules: true
     - name: Build the Docker image
-      run: ./build_docker.sh server
+      run: ./build_docker.sh ${{ matrix.module }}
