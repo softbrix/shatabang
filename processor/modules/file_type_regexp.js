@@ -3,7 +3,8 @@ const path = require('path');
 const mediaFiles = /^(?!\.).+([mj]pe?g|png|mp4|m4a|m4v|mov|bmp|avi)$/i,
 exif = /^(?!\.).+(jpe?g|m4a|m4v|mp4)$/i,
 movieFile = /(m4v|mp4|mpe?g|mov|avi)$/i,
-imageFile = /(jpe?g|png|bmp)$/i;
+imageFile = /(jpe?g|png|bmp)$/i,
+heicFile = /(heic|heif)$/i;
 
 function replaceExtFunc(filePath, newExt) {
   var fileInfo = path.parse(filePath);
@@ -24,8 +25,11 @@ module.exports = {
   isImage : function(filePath) {
     return imageFile.test(filePath);
   },
+  isHeicFile : function(filePath) {
+    return heicFile.test(filePath);
+  },
   replaceExt: replaceExtFunc,
-  toImageFileName: function(movieFilePath) {
-    return movieFile.test(path.basename(movieFilePath)) ? replaceExtFunc(movieFilePath, 'jpg') : movieFilePath;
+  toCacheImageFileName: function(movieFilePath) {
+    return replaceExtFunc(movieFilePath, 'webp');
   }
 };

@@ -12,22 +12,23 @@ var init = function(config, task_queue) {
   task_queue.registerTaskProcessor('resize_image', async function(data, job, done) {
     var width = data.width, 
     relativeFilePath = data.file;
-    var outputImgFileName = fileTypeRegexp.toImageFileName(path.basename(relativeFilePath)), 
+    var outputImgFileName = fileTypeRegexp.toCacheImageFileName(path.basename(relativeFilePath)), 
         outputFileName = path.join(cacheDir, '' + width, path.dirname(relativeFilePath), outputImgFileName),
         sourceFileName = path.join(storageDir, relativeFilePath);
 
     if (!data.forceUpdate && shFiles.exists(outputFileName)) {
-      console.log('Already exists: ' + outputFileName);
       job.log('Already exists: ' + outputFileName);
       return done();
     }
 
     if (fileTypeRegexp.isVideo(sourceFileName)) {
       const videoTmpDir = path.join(cacheDir, '1920', path.dirname(relativeFilePath));
-      const videoImageOutFileName = PREFIX + outputImgFileName;
-      const videoOutFullPath = path.join(videoTmpDir, videoImageOutFileName);
-      await thumbnailer.screenshots(sourceFileName, videoOutFullPath, ['10%']);
-      sourceFileName = videoOutFullPath;
+      const sourceFileName = path.join(videoTmpDir, PREFIX + outputImgFileName);
+      await thumbnailer.screenshots(sourceFileName, sourceFileName, ['10%']);
+    } else if (fileTypeRegexp.isHeicFile(sourceFileName)) {
+      const heicTmpDir = path.join(cacheDir, '1920', path.dirname(relativeFilePath));
+      const sourceFileName = path.join(heicTmpDir, PREFIX + outputImgFileName);
+      await thumbnailer.convertHeicToJpg(sourceFileName, sourceFileName);
     }
     thumbnailer
       .generateThumbnail(sourceFileName, outputFileName, width, data.height, data.keepAspec)

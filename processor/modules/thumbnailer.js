@@ -7,6 +7,8 @@ var path = require('path');
 var sharp = require('sharp');
 var ffmpeg = require('fluent-ffmpeg');
 const phash = require('sharp-phash');
+const { promisify } = require('util');
+const convert = require('heic-convert');
 
 function binaryToHex(binary) {
   return binary.replace(/[01]{4}/g, function(v){
@@ -42,6 +44,7 @@ module.exports = {
         }
         await image.rotate()
           .resize(width, height)
+          .webp({ effort: 6 })
           .toFile(outputFileName);
         resolve(outputFileName);
       } catch(e) {
@@ -111,5 +114,15 @@ module.exports = {
           return binaryToHex(bitString);
         });
     }
+  },
+  convertHeicToJpg : async function(sourceFile, destFile) {
+    const inputBuffer = await promisify(fs.readFile)(sourceFile);
+    const outputBuffer = await convert({
+      buffer: inputBuffer, // the HEIC file buffer
+      format: 'JPEG',      // output format
+      quality: 1           // the jpeg compression quality, between 0 and 1
+    });
+
+    await promisify(fs.writeFile)(destFile, outputBuffer);
   }
 };
