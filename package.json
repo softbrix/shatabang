@@ -8,8 +8,8 @@
     "module-name": ""
   },
   "scripts": {
-    "dev": "npm-run-all --parallel start_redis server processor",
-    "dev-processor": "npm-run-all --parallel start_redis processor",
+    "dev": "npm-run-all --parallel server processor",
+    "dev-processor": "npm-run-all --parallel processor",
     "test": "jest",
     "start": "node --preserve-symlinks server/server.js",
     "start_redis": "redis-server",
