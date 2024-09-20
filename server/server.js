@@ -201,7 +201,12 @@ routes.forEach(function(route) {
 });
 
 // Images is the route to the cached (resized) images
-app.use('/images', express.static(config.cacheDir));
+app.use('/images', function(req, res, next) {
+  req.shOriginalUrl = req.url;
+  // replace file ending with .jpg
+  req.url = req.url.replace(/\.png|\.jpg|\.jpeg|\.gif|\.bmp|\.tiff|\.webp/, '.jpg');
+  next();
+}, express.static(config.cacheDir));
 // Media will laod the original
 app.use('/media', express.static(config.storageDir));
 
