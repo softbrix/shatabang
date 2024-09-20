@@ -44,7 +44,7 @@ module.exports = {
         }
         await image.rotate()
           .resize(width, height)
-          .webp({ effort: 6 })
+          .jpeg({ mozjpeg: true })
           .toFile(outputFileName);
         resolve(outputFileName);
       } catch(e) {

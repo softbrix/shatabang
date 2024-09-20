@@ -30,6 +30,6 @@ module.exports = {
   },
   replaceExt: replaceExtFunc,
   toCacheImageFileName: function(movieFilePath) {
-    return replaceExtFunc(movieFilePath, 'webp');
+    return replaceExtFunc(movieFilePath, 'jpg');
   }
 };
