@@ -12,13 +12,13 @@ describe('File type regexp', () => {
   });
 
   it('from video to image', () => {
-    let result = FileTypeRegexp.toImageFileName(videoFileName);
+    let result = FileTypeRegexp.toCacheImageFileName(videoFileName);
     assert.equal(expected, result);
   });
 
   it('from mpg video to image', () => {
     let videoFileName = '/mnt/cache/1920/2005/03/19/150739.mpg';
-    let result = FileTypeRegexp.toImageFileName(videoFileName);
+    let result = FileTypeRegexp.toCacheImageFileName(videoFileName);
     assert.equal(expected, result);
   });
 });
