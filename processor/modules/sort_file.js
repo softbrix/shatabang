@@ -3,17 +3,9 @@ var shFiles = require('../common/shatabang_files');
 var path = require('path');
 
 var sort_file = function(sourceFile, destDir, exifData) {
-  var handleError = function(error) {
-    console.error(sourceFile, 'Error: ', (error.message || error));
-    var destinationDir = path.join(destDir, 'unknown');
-    var fileName = path.basename(sourceFile);
-    return moveFile(sourceFile, destinationDir, fileName);
-  };
-
   var dateStr = exifData.CreateDate || exifData.ModifyDate;
   if(dateStr === undefined) {
-    // console.debug('exifData', exifData);
-    return handleError("Failed to parse the date in the exif information, '" + dateStr + "'");
+    throw new Error("Failed to parse the date in the exif information, '" + dateStr + "'");
   }
   var date = new Date(dateStr);
   var newPath = buildPathFromDate(date, destDir);

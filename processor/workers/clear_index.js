@@ -2,7 +2,6 @@
 
 var shIndex = require('stureby-index');
 var path = require('path');
-var fs   = require('fs-extra');
 
 
 var init = function(config, task_queue) {

@@ -22,8 +22,6 @@ var init = function(config, task_queue) {
   const importLog = new ImportLog(config.cacheDir);
   const idxImported = indexes.importedTimesIndex(config.cacheDir);
 
-  shFiles.mkdirsSync(duplicatesDir);
-
   task_queue.registerTaskProcessor('update_import_directory', async (data, job, done) => {
     let mediaFiles = await shFiles.listMediaFiles(importDir);
     
