@@ -123,6 +123,6 @@ module.exports = {
       quality: 1           // the jpeg compression quality, between 0 and 1
     });
 
-    await promisify(fs.writeFile)(destFile, outputBuffer);
+    return promisify(fs.writeFile)(destFile, outputBuffer);
   }
 };

@@ -1,13 +1,12 @@
 "use strict"
-var shFiles = require('../common/shatabang_files');
-var sort_file = require('../modules/sort_file');
-var fileMatcher = require('../modules/file_type_regexp');
-var directory_list = require('../modules/directory_list');
-var ImportLog = require('../common/import_log');
+const shFiles = require('../common/shatabang_files');
+const sort_file = require('../modules/sort_file');
+const fileMatcher = require('../modules/file_type_regexp');
+const directory_list = require('../modules/directory_list');
+const ImportLog = require('../common/import_log');
 const indexes = require('../common/indexes');
-var mediaInfo = require('vega-media-info');
-var path = require('path');
-var path = require('path');
+const mediaInfo = require('vega-media-info');
+const path = require('path');
 
 const useExifToolFallback = process.env.EXIF_TOOL || true;
 /**
@@ -16,9 +15,9 @@ thumbnail and finger for each item in the import folder.
 **/
 var init = function(config, task_queue) {
   const storageDir = config.storageDir,
-  importDir = path.join(storageDir, 'import'),
-  unknownDir = path.join(storageDir, 'unknown'),
-  duplicatesDir = path.join(storageDir, 'duplicates');
+  importDir = config.dirs.import,
+  unknownDir = config.dirs.unknown,
+  duplicatesDir = config.dirs.duplicates;
 
   const importLog = new ImportLog(config.cacheDir);
   const idxImported = indexes.importedTimesIndex(config.cacheDir);

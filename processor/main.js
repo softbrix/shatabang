@@ -3,6 +3,7 @@
 const redis = require('redis');
 
 const config = require('./common/config.js');
+const directories = require('./common/directories.js');
 const task_queue = require('./common/task_queue');
 const worker_log = require('./workers/worker_log.js');
 
@@ -37,6 +38,9 @@ config.redisClient = redis.createClient({
   },
 });
 task_queue.connect(config);
+
+directories.populatesDirectories(config);
+directories.checkDirectories(config);
 
 processors.forEach(function(processor) {
   processor.init(config, task_queue);

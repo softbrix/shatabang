@@ -1,5 +1,4 @@
-
-var config = require('../config_server.json');
+const config = require('../config_server.json');
 
 /*
 Transfer config values from the environment to a configuration object used by

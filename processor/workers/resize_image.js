@@ -23,12 +23,14 @@ var init = function(config, task_queue) {
 
     if (fileTypeRegexp.isVideo(sourceFileName)) {
       const videoTmpDir = path.join(cacheDir, '1920', path.dirname(relativeFilePath));
-      const sourceFileName = path.join(videoTmpDir, PREFIX + outputImgFileName);
-      await thumbnailer.screenshots(sourceFileName, sourceFileName, ['10%']);
+      const tmpFileName = path.join(videoTmpDir, PREFIX + outputImgFileName);
+      await thumbnailer.screenshots(sourceFileName, tmpFileName, ['10%']);
+      sourceFileName = tmpFileName;
     } else if (fileTypeRegexp.isHeicFile(sourceFileName)) {
       const heicTmpDir = path.join(cacheDir, '1920', path.dirname(relativeFilePath));
-      const sourceFileName = path.join(heicTmpDir, PREFIX + outputImgFileName);
-      await thumbnailer.convertHeicToJpg(sourceFileName, sourceFileName);
+      const tmpFileName = path.join(heicTmpDir, 'h' + outputImgFileName);
+      await thumbnailer.convertHeicToJpg(sourceFileName, tmpFileName);
+      sourceFileName = tmpFileName;
     }
     thumbnailer
       .generateThumbnail(sourceFileName, outputFileName, width, data.height, data.keepAspec)

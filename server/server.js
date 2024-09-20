@@ -1,7 +1,7 @@
 "use strict";
 
 const config       = require('./common/config.js'),
-    shFiles        = require('./common/shatabang_files'),
+    directories  = require('./common/directories'),
     task_queue     = require('./common/task_queue'),
     Bull           = require('bull'),
     Arena          = require('bull-arena'),
@@ -41,12 +41,6 @@ console.log('Starting the server with the following configuration', config);
 
 
 const baseUrlPath = url.parse(config.baseUrl, true).pathname;
-const storageDir = config.storageDir;
-const cacheDir = config.cacheDir;
-const filteredDir = path.join(storageDir, 'filtered');
-const deleteDir = config.deletedDir = path.join(filteredDir, 'deleted');
-const uploadDir = config.uploadDir = path.join(storageDir, 'upload');
-const importDir = config.importDir = path.join(storageDir, 'import');
 
 // Initialize the default redis client
 config.redisClient = redis.createClient({
@@ -56,20 +50,8 @@ config.redisClient = redis.createClient({
 task_queue.connect(Object.assign(config, { createIfMissing: true }));
 
 // Check that directories exists
-[ 
-  importDir,
-  uploadDir,
-  path.join(cacheDir, 'info'),
-  filteredDir,
-  deleteDir,
-  path.join(filteredDir, 'duplicates'),
-  path.join(filteredDir, 'unknown')
-].forEach(function(directory) {
-  if(!shFiles.exists(directory)) {
-    console.log("Directory dir does not exists. Trying to create it.", directory);
-    shFiles.mkdirsSync(directory);
-  }
-});
+directories.populatesDirectories(config);
+directories.checkDirectories(config);
 
 var routes = [];
 routes.push({path: 'upload', route: require('./routes/uploads')});
@@ -219,9 +201,9 @@ routes.forEach(function(route) {
 });
 
 // Images is the route to the cached (resized) images
-app.use('/images', express.static(cacheDir));
+app.use('/images', express.static(config.cacheDir));
 // Media will laod the original
-app.use('/media', express.static(storageDir));
+app.use('/media', express.static(config.storageDir));
 
 // Video route will first serve the cached movie and fallback to the original
 // file if not found. Images should be loaded from the image dir
@@ -231,14 +213,14 @@ app.use('/video', function(req, res, next) {
     // Look for a transcoded mp4 file in the cache
     req.url = path.join('/1920', req.url.replace(movieFileRegexp, '$1mp4'));
     next();
-}, express.static(path.join(cacheDir)));
+}, express.static(path.join(config.cacheDir)));
 app.use('/video', function(req, res, next) {
   if(req.shOriginalUrl) {
     // Reset the url if we have modified it
     req.url = req.shOriginalUrl;
   }
   next();
-}, express.static(storageDir));
+}, express.static(config.storageDir));
 
 const arenaRedisConf = {
   port: config.redisPort,

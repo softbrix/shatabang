@@ -7,10 +7,9 @@ This method will move all media files in unknown directory back to the
 import directory so they can be processed again. This could be run after an upgrade
 with new import functionallity or media support.
 **/
-var init = function(config, task_queue) {
-  var storageDir = config.storageDir,
-  importDir = path.join(storageDir, 'import'),
-  unknownDir = path.join(storageDir, 'unknown');
+const init = function(config, task_queue) {
+  const importDir = config.dirs.import,
+        unknownDir = config.dirs.unknown;
 
   task_queue.registerTaskProcessor('retry_unknown', function(data, job, done) {
     shFiles.listMediaFiles(unknownDir, function(err, mediaFiles) {
