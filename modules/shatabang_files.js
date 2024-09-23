@@ -57,6 +57,7 @@ module.exports = {
   basename: path.basename,
   diname: path.dirname,
   extname: path.extname,
+  ensureDir: fs.ensureDir,
   listMediaFiles : function(sourceDir, callback) {
     return new Promise((resolve, reject) => {
       if (callback === undefined) {

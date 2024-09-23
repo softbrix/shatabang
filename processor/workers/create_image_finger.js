@@ -15,7 +15,7 @@ var init = function(config, task_queue) {
     var sourceFile = path.join(config.storageDir, data.file);
     var sourceFingerFile = sourceFile;
     if (fileTypeRegexp.isVideo(data.file)) {
-      sourceFingerFile = path.join(config.cacheDir, '1920', fileTypeRegexp.toImageFileName(data.file));
+      sourceFingerFile = path.join(config.cacheDir, '1920', fileTypeRegexp.toCacheImageFileName(data.file));
     }
     if(shFiles.exists(sourceFile)) {
       Promise.all([sha1File(sourceFile), thumbnailer.create_image_finger(sourceFingerFile)])

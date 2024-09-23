@@ -204,7 +204,7 @@ routes.forEach(function(route) {
 app.use('/images', function(req, res, next) {
   req.shOriginalUrl = req.url;
   // replace file ending with .jpg
-  req.url = req.url.replace(/\.png|\.jpg|\.jpeg|\.gif|\.bmp|\.tiff|\.webp/, '.jpg');
+  req.url = req.url.replace(/\.png|\.jpg|\.jpeg|\.gif|\.bmp|\.tiff|\.webp|\.heic|\.heif/, '.jpg');
   next();
 }, express.static(config.cacheDir));
 // Media will laod the original
@@ -254,7 +254,6 @@ app.use('/arena', (req, res, next) => {
   if (baseUrlPath != '/' ) {
     req.url = baseUrlPath + `/arena${req.url}`; 
   }
-  console.log('get arena', req.url);
   next(); 
 }, arena);
 

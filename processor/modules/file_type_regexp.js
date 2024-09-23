@@ -23,7 +23,7 @@ module.exports = {
     return movieFile.test(filePath);
   },
   isImage : function(filePath) {
-    return imageFile.test(filePath);
+    return imageFile.test(filePath) || this.isHeicFile(filePath);
   },
   isHeicFile : function(filePath) {
     return heicFile.test(filePath);
