@@ -77,18 +77,13 @@ var init = function(config, task_queue) {
 
     var directory = relativeDest.split(path.sep)[0];
 
-    var addToImported = function() {
-      directory_list.addMediaListFile(directory, config.cacheDir, relativeDest);
-    };
-
     // Thumbnail
-    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 300, height: 200}, 2)
-    .then(job => job.finished().then(addToImported, addToImported));
+    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 300, height: 200}, 2);
     task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 960, height: 540, keepAspec: true});
-    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true})
-    .then(job => job.finished().then(() => {
-      task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest});
-    }));
+    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true}, 4);
+    task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest}, 50, {delay: 5000, backoff: 10000});
+
+    directory_list.addMediaListFile(directory, config.cacheDir, relativeDest);
 
 
     if(fileMatcher.isVideo(relativeDest)) {
