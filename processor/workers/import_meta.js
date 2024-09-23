@@ -51,7 +51,6 @@ var init = function(config, task_queue) {
         keywordsIndex.put(val, id)
       });
 
-
       // Store meta cache
       let cachableMeta = extractCachableMeta(info);
       cachePutPromises.push(metaCache.put(id, cachableMeta));
@@ -65,7 +64,6 @@ var init = function(config, task_queue) {
           }
         });
       } else {
-        console.log('No thumnail')
         task_queue.queueTask('resize_image', { title: data.file, file: data.file, width: 120, height: 100});
       }
 
