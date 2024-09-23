@@ -37,4 +37,4 @@ COPY modules common/
 COPY --from=client-builder /usr/src/dist client/dist
 
 EXPOSE 3000
-CMD ["./docker_start.sh && sh"]
+ENTRYPOINT [ "./docker_start.sh"]
