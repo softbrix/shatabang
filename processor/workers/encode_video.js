@@ -1,7 +1,6 @@
 "use strict"
 const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
-const fs = require('fs-extra');
 const os = require('os');
 const shFiles = require('../common/shatabang_files');
 
@@ -11,7 +10,7 @@ const MAX_WIDTH = 1920, MAX_HEIGHT = 1080;
 const CPU_CORES = os.cpus();
 const CORES_TO_USE = Math.max(1, CPU_CORES.length - 1);
 
-module.exports = function(job, done) {
+module.exports = async function(job, done) {
   const data = job.data;
   const storageDir = data.storageDir;
   const cacheDir = data.cacheDir;
@@ -19,10 +18,8 @@ module.exports = function(job, done) {
   const height = data.height || MAX_HEIGHT;
   const file = path.parse(data.file);
 
-  var outputFileName = path.join(cacheDir, '' + width, file.dir, file.name + '.mp4'),
+  const outputFileName = path.join(cacheDir, '' + width, file.dir, file.name + '.mp4'),
       sourceFileName = path.join(storageDir, file.dir, file.base);
-
-  fs.mkdirsSync(path.dirname(outputFileName));
 
   job.log('Source: '+ sourceFileName);
   job.log('Dest: ' + outputFileName);
@@ -31,6 +28,9 @@ module.exports = function(job, done) {
     job.log('Video already exists: ' + outputFileName)
     return done();
   }
+
+  const encodeFileName = path.join(cacheDir, 'encoding', '' + width, file.dir, file.name + '.mp4')
+  await shFiles.ensureDir(path.dirname(encodeFileName));
 
   ffmpeg(sourceFileName, { logger: console })
     .videoCodec('libx264')
@@ -59,12 +59,19 @@ module.exports = function(job, done) {
     .on('progress', function(progress) {
       job.progress(progress.percent);
     })
-    .on('end', function() {
-      job.progress(100);
-      done();
+    .on('end', async function() {
+      try {
+        await shFiles.ensureDir(path.dirname(outputFileName));
+        await shFiles.moveFile(encodeFileName, outputFileName);
+        job.progress(100);
+        done();
+      } catch (err) {
+        job.log('Error moving file', err);
+        done(err);
+      }
     })
     .on('start', function(commandLine) {
       job.log('Spawned Ffmpeg with command: ' + commandLine);
     })
-    .save(outputFileName);
+    .save(encodeFileName);
 }
