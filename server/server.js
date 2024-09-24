@@ -172,7 +172,7 @@ function requireAuthentication(redirectUrl) {
       return next();
     }
     if (redirectUrl !== undefined) {
-      res.redirect(url);
+      res.redirect(redirectUrl);
     } else {
       res.status(401).send('Unauthorized');
     }
@@ -185,8 +185,8 @@ function requireAuthentication(redirectUrl) {
 app.all('/images/*', requireAuthentication());
 app.all('/media/*', requireAuthentication());
 app.all('/video/*', requireAuthentication());
-app.all('/arena/*', requireAuthentication(baseUrlPath + '/login'));
-app.all('/admin/*', requireAuthentication(baseUrlPath + '/login'));
+app.all('/arena/*', requireAuthentication(config.baseUrl + '/login'));
+app.all('/admin/*', requireAuthentication(config.baseUrl + '/login'));
 
 // Map the routes
 routes.forEach(function(route) {
@@ -245,21 +245,16 @@ const arenaConfig = Arena({
   queues: queueNames.map(name => Object.assign({}, queConf, {name: name})),
 },
 {
-  basePath: '/',
+  basePath: baseUrlPath,
   disableListen: true // Let express handle the listening.
 });
 const arena = express.Router();
 arena.use(arenaConfig);
-app.use('/arena', (req, res, next) => { 
-  if (baseUrlPath != '/' ) {
-    req.url = baseUrlPath + `/arena${req.url}`; 
-  }
-  next(); 
-}, arena);
+app.use('/arena', arena);
 
 // Bull-board route
 const serverAdapter = new ExpressAdapter();
-serverAdapter.setBasePath('/admin/queuestat');
+serverAdapter.setBasePath(baseUrlPath + 'admin/queuestat');
 
 const { addQueue, removeQueue, setQueues, replaceQueues } = createBullBoard({
   queues: [],
@@ -267,12 +262,7 @@ const { addQueue, removeQueue, setQueues, replaceQueues } = createBullBoard({
 });
 setQueues(queueNames.map(name => new BullAdapter(new Bull(name, { redis: arenaRedisConf, prefix: task_queue.prefix }))));
 
-app.use('/admin/queuestat', (req, res, next) => {
-  if (baseUrlPath != '/' ) {
-    req.proxyUrl = baseUrlPath + '/admin/queuestat';
-  }
-  next();
-}, serverAdapter.getRouter());
+app.use('/admin/queuestat', serverAdapter.getRouter());
 
 app.use('/', express.static(__dirname + "/client/dist/"));
 
