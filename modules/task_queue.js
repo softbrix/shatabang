@@ -228,6 +228,7 @@ module.exports = {
   names: () => [
     'clear_index',
     'create_image_finger',
+    'delete_media',
     'encode_video',
     'import_meta',
     'resize_image',
