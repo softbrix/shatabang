@@ -51,6 +51,7 @@ var init = function(config, task_queue) {
           await queueWorkers(relativeDest, date.getTime());
           importLog.push(date.getTime());
           idxImported.put(date.getTime(), relativeDest);
+          idxImported.put(relativeDest, date.getTime());
           job.log("Imported: ", relativeDest);
         }
       } catch (err) {
@@ -78,16 +79,14 @@ var init = function(config, task_queue) {
     var directory = relativeDest.split(path.sep)[0];
 
     // Thumbnail
-    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 300, height: 200}, 2);
+    task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 300, height: 200}, 1);
     task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 960, height: 540, keepAspec: true});
     task_queue.queueTask('resize_image', { title: relativeDest, file: relativeDest, width: 1920, height: 1080, keepAspec: true}, 4);
     task_queue.queueTask('create_image_finger', { title: relativeDest, file: relativeDest}, 50, {delay: 5000, backoff: 10000});
 
     directory_list.addMediaListFile(directory, config.cacheDir, relativeDest);
 
-
     if(fileMatcher.isVideo(relativeDest)) {
-      // TODO: Encode video in multiple formats and sizes, Search for faces etc.
       var data = { 
         title: relativeDest, 
         file: relativeDest,
@@ -96,13 +95,7 @@ var init = function(config, task_queue) {
       };
       data.width = 1920;
       data.height = 1080;
-      task_queue.queueTask('encode_video', data, 10000);
-
-      // Create a shallow copy
-      data = Object.assign({}, data);
-      data.width = 960;
-      data.height = 540;
-      task_queue.queueTask('encode_video', data, 5000);
+      task_queue.queueTask('encode_video', data);
     }
   };
 };

@@ -7,7 +7,6 @@ const mediaInfo = require('vega-media-info');
 const ImportLog = require('../common/import_log');
 const MediaMeta = require('../modules/media_meta');
 const fileMatcher = require('../modules/file_type_regexp');
-const FileType = require('../modules/file_type_regexp');
 const shFiles = require('../common/shatabang_files');
 const indexes = require("../common/indexes");
 const DirectoryList = require('../modules/directory_list');
@@ -19,7 +18,7 @@ var init = function(config, task_queue) {
   var infoDirectory = path.join(config.cacheDir, 'info');
   var storageDir = config.storageDir;
   var versionKey = 'shatabangVersion';
-  var latestVersion = '202102';
+  var latestVersion = '202409';
 
   shFiles.mkdirsSync(infoDirectory);
 
@@ -91,6 +90,10 @@ var init = function(config, task_queue) {
         logger('Updated directory list');
         redis.set(versionKey, '202102');
       }
+      if(version < latestVersion) {
+        await add_import_cache(infoDirectory, storageDir, config.cacheDir);
+        logger('Added import cache');
+      }
 
       // Clean memory
       timestamps = {};
@@ -99,12 +102,12 @@ var init = function(config, task_queue) {
         task_queue.queueTask('retry_unknown', {}, 'low');
         task_queue.retryFailed();
 
-        logger('Successfully upgraded index to', 'v'+latestVersion);
         redis.set(versionKey, latestVersion, function() {
+          logger('Successfully upgraded index to', 'v'+latestVersion);
           done();
         });
       } else {
-        logger('All done');
+        logger('Upgrade check done');
         done();
         return;
       }
@@ -234,6 +237,7 @@ async function add_import_cache(infoDirectory, storageDir, cacheDir) {
       }
       datesTimes.add(d);
       idxImported.put(d, relativeDest);
+      idxImported.put(relativeDest, d);
       if (i % 500 == 0) {
         console.log('Import log: ', Math.round(10000 * (datesTimes.size / items.length))/100, '%');
       }
