@@ -36,6 +36,8 @@ var init = function(config, task_queue) {
         var exifData = await mediaInfo.readMediaInfo(filePath, useExifToolFallback);
         if (exifData === undefined || (exifData.CreateDate || exifData.ModifyDate) === undefined) {
           throw Error("Failed to read exif data from " + filePath);
+        } else if (exifData.Type === 'system') {
+          throw Error("No valid date metadata found in " + filePath);
         }
         var date = new Date(exifData.CreateDate || exifData.ModifyDate);
         var items = idxImported.get(date.getTime());
@@ -51,7 +53,7 @@ var init = function(config, task_queue) {
           await queueWorkers(relativeDest, date.getTime());
           importLog.push(date.getTime());
           idxImported.put(date.getTime(), relativeDest);
-          idxImported.put(relativeDest, date.getTime());
+          idxImported.put(relativeDest, '' + date.getTime());
           job.log("Imported: ", relativeDest);
         }
       } catch (err) {
