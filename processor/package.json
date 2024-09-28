@@ -47,7 +47,7 @@
     "stureby-index": "^3.3.0",
     "underscore": "^1.13.7",
     "variance": "0.0.1",
-    "vega-media-info": "2.8.0",
+    "vega-media-info": "3.0.0",
     "vemdalen-index": "^2.0.2"
   },
   "devDependencies": {
