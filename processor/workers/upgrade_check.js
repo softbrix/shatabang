@@ -237,7 +237,7 @@ async function add_import_cache(infoDirectory, storageDir, cacheDir) {
       }
       datesTimes.add(d);
       idxImported.put(d, relativeDest);
-      idxImported.put(relativeDest, d);
+      idxImported.put(relativeDest, '' + d);
       if (i % 500 == 0) {
         console.log('Import log: ', Math.round(10000 * (datesTimes.size / items.length))/100, '%');
       }
