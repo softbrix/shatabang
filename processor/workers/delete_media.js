@@ -21,16 +21,16 @@ var init = function(config, task_queue) {
       const cache300 = path.join(cacheDir, '300', fileTypeRegexp.toCacheImageFileName(mediaFile));
       const cache1920 = path.join(cacheDir, '1920', fileTypeRegexp.toCacheImageFileName(mediaFile));
 
-      shFiles.moveFile(sourceFile, destFile).then(job.log, done);
-      shFiles.deleteFile(cache300);
-      shFiles.deleteFile(cache1920);
+      await shFiles.moveFile(sourceFile, destFile);
+      await shFiles.deleteFile(cache300);
+      await shFiles.deleteFile(cache1920);
 
-      let timestamp = timesIndex.get(mediaFile);
-      if (timestamp != undefined) {
+     let timestamp = timesIndex.get(mediaFile);
+     if (timestamp != undefined && timestamp.length > 0) {
         timesIndex.delete(mediaFile);
         timesIndex.delete(timestamp);
-        // importLogIndex.delete(timestamp);
-        metaCache.delete(timestamp);
+        // importLogIndex.delete(timestamp); 
+        await metaCache.delete('' + timestamp);
         job.log(`Deleted ${mediaFile} from indexes (${timestamp})`);
       }
 
