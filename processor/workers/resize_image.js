@@ -21,22 +21,26 @@ var init = function(config, task_queue) {
       return done();
     }
 
-    if (fileTypeRegexp.isVideo(sourceFileName)) {
-      const videoTmpDir = path.join(cacheDir, '1920', path.dirname(relativeFilePath));
-      const tmpFileName = path.join(videoTmpDir, PREFIX + outputImgFileName);
-      await shFiles.ensureDir(path.dirname(tmpFileName));
-      await thumbnailer.screenshots(sourceFileName, tmpFileName, ['10%']);
-      sourceFileName = tmpFileName;
-    } else if (fileTypeRegexp.isHeicFile(sourceFileName)) {
-      const heicTmpDir = path.join(cacheDir, '1920', path.dirname(relativeFilePath));
-      const tmpFileName = path.join(heicTmpDir, 'h' + outputImgFileName);
-      await shFiles.ensureDir(path.dirname(tmpFileName));
-      await thumbnailer.convertHeicToJpg(sourceFileName, tmpFileName);
-      sourceFileName = tmpFileName;
+    try {
+      if (fileTypeRegexp.isVideo(sourceFileName)) {
+        const videoTmpDir = path.join(cacheDir, '1920', path.dirname(relativeFilePath));
+        const tmpFileName = path.join(videoTmpDir, PREFIX + outputImgFileName);
+        await shFiles.ensureDir(path.dirname(tmpFileName));
+        await thumbnailer.screenshots(sourceFileName, tmpFileName, ['10%']);
+        sourceFileName = tmpFileName;
+      } else if (fileTypeRegexp.isHeicFile(sourceFileName)) {
+        const heicTmpDir = path.join(cacheDir, '1920', path.dirname(relativeFilePath));
+        const tmpFileName = path.join(heicTmpDir, 'h' + outputImgFileName);
+        await shFiles.ensureDir(path.dirname(tmpFileName));
+        await thumbnailer.convertHeicToJpg(sourceFileName, tmpFileName);
+        sourceFileName = tmpFileName;
+      }
+      thumbnailer
+        .generateThumbnail(sourceFileName, outputFileName, width, data.height, data.keepAspec)
+        .then(() => { done() }, done);
+    } catch(err) {
+      done(err);
     }
-    thumbnailer
-      .generateThumbnail(sourceFileName, outputFileName, width, data.height, data.keepAspec)
-      .then(() => { done() }, done);
   });
 };
 
