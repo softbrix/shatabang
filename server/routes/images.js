@@ -7,12 +7,8 @@ const indexes = require('../common/indexes')
 const shFiles = require('../common/shatabang_files');
 const task_queue = require('../common/task_queue');
 
-var sourceDir, cacheDir, deletedDir, timesIndex, apiEndpoint;
+var  apiEndpoint;
 router.initialize = function(config) {
-  sourceDir = config.storageDir;
-  cacheDir = config.cacheDir;
-  deletedDir = config.deletedDir;
-  timesIndex = indexes.importedTimesIndex(config.cacheDir);
   apiEndpoint = 'https://photoslibrary.googleapis.com';
 };
 
@@ -23,25 +19,7 @@ router.post('/delete',function(req,res){
     }
 
     req.body.forEach(function(reference) {
-      var sourceFile = path.join(sourceDir, reference);
-      var destFile = path.join(deletedDir, path.basename(reference));
-      var cache300 = path.join(cacheDir, '300', reference);
-      var cache1920 = path.join(cacheDir, '1920', reference);
-
-      shFiles.moveFile(sourceFile, destFile)
-        .then(console.log, function(error) {
-          console.log('Error:', error);
-        });
-      shFiles.deleteFile(cache300);
-      shFiles.deleteFile(cache1920);
-
-      let elem = Object.entries(timesIndex.toJSON()).find(([key, value]) => value && value.indexOf && value.indexOf(reference) > -1);
-      if (elem != undefined) {
-        timesIndex.delete(elem[0]);
-      }
-
-      var directory = reference.split(path.sep)[0];
-      task_queue.queueTask('update_directory_list', { title: directory, dir: directory}, 'high');
+      task_queue.queueTask('delete_media', { title: reference, media: reference}, 'high');
     });
 
     res.send("OK").status(200);

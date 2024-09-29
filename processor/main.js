@@ -10,6 +10,7 @@ const worker_log = require('./workers/worker_log.js');
 let processors = [
     require('./workers/clear_index'),
     require('./workers/create_image_finger'),
+    require('./workers/delete_media'),
     require('./workers/import_meta'),
     require('./workers/resize_image'),
     require('./workers/retry_unknown'),

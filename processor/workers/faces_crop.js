@@ -34,7 +34,7 @@ var init = function(config, task_queue) {
       return Face.findByIdAndUpdate(face.id, { "sharpness": sharpness });
     })
     .then((arg) => { job.log(arg); done() })
-    .catch((arg) => { job.log(arg); done(arg) });
+    .catch(done);
   });
 };
 

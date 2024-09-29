@@ -19,7 +19,6 @@ var init = async function(config, task_queue) {
     var sourceFileName = path.resolve(path.join(cacheDir, "960", relativeFilePath));
 
     if(!shFiles.exists(sourceFileName)) {
-      job.log('Missing file:' + sourceFileName)
       return done('Missing file:' + sourceFileName);
     }
 

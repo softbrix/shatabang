@@ -18,6 +18,7 @@ module.exports = {
   }),
   fileShaIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_file_sha')),
   imgFingerIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_finger')),
+  // importedTimesIndex is dual linked relative file -> timestamp & timestamp -> relative file
   importedTimesIndex: (cacheDir, options) => shIndex(path.join(cacheDir, 'idx_imported'), options),
   ratingIndex: (cacheDir) => shIndex(path.join(cacheDir, 'idx_rating')),
 }

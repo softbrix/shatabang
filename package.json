@@ -48,8 +48,8 @@
     "progress": "^2.0.3",
     "sha256": "0.2.0",
     "sharp-phash": "2.1.0",
-    "stureby-index": "^3.3.0",
-    "vega-media-info": "2.8.0",
+    "stureby-index": "4.0.0",
+    "vega-media-info": "3.0.0",
     "vemdalen-index": "^2.0.2"
   },
   "preferGlobal": true,
