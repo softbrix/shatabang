@@ -26,7 +26,7 @@ var init = function(config, task_queue) {
     let mediaFiles = await shFiles.listMediaFiles(importDir);
     
     return syncLoop(mediaFiles, async (filePath, i) => {
-      job.log("Processing", i, filePath);
+      job.log(`Processing ${i}, ${filePath}`);
 
       var updateProgress = function() {
         job.progress(100 * i / mediaFiles.length);
@@ -45,23 +45,22 @@ var init = function(config, task_queue) {
         if(!process.env.IGNORE_DUPLICATES && items.length > 0) {
           var newDest = await sort_file(filePath, duplicatesDir, exifData);
           console.log('Duplicate', filePath, newDest);
-          job.log("Exists in image date cache", newDest);
+          job.log(`Exists in image date cache: ${newDest}`);
         } else {
           var newDest = await sort_file(filePath, storageDir, exifData);
           var relativeDest = path.relative(storageDir, newDest);
-          job.log('Importing', relativeDest);
+          job.log(`Importing ${relativeDest}`);
           await queueWorkers(relativeDest, date.getTime());
           importLog.push(date.getTime());
           idxImported.put(date.getTime(), relativeDest);
           idxImported.put(relativeDest, '' + date.getTime());
-          job.log("Imported: ", relativeDest);
+          job.log(`Imported: ${relativeDest}`);
         }
       } catch (err) {
-        console.error("Failed to import", err);
-        job.log("Failed to import", err);
+        job.log(`Failed to import: ${err}`);
         if (shFiles.exists(filePath)) {
           let newPath = path.join(unknownDir, path.basename(filePath));
-          console.log('Moving to: ', newPath);
+          job.log(`Moving to: ${newPath}`);
           // Failed to import move to unknown dir
           await shFiles.moveFile(filePath, newPath);
         }
@@ -69,7 +68,7 @@ var init = function(config, task_queue) {
       updateProgress();
     }).then(function(importedFiles) {
       if(importedFiles > 0) {
-        console.log('Files imported:', importedFiles);
+        console.log(`Files imported: ${importedFiles}`);
       }
       done();
     }, done);

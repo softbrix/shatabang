@@ -21,11 +21,11 @@ module.exports = async function(job, done) {
   const outputFileName = path.join(cacheDir, '' + width, file.dir, file.name + '.mp4'),
       sourceFileName = path.join(storageDir, file.dir, file.base);
 
-  job.log('Source: '+ sourceFileName);
-  job.log('Dest: ' + outputFileName);
+  job.log(`Source:  ${sourceFileName}`);
+  job.log(`Dest:  ${outputFileName}`);
 
   if (!data.forceUpdate && shFiles.exists(outputFileName)) {
-    job.log('Video already exists: ' + outputFileName)
+    job.log(`Video already exists ${outputFileName}`);
     return done();
   }
 
@@ -52,10 +52,7 @@ module.exports = async function(job, done) {
     ])
     .size(`${width}x${height}`)
     .keepDisplayAspectRatio()
-    .on('error', function(err) {
-      job.log('Error encoding file', err);
-      done(err);
-    })
+    .on('error', done)
     .on('progress', function(progress) {
       job.progress(progress.percent);
     })
@@ -66,12 +63,11 @@ module.exports = async function(job, done) {
         job.progress(100);
         done();
       } catch (err) {
-        job.log('Error moving file', err);
         done(err);
       }
     })
     .on('start', function(commandLine) {
-      job.log('Spawned Ffmpeg with command: ' + commandLine);
+      job.log(`Spawned Ffmpeg with command:  ${commandLine}`);
     })
     .save(encodeFileName);
 }

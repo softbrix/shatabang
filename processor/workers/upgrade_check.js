@@ -27,20 +27,20 @@ var init = function(config, task_queue) {
       job.log.apply(job, arguments);
       console.log.apply(console, arguments);
     }
-    logger('Running upgrade to ', latestVersion)
+    logger(`Running upgrade to  ${latestVersion}`);
 
     var redis = config.redisClient;
     // Check version in redisStore
     redis.get(versionKey, async function (err, version) {
       if(err) {
-        logger('Error while retrieving versionKey', err);
+        logger(`Error while retrieving versionKey ${err}`);
         return;
       }
       if (process.env.DB_VERSION != undefined) {
         version = process.env.DB_VERSION;
-        logger('Force db-version', version);
+        logger(`Force db-version ${version}`);
       } else {
-        logger('Index version', version);
+        logger(`Index version ${version}`);
       }
       if(!version) {
         version = 0;
@@ -103,7 +103,7 @@ var init = function(config, task_queue) {
         task_queue.retryFailed();
 
         redis.set(versionKey, latestVersion, function() {
-          logger('Successfully upgraded index to', 'v'+latestVersion);
+          logger(`Successfully upgraded index to v${latestVersion}`);
           done();
         });
       } else {
